@@ -229,7 +229,7 @@ def available_scenarios():
         scenid =  {"id":scen,"label":scen}
         scenids.append(scenid)
 
-    models_list = pd.read_excel('{}\\Utilities\\Titles\\classification_titles.xlsx'.format(rootdir),sheet_name="Models",index_col=0)
+    models_list = pd.read_excel('{}\\Utilities\\Titles\\classification_titles.xlsx'.format(rootdir),sheet_name="Models",index_col=0, engine = "openpyxl")
     modids = []
     models = models_list["Short name"]
     for mod in models:
