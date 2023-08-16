@@ -160,8 +160,11 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                                 if dims[var][0] == 'RTI':
 
                                     if len(titles[dims[var][1]]) > 1:
-                                        data[scen][var][:, :, 0, 0] = read
-                                        
+                                        try: 
+                                            data[scen][var][:, :, 0, 0] = read
+                                        except:
+                                            print(f'When reading in {var} from scenario {scen}, an error occurred')
+
                                     elif len(titles[dims[var][2]]) > 1:
                                         data[scen][var][:, 0, :, 0] = read
                                     elif len(titles[dims[var][3]]) > 1:
