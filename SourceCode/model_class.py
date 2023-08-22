@@ -218,7 +218,7 @@ class ModelRun:
             if "FTT-P" in self.ftt_modules:
                 variables = ftt_p.solve(variables, time_lags, iter_lags,
                                         self.titles, self.histend, tl[y],
-                                        self.domain)
+                                        self.domain, scenario=scenario)
             if "FTT-Tr" in self.ftt_modules:
                 variables = ftt_tr.solve(variables, time_lags, iter_lags,
                                         self.titles, self.histend, tl[y],

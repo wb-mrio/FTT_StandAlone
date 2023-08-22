@@ -77,7 +77,7 @@ from SourceCode.Power.ftt_p_costc import cost_curves
 # -----------------------------------------------------------------------------
 # ----------------------------- Main ------------------------------------------
 # -----------------------------------------------------------------------------
-def solve(data, time_lag, iter_lag, titles, histend, year, domain):
+def solve(data, time_lag, iter_lag, titles, histend, year, domain, scenario=None):
     """
     Main solution function for the module.
 
@@ -174,7 +174,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
         data['MRED'] = mred
         data['MRES'] = mres
 
-        data = get_lcoe(data, titles)
+        data = get_lcoe(data, titles, scenario=scenario)
         data = rldc(data, time_lag, titles)
         mslb, mllb, mes1, mes2 = dspch(data['MWDD'], data['MEWS'], data['MKLB'], data['MCRT'],
                                    data['MEWL'], data['MWMC'], data['MMCD'],
@@ -231,7 +231,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             data['MEWI'][r, :, 0] = np.where(cap_diff > 0.0,
                                              cap_diff + cap_drpctn,
                                              cap_drpctn)
-        data = get_lcoe(data, titles)
+        data = get_lcoe(data, titles, scenario=scenario)
 
 
     #%%
@@ -280,7 +280,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
         # If first year, get initial MC, dMC for DSPCH
         if not time_lag['MMCD'][:, :, 0].any():
-            time_lag = get_lcoe(data, titles)
+            time_lag = get_lcoe(data, titles, scenario=scenario)
         # Call RLDC function for capacity and load factor by LB, and storage costs
         if year >= 2013:
             print(f'MEWS: {data["MEWS"][40, 15, 0]:.7f}\n'
@@ -473,7 +473,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # =====================================================================
             # Initialise the LCOE variables
             # =====================================================================
-            data = get_lcoe(data, titles)
+            data = get_lcoe(data, titles, scenario=scenario)
             bidon = 0
             # Historical differences between demand and supply.
             # This variable covers transmission losses and net exports
@@ -776,7 +776,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # Update LCOE
             # =================================================================
 
-            data = get_lcoe(data, titles)
+            data = get_lcoe(data, titles, scenario=scenario)
 
             # =================================================================
             # Update the time-loop variables

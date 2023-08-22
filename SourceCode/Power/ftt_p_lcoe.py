@@ -36,7 +36,7 @@ import numpy as np
 # -----------------------------------------------------------------------------
 # --------------------------- LCOT function -----------------------------------
 # -----------------------------------------------------------------------------
-def get_lcoe(data, titles):
+def get_lcoe(data, titles, scenario=None):
     """
     Calculate levelized costs.
 
@@ -246,3 +246,4 @@ def get_lcoe(data, titles):
             x = 1+1
 
     return data
+
