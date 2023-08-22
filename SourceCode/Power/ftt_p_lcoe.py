@@ -67,6 +67,16 @@ def get_lcoe(data, titles, scenario=None):
 
     # Categories for the cost matrix (BCET)
     c2ti = {category: index for index, category in enumerate(titles['C2TI'])}
+    
+    
+
+    global_south = ['26 Bulgaria (BG)', '32 Turkey (TR)', '33 Macedonia (MK)', '39 Russian Fed. (RS)', '41 China (CN)', '42 India (IN)', '43 Mexico (MX)', 
+                    '44 Brazil (BR)', '45 Argentina (AR)', '46 Colombia (CO)', '47 Rest LatinAmerica(LA)', '50 Indonesia (ID)', '51 Rest of ASEAN (AS)', 
+                    '52 Rest of OPEC ex Venez', '53 Rest of World (RW)', '54 Ukraine (UE)', '56 Nigeria (NG)', '57 South Africa (SA)', 
+                    '58 NorthAfrica OPEC (ON)', '59 CentralAfricaOPEC(OC)', '60 Malaysia (MY)', '61 Kazakhstan (KZ)', '62 Rest NorthAfrica (AN)', 
+                    '63 RestCentralAfrica(AC)', '64 Rest West Africa (AW)', '65 Rest East Africa (AE)', '66 Rest SouthAfrica (ZA)', '67 Egypt (EG)', 
+                    '68 Dem. Rep. Congo (DC)', '69 Kenya (KE)']
+
 
     for r in range(len(titles['RTI'])):
 
@@ -107,9 +117,17 @@ def get_lcoe(data, titles, scenario=None):
         # dr = bcet[6]
         dr = bcet[:, c2ti['17 Discount Rate (%)'], np.newaxis]
 
+        # TT policies impact on discount rate (r), supposing a TT policy is implemented in 2022 in Global South countries 
+        # (so fully implemented and functional in 2032, and the policy decreases r by 5% every year)
+        ttpolicy = lambda dr, year: dr*(1-0.05*(2050-year))  # year is year of implementation
+        new_dr = None
+        if titles['RTI'][r] in global_south:
+            new_dr = ttpolicy(dr, 2032)
+
         data['MWIC'][r, :, 0] = copy.deepcopy(bcet[:, c2ti['3 Investment ($/kW)']])
         data['MWFC'][r, :, 0] = copy.deepcopy(bcet[:, c2ti['5 Fuel ($/MWh)']])
         data['MCFC'][r, :, 0] = copy.deepcopy(bcet[:, c2ti['11 Decision Load Factor']])
+
 
         # Initialse the levelised cost components
         # Average investment cost
@@ -187,7 +205,7 @@ def get_lcoe(data, titles, scenario=None):
 
         # Net present value calculations
         # Discount rate
-        denominator = (1+dr)**full_lt_mat
+        denominator = (1+dr)**full_lt_mat if new_dr is None else (1+new_dr)**full_lt_mat
 
         # 1-Expenses
         # 1.1-Without policy costs
