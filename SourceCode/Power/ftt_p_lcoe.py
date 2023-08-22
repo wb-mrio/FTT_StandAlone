@@ -119,10 +119,16 @@ def get_lcoe(data, titles, scenario=None):
 
         # TT policies impact on discount rate (r), supposing a TT policy is implemented in 2022 in Global South countries 
         # (so fully implemented and functional in 2032, and the policy decreases r by 5% every year)
-        ttpolicy = lambda dr, year: dr*(1-0.05*(2050-year))  # year is year of implementation
+        def ttpolicy(dr, year):
+            dr = dr*(1-0.05*(2050-year))  # updated only for renewables. Year is year of full implementation
+            return dr
         new_dr = None
-        if titles['RTI'][r] in global_south:
+        if titles['RTI'][r] in global_south: 
+        #and scenario and scenario=='S2':
             new_dr = ttpolicy(dr, 2032)
+
+        if scenario:
+            print(scenario)
 
         data['MWIC'][r, :, 0] = copy.deepcopy(bcet[:, c2ti['3 Investment ($/kW)']])
         data['MWFC'][r, :, 0] = copy.deepcopy(bcet[:, c2ti['5 Fuel ($/MWh)']])
