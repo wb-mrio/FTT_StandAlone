@@ -36,7 +36,7 @@ import numpy as np
 # -----------------------------------------------------------------------------
 # --------------------------- LCOT function -----------------------------------
 # -----------------------------------------------------------------------------
-def get_lcoe(data, titles, scenario=None):
+def get_lcoe(data, titles, scenario=None, year=None):
     """
     Calculate levelized costs.
 
@@ -120,15 +120,17 @@ def get_lcoe(data, titles, scenario=None):
         # TT policies impact on discount rate (r), supposing a TT policy is implemented in 2022 in Global South countries 
         # (so fully implemented and functional in 2032, and the policy decreases r by 5% every year)
         def ttpolicy(dr, year):
-            dr = dr*(1-0.05*(2050-year))  # updated only for renewables. Year is year of full implementation
+            old_dr_shape = dr.shape
+            # print(old_dr_shape)   (24,1)
+            dr[15:] = dr[15:]*((1-0.05)**(year-2031))  # updated only for renewables. Year is year of full implementation
+            assert old_dr_shape == dr.shape, (old_dr_shape, dr.shape)
             return dr
         new_dr = None
-        if titles['RTI'][r] in global_south: 
-        #and scenario and scenario=='S2':
-            new_dr = ttpolicy(dr, 2032)
+        if titles['RTI'][r] in global_south and scenario and year and scenario=='S2' and year >= 2032:
+            new_dr = ttpolicy(dr, year)
 
-        if scenario:
-            print(scenario)
+        #if scenario:
+           # print(scenario)
 
         data['MWIC'][r, :, 0] = copy.deepcopy(bcet[:, c2ti['3 Investment ($/kW)']])
         data['MWFC'][r, :, 0] = copy.deepcopy(bcet[:, c2ti['5 Fuel ($/MWh)']])
