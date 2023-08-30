@@ -120,10 +120,12 @@ def get_lcoe(data, titles, scenario=None, year=None):
         # TT policies impact on discount rate (r), supposing a TT policy is implemented in 2022 in Global South countries 
         # (so fully implemented and functional in 2032, and the policy decreases r by 5% every year)
         def ttpolicy(dr, year):
-            old_dr_shape = dr.shape
-            # print(old_dr_shape)   (24,1)
-            dr[15:] = dr[15:]*((1-0.05)**(year-2031))  # updated only for renewables. Year is year of full implementation
-            assert old_dr_shape == dr.shape, (old_dr_shape, dr.shape)
+            #old_dr_shape = dr.shape
+            #print(old_dr_shape)   (24,1)
+            dr = dr*((1-0.05)**(year-2031)) #decrease in DR for all tech
+            #for i in [9,10,11,12,13,14,15,16,17,18,20,21,22,23]:
+                #dr[i] = dr[i]*((1-0.05)**(year-2031))  # updated only for renewables. Year is year of full implementation
+            #assert old_dr_shape == dr.shape, (old_dr_shape, dr.shape)
             return dr
         new_dr = None
         if titles['RTI'][r] in global_south and scenario and year and scenario=='S2' and year >= 2032:
