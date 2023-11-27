@@ -1,0 +1,13 @@
+,Indirect Heating Coal,Indirect Heating Oil,Indirect Heating Gas,Indirect Heating Biomass,Indirect Heating Electric,Indirect Heating Steam Distributed,Heat Pumps (Electricity),Direct Heating Coal,Direct Heating Oil,Direct Heating Gas,Direct Heating Biomass,Direct Heating Electric,Direct Heating Steam Distributed
+1 Hard coal,1,0,0,0,0,0,0,1,0,0,0,0,0
+2 Other coal etc,1,0,0,0,0,0,0,1,0,0,0,0,0
+3 Crude oil etc,0,1,0,0,0,0,0,0,1,0,0,0,0
+4 Heavy fuel oil,0,1,0,0,0,0,0,0,1,0,0,0,0
+5 Middle distillates,0,1,0,0,0,0,0,0,1,0,0,0,0
+6 Other gas,0,0,1,0,0,0,0,0,0,1,0,0,0
+7 Natural gas,0,0,1,0,0,0,0,0,0,1,0,0,0
+8 Electricity,0,0,0,0,1,0,1,0,0,0,0,1,0
+9 Heat,0,0,0,0,0,1,0,0,0,0,0,0,1
+10 Combustible waste,0,0,0,0,0,0,0,0,0,0,0,0,0
+11 Biofuels,0,0,0,1,0,0,0,0,0,0,1,0,0
+12 Hydrogen,0,0,0,0,0,0,0,0,0,0,0,0,0

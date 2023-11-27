@@ -188,7 +188,6 @@ def marginal_function(MEPD,RERY,MPTR,BCSC,HistC,MRCL,MERC,MRED,MRES,rti,erti,yea
     #First 4 elements are the non-renewable resources
 
     P[:4] = copy.deepcopy(MRCL[1,:4,0])  #All marginal costs of non-renewable resources are identical (global), we use 1-USA ? 1 is not USA
-    print(P)
     MEPD_sum = np.sum(MEPD[:,:,0], axis=0) #sum over regions
     D[:4] = copy.deepcopy(MEPD_sum[:4])      #Global demand for non-renewable resources
 
