@@ -1,0 +1,17 @@
+Variable name,Read in?,Code,Description,RowDim,ColDim,3DDim
+HJET,1,33130000,FTT-Heat Tech to fuel conversion matrix,HTTI,JTI,0
+HJFC,1,33180000,FTT-Heat Fraction of energy use for heating in households,JTI,RSHORTTI,0
+HEWA,1,33020000,FTT-Heat Substitution matrix,HTTI,HTTI,0
+HEWB,1,33030000,FTT-Heat Technology spill-over matrix,HTTI,HTTI,0
+HEWW,1,33050000,FTT-Heat Global cumulative investment,HTTI,0,0
+HFIN,1,33120000,FTT-Heat Interest rates,HTTI,TIME,RSHORTTI
+HFFC,1,33140000,FTT-Heat Fuel price rates,JTI,TIME,RSHORTTI
+HEWF,1,33040000,FTT-Heat Final energy demand for heat generation,HTTI,TIME,RSHORTTI
+RHUD,1,33170000,FTT-Heat Useful energy demand,RSHORTTI,TIME,0
+HTVS,1,33060000,FTT-Heat Subsidy on investment cost,HTTI,TIME,RSHORTTI
+HTRT,1,33070000,FTT-Heat Subsidy/tax on fuel use,HTTI,TIME,RSHORTTI
+HREG,1,33080000,FTT-Heat Regulations on heating technologies,HTTI,TIME,RSHORTTI
+HWSA,1,33090000,FTT-Heat Exogenous market share changes,HTTI,TIME,RSHORTTI
+HEFI,1,33100000,FTT-Heat Feed-in-tariff,HTTI,TIME,RSHORTTI
+HETR,1,33110000,FTT-Heat Turn-over rate,HTTI,TIME,RSHORTTI
+BHTC,1,33010000,FTT-Heat Cost matrix,HTTI,C4TI,RSHORTTI

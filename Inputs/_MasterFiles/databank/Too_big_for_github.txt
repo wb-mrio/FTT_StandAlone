@@ -1,0 +1,1 @@
+These contain the E3ME databanks, which store various data. All relevant data has been converted into csv files. However, when E3ME is updated, this data needs to be re-extracted. 

@@ -13,6 +13,7 @@ The user can select one or more scenarios to upload from the excel sheet.
 
 import pandas as pd
 import numpy as np
+import celib
 import os
 from celib import DB1
 from pathlib import Path
@@ -25,10 +26,12 @@ Scenario 1 = 2-degree scenario (default)
 Scenario 2 = 1.5-degree scenario (default)
 ENTER SCENARIO NUMBERS HERE! This will dictate which sheets are read in.
 """
-models = {'FTT-Tr': [[0], 'FTT-Tr_25x70_2021'],
-          'FTT-P': [[0], 'FTT-P-24x71_2022'],
-          'FTT-H': [[0], 'FTT-H-13x70_2021'],
-          'FTT-S': [[0], 'FTT-S-26x70_2021']}
+#models = {'FTT-Tr': [[0], 'FTT-Tr_25x70_2021'],
+          #'FTT-P': [[0], 'FTT-P-24x71_2022'],
+          #'FTT-H': [[0], 'FTT-H-13x71_2023_S0'],
+          #'FTT-S': [[0], 'FTT-S-26x70_2021']}
+
+models = {'FTT-H': [[0], 'FTT-H-13x71_2023']}
 
 # models = {'FTT-IH-CHI': [[0], 'FTT-IH-CHI-13x70_2022'],
 #           'FTT-IH-FBT': [[0], 'FTT-IH-FBT-13x70_2022'],
@@ -95,6 +98,7 @@ if __name__ == '__main__':
             vardict[model][var]['Read in?'] = variables_df.loc[i, 'Read in?']
 #            vardict[var]['Scen'] = variables_df.loc[i, 'Scenarios']
             vardict[model][var]['Data'] = {}
+            
 
         # Get model classifications
         dims = list(pd.concat([variables_df['RowDim'], variables_df['ColDim'], variables_df['3DDim']]))
@@ -130,9 +134,33 @@ if __name__ == '__main__':
             # Tell the user that the file is being read in.
             msg = "Extracting {} variables of scenario {} from the excelsheets".format(model, scen)
             print(msg)
+            
+            #Defining relevant rows
+            #class_titles = pd.read_excel('classification_titles.xlsx', sheet_name = 'HTTI')
+            #relevant_rows = set(class_titles.iloc[:, 0])
 
             # Load sheets
             raw_data = pd.read_excel(raw_p, sheet_name=sheets, header=None)
+            
+            # import re
+        
+            # filtered_raw_data = {}
+
+            # Define the pattern to match 'placeholder' as a separate word
+            # word_to_filter = r'\bPlaceholder\b'
+            
+            # Iterate through the original raw_data dictionary
+            # for key, data in raw_data.items():
+                # if not any(re.search(word_to_filter, str(cell)) for cell in data):
+                    # If the pattern is not found, add the data to the filtered_raw_data dictionary
+                    # filtered_raw_data[key] = data
+                    
+                    #raw_data = filtered_raw_data
+                    
+                    #print(raw_data)
+            
+            # filtered_raw_data now contains the filtered data without rows containing 'placeholder' as a separate word
+            
 
             # Get titles from the Titles sheet in the excel file
             raw_titles = raw_data['Titles']
@@ -152,6 +180,7 @@ if __name__ == '__main__':
                 ndims = len(vardict[model][var]['Dims'])
                 rdim = len(dims[vardict[model][var]['Dims'][0]])
                 r_ttle = dims[vardict[model][var]['Dims'][0]]
+                #r_ttle = [r for r in r_ttle if r in relevant_rows]
                 if len(vardict[model][var]['Dims']) == 1:
                     cdim = 1
                     c_ttle = ['NA']
@@ -176,9 +205,12 @@ if __name__ == '__main__':
 
                         out_fn = os.path.join(out_dir, "{}_{}.csv".format(var, reg))
                         df = pd.DataFrame(data.values, index=r_ttle, columns=c_ttle)
+                        mask = ~df.index.to_series().astype(str).str.contains(r'\bundefined\b', case=False)
+                        df = df[mask]
+                        # print(df)
                         df.to_csv(out_fn)
 
-                elif ndims==2:
+                elif ndims == 2:
                     ri = row_start
                     rf = ri + rdim
                     data = raw_data[sheet_name].iloc[ri:rf, ci:cf]
@@ -186,9 +218,12 @@ if __name__ == '__main__':
 
                     out_fn = os.path.join(out_dir, "{}.csv".format(var))
                     df = pd.DataFrame(data.values, index=r_ttle, columns=c_ttle)
+                    mask = ~df.index.to_series().astype(str).str.contains(r'\bundefined\b', case=False)
+                    df = df[mask]
+                    # print(df)
                     df.to_csv(out_fn)
 
-                elif ndims==1:
+                elif ndims == 1:
                     ri = row_start
                     rf = ri + rdim
                     data = raw_data[sheet_name].iloc[ri:rf, ci:cf]
@@ -196,7 +231,29 @@ if __name__ == '__main__':
 
                     out_fn = os.path.join(out_dir, "{}.csv".format(var))
                     df = pd.DataFrame(data.values, index=r_ttle, columns=c_ttle)
+                    mask = ~df.index.to_series().astype(str).str.contains(r'\bundefined\b', case=False)
+                    df = df[mask]
                     df.to_csv(out_fn)
 
-                msg = "Data for {} saved to CSV. Model: {}".format(var, model)
-                print(msg)
+                    msg = "Data for {} saved to CSV. Model: {}".format(var, model)
+                    print(msg)
+
+                    # Only return gamma sheets for the first scenario
+    if scen != "0":
+        pass
+    else:
+        var = "HGAM"
+        sheet_name = 'BHTC'
+        bhtc = pd.read_excel(models, sheet_name=sheet_name)
+        gamma_1D = bhtc[12]
+        col_names = list(range(2014, 2101))
+        # Make data 2D with np.tile
+        data = pd.DataFrame(np.tile(gamma_1D.values.T, (len(col_names), 1)).T)
+     
+        # Add column names    
+        data.columns = col_names
+        out_fn = os.path.join(out_dir, "{}_{}.csv".format(var, reg))
+        df = pd.DataFrame(data.values, index=dims["HTTI"], columns=col_names)
+        mask = ~df.index.to_series().astype(str).str.contains(r'\bundefined\b', case=False)
+        df = df[mask]
+        df.to_csv(out_fn)

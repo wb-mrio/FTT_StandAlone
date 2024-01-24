@@ -122,8 +122,12 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                                 var_tl = list(range(int(forstart[var]), timeline[-1]+1))
                                 var_tl_fit = [year for year in var_tl if year in timeline]
                                 var_tl_inds = [i for i, year in enumerate(timeline) if year in var_tl]
-                                #print(csv.columns, var)
-                                csv.columns = [int(year) for year in csv.columns]
+                                # print(csv.columns, var)
+                                try:
+                                    csv.columns = [int(year) for year in csv.columns]
+                                except ValueError as e:
+                                    print(f"'{var}'")
+                                    raise e
 
 
                                 #print(file)
@@ -134,7 +138,7 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
 
                                 read = csv
 
-                            # If the CSV file has a key indicator than it's 3D
+                            # If the CSV file has a region key indicator then it's 3D
                             if key in titles['RTI_short']:
 
                                 # Take the index of the region
@@ -147,38 +151,50 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                                         x = 1 +1
 
                                     # Distinction whether the last dimension is time or not
+                                
                                     if len(titles[dims[var][3]]) == 1:
-                                        data[scen][var][reg_index, i, :, 0] = read.iloc[i, :]
-                                    else:
-                                        # data[scen][var][reg_index, i, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[i, :len(var_tl_fit)]
-                                        # print(var, key)
-                                        data[scen][var][reg_index, i, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[i][var_tl_fit]
-
-                            # If the variable does not have key
+                                            data[scen][var][reg_index, i, :, 0] = read.iloc[i, :]
+                        
+                                    else:            
+                                            # data[scen][var][reg_index, i, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[i, :len(var_tl_fit)]
+                                            # print(var, key)
+                                            data[scen][var][reg_index, i, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[i][var_tl_fit]                       
+                                        
+                           # If the variable does not have a key
                             else:
-
+                                
                                 # Distinction between various cases
                                 if dims[var][0] == 'RTI':
-
-                                    if len(titles[dims[var][1]]) > 1:
-                                        print(var)
-                                        data[scen][var][:, :, 0, 0] = read
-
-                                    elif len(titles[dims[var][2]]) > 1:
-                                        data[scen][var][:, 0, :, 0] = read
-                                    elif len(titles[dims[var][3]]) > 1:
-                                        # data[scen][var][:, 0, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[:,:len(var_tl_fit)]
+                                
+                                    # RHUD specific case
+                                    if len(titles[dims[var][3]]) > 1 and len(titles[dims[var][1]]) == 1 and len(titles[dims[var][2]]) == 1:
                                         data[scen][var][:, 0, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[:][var_tl_fit]
-
-                                else:
-                                    if all([len(titles[dims[var][x]]) == 1 for x in range(4)]):
-                                        data[scen][var][0, 0, 0, 0] = read.iloc[0,0]
-                                    elif len(titles[dims[var][2]]) == 1:
-                                        # data[scen][var][0, :, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[:, :len(var_tl_fit)]
-                                        data[scen][var][0, :, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[:][var_tl_fit]
-
-                                    elif len(titles[dims[var][3]]) == 1:
-                                        data[scen][var][0, :, :, 0] = read.iloc[:,:len(titles[dims[var][2]])]
+                                    
+                                    # HJFC specific case (the csv has been transposed need to check if this is correct)
+                                    elif len(titles[dims[var][1]]) > 1 and len(titles[dims[var][2]]) == 1 and len(titles[dims[var][3]]) == 1:
+                                        try:
+                                            data[scen][var][:, :, 0, 0] = read.T
+                                        except ValueError as ve:
+                                            print(f"'{var}'")
+                                            raise ve
+                                            print(read.shape)
+                                    
+                                    # For all variables that are not country specific (no RTI)
+                                    else:
+                                        if dims[var][0] == 1:
+                                                
+                                            # if there is no time variable
+                                            if len(titles[dims[var][1]]) > 1 and len(titles[dims[var][2]]) > 1:
+                                                    data[scen][var][0, :, :, 0] = read.iloc[:, :len(titles[dims[var][2]])]
+                                            
+                                            # if there is a time variable
+                                            elif len(titles[dims[var][3]]) > 1 and len(titles[dims[var][1]]) > 1:
+                                                data[scen][var][0, :, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[:][var_tl_fit]
+                                             
+                                                
+                                            else:
+                                                if all([len(titles[dims[var][x]]) == 1 for x in range(4)]):
+                                                    data[scen][var][0, 0, 0, 0] = read.iloc[0,0]           
 
 #            #For the scenarios, copy from the baseline the variables that are not in the scenario folder
 #            if scen != 'S0':
@@ -213,3 +229,4 @@ def results_instructions():
 
     # Return data
     return results_list
+

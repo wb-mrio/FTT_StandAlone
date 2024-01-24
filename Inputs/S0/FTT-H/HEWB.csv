@@ -1,14 +1,14 @@
-,1 Oil,2 Oil condensing,3 Gas,4 Gas condensing,5 Wood stove,6 Wood boiler,7 Coal,8 District heating,9 Electric,10 Heatpump Ground,11 Heatpump AirWater,12 Heatpump AirAir,13 Solar Thermal
-1 Oil,1,0,0,0,0.0,0.0,0,0,0,0.0,0.0,0.0,0
-2 Oil condensing,0,1,0,0,0.0,0.0,0,0,0,0.0,0.0,0.0,0
-3 Gas,0,0,1,0,0.0,0.0,0,0,0,0.0,0.0,0.0,0
-4 Gas condensing,0,0,0,1,0.0,0.0,0,0,0,0.0,0.0,0.0,0
-5 Wood stove,0,0,0,0,1.0,0.8,0,0,0,0.0,0.0,0.0,0
-6 Wood boiler,0,0,0,0,0.8,1.0,0,0,0,0.0,0.0,0.0,0
-7 Coal,0,0,0,0,0.0,0.0,1,0,0,0.0,0.0,0.0,0
-8 District heating,0,0,0,0,0.0,0.0,0,1,0,0.0,0.0,0.0,0
-9 Electric,0,0,0,0,0.0,0.0,0,0,1,0.0,0.0,0.0,0
-10 Heatpump Ground,0,0,0,0,0.0,0.0,0,0,0,1.0,0.9,0.9,0
-11 Heatpump AirWater,0,0,0,0,0.0,0.0,0,0,0,0.9,1.0,0.9,0
-12 Heatpump AirAir,0,0,0,0,0.0,0.0,0,0,0,0.9,0.9,1.0,0
-13 Solar Thermal,0,0,0,0,0.0,0.0,0,0,0,0.0,0.0,0.0,1
+,1 Oil,2 Oil condensing,3 Gas,4 Gas condensing,5 Wood stove,6 Wood boiler,7 Coal,8 District heating,9 Electric,10 Heatpump Ground,11 Heatpump AirWater,12 Heatpump AirAir,13 Solar Thermal,14 undefined,15 undefined,16 undefined,17 undefined,18 undefined,19 undefined,20 undefined
+1 Oil,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2 Oil condensing,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3 Gas,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4 Gas condensing,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5 Wood stove,0,0,0,0,1,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6 Wood boiler,0,0,0,0,0.8,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+7 Coal,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+8 District heating,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+9 Electric,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+10 Heatpump Ground,0,0,0,0,0,0,0,0,0,1,0.9,0.9,0,0,0,0,0,0,0,0
+11 Heatpump AirWater,0,0,0,0,0,0,0,0,0,0.9,1,0.9,0,0,0,0,0,0,0,0
+12 Heatpump AirAir,0,0,0,0,0,0,0,0,0,0.9,0.9,1,0,0,0,0,0,0,0,0
+13 Solar Thermal,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0

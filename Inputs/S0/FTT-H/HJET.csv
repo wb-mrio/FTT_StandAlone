@@ -1,6 +1,6 @@
 ,1 Hard coal,2 Other coal etc,3 Crude oil etc,4 Heavy fuel oil,5 Middle distillates,6 Other gas,7 Natural gas,8 Electricity,9 Heat,10 Combustible waste,11 Biofuels,12 Hydrogen
-1 Oil,0,0,0,1,1,0,0,0,0,0,0,0
-2 Oil condensing,0,0,0,1,1,0,0,0,0,0,0,0
+1 Oil,0,0,0,0,1,0,0,0,0,0,0,0
+2 Oil condensing,0,0,0,0,1,0,0,0,0,0,0,0
 3 Gas,0,0,0,0,0,0,1,0,0,0,0,0
 4 Gas condensing,0,0,0,0,0,0,1,0,0,0,0,0
 5 Wood stove,0,0,0,0,0,0,0,0,0,0,1,0
@@ -8,7 +8,7 @@
 7 Coal,1,0,0,0,0,0,0,0,0,0,0,0
 8 District heating,0,0,0,0,0,0,0,0,1,0,0,0
 9 Electric,0,0,0,0,0,0,0,1,0,0,0,0
-10 Heatpump Ground,0,0,0,0,0,0,0,0.285714286,0,0,0,0
-11 Heatpump AirWater,0,0,0,0,0,0,0,0.384615385,0,0,0,0
-12 Heatpump AirAir,0,0,0,0,0,0,0,0.384615385,0,0,0,0
+10 Heatpump Ground,0,0,0,0,0,0,0,0.285714285714286,0,0,0,0
+11 Heatpump AirWater,0,0,0,0,0,0,0,0.3846153846153846,0,0,0,0
+12 Heatpump AirAir,0,0,0,0,0,0,0,0.3846153846153846,0,0,0,0
 13 Solar Thermal,0,0,0,0,0,0,0,0,0,0,0,0
