@@ -33,7 +33,7 @@ import SourceCode.Industrial_Heat.ftt_chi_main as ftt_indhe_chi
 import SourceCode.Industrial_Heat.ftt_fbt_main as ftt_indhe_fbt
 import SourceCode.Industrial_Heat.ftt_mtm_main as ftt_indhe_mtm
 import SourceCode.Industrial_Heat.ftt_nmm_main as ftt_indhe_nmm
-import SourceCode.Industrial_Heat.ftt_ois_main as ftt_indhe_ois2
+import SourceCode.Industrial_Heat.ftt_ois_main as ftt_indhe_ois
 
 
 # Support modules
@@ -257,8 +257,8 @@ class ModelRun:
                                         self.titles, self.histend, tl[y],
                                         self.domain)
                 
-            if "FTT-IH-OIS2" in self.ftt_modules:
-                variables = ftt_indhe_ois2.solve(variables, time_lags, iter_lags,
+            if "FTT-IH-OIS" in self.ftt_modules:
+                variables = ftt_indhe_ois.solve(variables, time_lags, iter_lags,
                                         self.titles, self.histend, tl[y],
                                         self.domain)
                 
