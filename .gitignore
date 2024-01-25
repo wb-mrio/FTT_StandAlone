@@ -5,3 +5,12 @@ __pycache__/
 *.pickle
 Output/Scenarios.json
 settings.ini
+Inputs/_MasterFiles/FTT-IH-FBT/.DS_Store
+Inputs/_MasterFiles/FTT-IH-MTM/.DS_Store
+Inputs/_MasterFiles/FTT-IH-NMM/.DS_Store
+Inputs/_MasterFiles/FTT-IH-OIS/.DS_Store
+Inputs/_MasterFiles/.DS_Store
+Inputs/S0/FTT-IH-FBT/.DS_Store
+Inputs/S0/FTT-IH-NMM/.DS_Store
+Inputs/S0/FTT-IH-OIS2/.DS_Store
+Inputs/.DS_Store

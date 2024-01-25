@@ -271,25 +271,25 @@ IAM4,FTT-IH-NMM gamma values,,RTI,ITTI,NA,TIME,FTT-IH-NMM,-,-,2000,,Y,Y
 IRG4,FTT-IH-NMM regulations (based on capacity),GW,RTI,ITTI,NA,TIME,FTT-IH-NMM,,,2000,,,
 ISB4,FTT-IH-NMM subsidies (percentage of investment cost),%,RTI,ITTI,NA,TIME,FTT-IH-NMM,,,2000,,,
 IXS4,FTT-IH-NMM exogenous share changes,%,RTI,ITTI,NA,TIME,FTT-IH-NMM,,,2000,,,
-IUD5,FTT-IH-OIS useful energy demand (GWh),GWh,RTI,ITTI,NA,TIME,FTT-IH-OIS2,1970,2015,1970,,Y,Y
-ISC5,FTT-IH-OIS market share caps,%,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2015,-,Y,Y
-IWW5,FTT-IH-OIS cumulative capacities (EU28),GW,NA,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2015,,Y,Y
-IWI5,FTT-IH-OIS yearly capacity additions,GW,RTI,ITTI,NA,TIME,FTT-IH-OIS2,1971,2015,1971,,Y,Y
-IWK5,FTT-IH-OIS yearly capacity ,GW,RTI,ITTI,NA,TIME,FTT-IH-OIS2,1970,2015,1970,,Y,Y
-IWA5,FTT-IH-OIS substitution matrix,rate,NA,ITTI,ITTI,NA,FTT-IH-OIS2,-,-,,,Y,Y
-BIC5,FTT-IH-OIS cost matrix,various,RTI,ITTI,CTTI,NA,FTT-IH-OIS2,-,-,,,Y,Y
-IWS5,FTT-IH-OIS market shares,%,RTI,ITTI,NA,TIME,FTT-IH-OIS2,2000,2015,2000,,Y,Y
-IWB5,FTT-IH-OIS learning spillover matrix,%,NA,ITTI,ITTI,NA,FTT-IH-OIS2,-,-,,,Y,Y
-IFD5,FTT-IH-OIS final energy demand,GWh,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2000,,Y,Y
-ILC5,FTT-IH-OIS The real bare LC without taxes,Meuros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2000,,Y,Y
-ILG5,FTT-IH-OIS LC as seen by consumer,Meuros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2000,,Y,Y
-ILD5,FTT-IH-OIS LC standard deviation,Meuros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2000,,Y,Y
-IWE5,FTT-IH-OIS Emissions,kt of CO2,RTI,ITTI,NA,TIME,FTT-IH-OIS2,2000,2015,2000,,,
-IHW5,FTT-IH-OIS Global average emissions per UED (kt of CO2/GWh),kt of CO2/GWh,NA,ITTI,NA,TIME,FTT-IH-OIS2,2000,2015,2000,,,
-IAM5,FTT-IH-OIS gamma values,,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2000,,Y,Y
-IRG5,FTT-IH-OIS regulations (based on capacity),GW,RTI,ITTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
-ISB5,FTT-IH-OIS subsidies (percentage of investment cost),%,RTI,ITTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
-IXS5,FTT-IH-OIS exogenous share changes,%,RTI,ITTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
+IUD5,FTT-IH-OIS useful energy demand (GWh),GWh,RTI,ITTI,NA,TIME,FTT-IH-OIS,1970,2015,1970,,Y,Y
+ISC5,FTT-IH-OIS market share caps,%,RTI,ITTI,NA,TIME,FTT-IH-OIS,-,-,2015,-,Y,Y
+IWW5,FTT-IH-OIS cumulative capacities (EU28),GW,NA,ITTI,NA,TIME,FTT-IH-OIS,-,-,2015,,Y,Y
+IWI5,FTT-IH-OIS yearly capacity additions,GW,RTI,ITTI,NA,TIME,FTT-IH-OIS,1971,2015,1971,,Y,Y
+IWK5,FTT-IH-OIS yearly capacity ,GW,RTI,ITTI,NA,TIME,FTT-IH-OIS,1970,2015,1970,,Y,Y
+IWA5,FTT-IH-OIS substitution matrix,rate,NA,ITTI,ITTI,NA,FTT-IH-OIS,-,-,,,Y,Y
+BIC5,FTT-IH-OIS cost matrix,various,RTI,ITTI,CTTI,NA,FTT-IH-OIS,-,-,,,Y,Y
+IWS5,FTT-IH-OIS market shares,%,RTI,ITTI,NA,TIME,FTT-IH-OIS,2000,2015,2000,,Y,Y
+IWB5,FTT-IH-OIS learning spillover matrix,%,NA,ITTI,ITTI,NA,FTT-IH-OIS,-,-,,,Y,Y
+IFD5,FTT-IH-OIS final energy demand,GWh,RTI,ITTI,NA,TIME,FTT-IH-OIS,-,-,2000,,Y,Y
+ILC5,FTT-IH-OIS The real bare LC without taxes,Meuros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS,-,-,2000,,Y,Y
+ILG5,FTT-IH-OIS LC as seen by consumer,Meuros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS,-,-,2000,,Y,Y
+ILD5,FTT-IH-OIS LC standard deviation,Meuros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS,-,-,2000,,Y,Y
+IWE5,FTT-IH-OIS Emissions,kt of CO2,RTI,ITTI,NA,TIME,FTT-IH-OIS,2000,2015,2000,,,
+IHW5,FTT-IH-OIS Global average emissions per UED (kt of CO2/GWh),kt of CO2/GWh,NA,ITTI,NA,TIME,FTT-IH-OIS,2000,2015,2000,,,
+IAM5,FTT-IH-OIS gamma values,,RTI,ITTI,NA,TIME,FTT-IH-OIS,-,-,2000,,Y,Y
+IRG5,FTT-IH-OIS regulations (based on capacity),GW,RTI,ITTI,NA,TIME,FTT-IH-OIS,,,2000,,,
+ISB5,FTT-IH-OIS subsidies (percentage of investment cost),%,RTI,ITTI,NA,TIME,FTT-IH-OIS,,,2000,,,
+IXS5,FTT-IH-OIS exogenous share changes,%,RTI,ITTI,NA,TIME,FTT-IH-OIS,,,2000,,,
 RVKZ,FTT-Fr Demand,Million Tkm,RTI,NA,NA,TIME,FTT-Fr,,2018,1995,,Y,Y
 RFLZ,FTT-Fr Number in Fleet,veh,RTI,NA,NA,TIME,FTT-Fr,,2019,1995,,Y,Y
 ZEWS,FTT-Fr Historical Market Shares,%,RTI,FTTI,NA,TIME,FTT-Fr,,2019,2001,,Y,Y
@@ -340,12 +340,12 @@ IHF1,FTT-IH-CHI final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIM
 IHF2,FTT-IH-FBT final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIME,FTT-IH-FBT,,,2000,,,
 IHF3,FTT-IH-MTM final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIME,FTT-IH-MTM,,,2000,,,
 IHF4,FTT-IH-NMM final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIME,FTT-IH-NMM,,,2000,,,
-IHF5,FTT-IH-OIS final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
+IHF5,FTT-IH-OIS final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIME,FTT-IH-OIS,,,2000,,,
 IJT1,FTT-IH-CHI Tech to fuel conversion matrix (fuel x technology),,NA,JTI,ITTI,NA,FTT-IH-CHI,,,,,,
 IJT2,FTT-IH-FBT Tech to fuel conversion matrix (fuel x technology),,NA,JTI,ITTI,NA,FTT-IH-FBT,,,,,,
 IJT3,FTT-IH-MTM Tech to fuel conversion matrix (fuel x technology),,NA,JTI,ITTI,NA,FTT-IH-MTM,,,,,,
 IJT4,FTT-IH-NMM Tech to fuel conversion matrix (fuel x technology),,NA,JTI,ITTI,NA,FTT-IH-NMM,,,,,,
-IJT5,FTT-IH-OIS Tech to fuel conversion matrix (fuel x technology),,NA,JTI,ITTI,NA,FTT-IH-OIS2,,,,,,
+IJT5,FTT-IH-OIS Tech to fuel conversion matrix (fuel x technology),,NA,JTI,ITTI,NA,FTT-IH-OIS,,,,,,
 HWIY,FTT-H Investment by technology,2014 mEuros,RTI,HTTI,NA,TIME,FTT-H,,,2014,,,
 PRSC14,Price levels in 2014 (2010=100),index,RTI,NA,NA,TIME,FTT-H,-,-,2001,-,,Y
 MCTG,FTT:Power Gross curtailment rate by technology (-),%,RTI,T2TI,NA,TIME,FTT-P,,,2001,,,
@@ -372,7 +372,7 @@ IFT1,FTT-IH-CHI Fuel tax (2010 Euros/MWh) ,2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-I
 IFT2,FTT-IH-FBT Fuel tax (2010 Euros/MWh),2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-FBT,-,-,2000,-,Y,Y
 IFT3,FTT-IH-MTM Fuel tax (2010 Euros/MWh) ,2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-MTM,-,-,2000,-,Y,Y
 IFT4,FTT-IH-NMM Fuel tax (2010 Euros/MWh) ,2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-NMM,-,-,2000,-,Y,Y
-IFT5,FTT-IH-OIS Fuel tax (2010 Euros/MWh) ,2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2000,-,Y,Y
+IFT5,FTT-IH-OIS Fuel tax (2010 Euros/MWh) ,2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-OIS,-,-,2000,-,Y,Y
 MEWSX,FTT:Power shares of capacity by tech,na,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,From E3ME results,,Y
 MWMCX,FTT:Power marginal costs,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,From E3ME results,,Y
 MMCDX,FTT:Power standard deviation of marginal costs,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,From E3ME results,,Y
