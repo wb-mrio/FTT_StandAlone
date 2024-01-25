@@ -78,7 +78,7 @@ def get_lcoih(data, titles, year):
     ---------
     Additional notes if required.
     """
-
+    sector = 'CHI'
     # Categories for the cost matrix (BIC1)
     ctti = {category: index for index, category in enumerate(titles['CTTI'])}
 
@@ -142,8 +142,8 @@ def get_lcoih(data, titles, year):
 
         #fuel tax/subsidies
         ftt = np.ones([len(titles['ITTI']), int(max_lt)])
-        ftt = ftt * data['IFT1'][r,:, 0, np.newaxis]/ce
-        ftt = np.where(mask, ft, 0)
+        ftt = ftt * data['IFT1'][r,:, 0, np.newaxis]/11.63/ce
+        ftt = np.where(mask, ftt, 0)
         # Fixed operation & maintenance cost - variable O&M available but not included
         omt = np.ones([len(titles['ITTI']), int(max_lt)])
         omt = omt * data['BIC1'][r,:, ctti['3 O&M cost mean (Euros/MJ/s/year)'], np.newaxis]*conv #(euros per MW) in a year
@@ -190,6 +190,12 @@ def get_lcoih(data, titles, year):
 
         # LCOE augmented with gamma values, no gamma values yet
         tlcoeg = tlcoe+data['IAM1'][r, :, 0]
+
+        if np.any(tlcoeg < 0.0):
+                    msg = """Sector: {} - Region: {} - Year: {}
+                    Negative levelised cost detected! Critical error!
+                    """.format(sector, titles['RTI'][r], year)
+                    warnings.warn(msg)
 
         # Pass to variables that are stored outside.
         data['ILC1'][r, :, 0] = lcoe            # The real bare LCOT without taxes (euros/mwh)
@@ -239,7 +245,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
     # Categories for the cost matrix (BIC1)
     ctti = {category: index for index, category in enumerate(titles['CTTI'])}
 
-    sector = 'chemical'
+    sector = 'CHI'
 
 
     data = get_lcoih(data, titles, year)

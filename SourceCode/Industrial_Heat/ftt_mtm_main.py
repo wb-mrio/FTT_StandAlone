@@ -80,7 +80,7 @@ def get_lcoih(data, titles, year):
     ---------
     Additional notes if required.
     """
-
+    sector = 'MTM'
     # Categories for the cost matrix (BIC3)
     ctti = {category: index for index, category in enumerate(titles['CTTI'])}
 
@@ -143,8 +143,8 @@ def get_lcoih(data, titles, year):
 
         #fuel tax/subsidies
         ftt = np.ones([len(titles['ITTI']), int(max_lt)])
-        ftt = ftt * data['IFT3'][r,:, 0, np.newaxis]/ce
-        ftt = np.where(mask, ft, 0)
+        ftt = ftt * data['IFT3'][r,:, 0, np.newaxis]/11.63/ce
+        ftt = np.where(mask, ftt, 0)
 
         # Fixed operation & maintenance cost - variable O&M available but not included
         omt = np.ones([len(titles['ITTI']), int(max_lt)])
@@ -191,8 +191,14 @@ def get_lcoih(data, titles, year):
         # Standard deviation of LCOT
         dlcoe = np.sum(npv_std, axis=1)/np.sum(npv_utility, axis=1)
 
-        # LCOE augmented with gamma values, no gamma values yet
+        # LCOE augmented with gamma values
         tlcoeg = tlcoe+data['IAM3'][r, :, 0]
+
+        if np.any(tlcoeg < 0.0):
+                    msg = """Sector: {} - Region: {} - Year: {}
+                    Negative levelised cost detected! Critical error!
+                    """.format(sector, titles['RTI'][r], year)
+                    warnings.warn(msg)
 
         # Pass to variables that are stored outside.
         data['ILC3'][r, :, 0] = lcoe            # The real bare LCOT without taxes (euros/mwh)
@@ -245,7 +251,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
     # Categories for the cost matrix (BIC3)
     ctti = {category: index for index, category in enumerate(titles['CTTI'])}
 
-    sector = 'Metals, transport and machinery equipment'
+    sector = 'MTM'
 
     #Get fuel prices from E3ME and add them to the data for this code
     #Initialise everything #TODO
@@ -267,7 +273,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
 
             data_dt[var] = copy.deepcopy(time_lag[var])
 
-        # Create the regulation variable #Regulate ued #no regulations yet, isReg full of zeros
+        # Create the regulation variable #Regulate capacity #no regulations yet, isReg full of zeros
         division = divide((data_dt['IWK3'][:, :, 0] - data['IRG3'][:, :, 0]),
                data_dt['IRG3'][:, :, 0]) # divide gives 0 when dividing by 0
         isReg = 0.5 + 0.5*np.tanh(1.5+10*division)
