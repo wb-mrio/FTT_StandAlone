@@ -144,6 +144,7 @@ def get_lcoih(data, titles, year):
         ftt = np.ones([len(titles['ITTI']), int(max_lt)])
         ftt = ftt * data['IFT1'][r,:, 0, np.newaxis]/11.63/ce
         ftt = np.where(mask, ftt, 0)
+
         # Fixed operation & maintenance cost - variable O&M available but not included
         omt = np.ones([len(titles['ITTI']), int(max_lt)])
         omt = omt * data['BIC1'][r,:, ctti['3 O&M cost mean (Euros/MJ/s/year)'], np.newaxis]*conv #(euros per MW) in a year
@@ -167,7 +168,7 @@ def get_lcoih(data, titles, year):
         #npv_expenses3 = (st+fft-fit)/denominator
         # 2-Utility
         npv_utility = 1/denominator
-        #Remove 1s for tech with small lifetime than max
+        #Remove 1s for tech with small lifetime than max but keep t=0 as 1
         npv_utility[npv_utility==1] = 0
         npv_utility[:,0] = 1
 
@@ -188,7 +189,7 @@ def get_lcoih(data, titles, year):
         # Standard deviation of LCOT
         dlcoe = np.sum(npv_std, axis=1)/np.sum(npv_utility, axis=1)
 
-        # LCOE augmented with gamma values, no gamma values yet
+        # LCOIH augmented with gamma values
         tlcoeg = tlcoe+data['IAM1'][r, :, 0]
 
         if np.any(tlcoeg < 0.0):
@@ -198,13 +199,12 @@ def get_lcoih(data, titles, year):
                     warnings.warn(msg)
 
         # Pass to variables that are stored outside.
-        data['ILC1'][r, :, 0] = lcoe            # The real bare LCOT without taxes (euros/mwh)
-        #data['IHLT'][r, :, 0] = tlcoe           # The real bare LCOE with taxes
+        data['ILC1'][r, :, 0] = lcoe            # The real bare LC without taxes (euros/mwh)
+        #data['IHLT'][r, :, 0] = tlcoe           # The real bare LC with taxes
         data['ILG1'][r, :, 0] = tlcoeg         # As seen by consumer (generalised cost)
-        data['ILD1'][r, :, 0] = dlcoe          # Variation on the LCOT distribution
+        data['ILD1'][r, :, 0] = dlcoe          # Variation on the LC distribution
 
     return data
-
 
 
 # %% main function
@@ -251,7 +251,6 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
 
 
     data = get_lcoih(data, titles, year)
-
 
     # Endogenous calculation takes over from here
     if year > histend['IUD1']:
@@ -366,8 +365,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
                         dSik[b1, b2] = dt*(k_1+2*k_2+2*k_3+k_4)/6
                         dSik[b2, b1] = -dSik[b1, b2]
 
-                        #dSik[b1, b2] = S_i*S_k* (Aik*F[b1,b2]*Gijmax[b1] - Aki*F[b2,b1]*Gijmax[b2])*dt
-                        #dSik[b2, b1] = -dSik[b1, b2]
+                     
 
 
                 #calculate temportary market shares and temporary capacity from endogenous results
@@ -420,7 +418,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
                 indirect_weighting = np.sum(endo_shares[:indirect_cut_off])
                 
 
-                # Calaculate changes to endogenous ued, and use to find new market shares
+                # Calculate changes to endogenous ued, and use to find new market shares
                 # Zero ued will result in zero shares
                 # All other ueds will be streched
 
