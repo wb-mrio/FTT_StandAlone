@@ -326,7 +326,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
                         continue
 
                     #TODO: create market share constraints
-                    Gijmax[b1] = np.tanh(1.25*(data_dt['ISC4'][r, b1, 0] - data_dt['IWS4'][r, b1, 0])/0.1)
+                    Gijmax[b1] = 0.5 + 0.5*np.tanh(1.25*(data_dt['ISC4'][r, b1, 0] - data_dt['IWS4'][r, b1, 0])/0.1)
                     #Gijmin[b1] = np.tanh(1.25*(-mes2_dt[r, b1, 0] + mews_dt[r, b1, 0])/0.1)
 
 
