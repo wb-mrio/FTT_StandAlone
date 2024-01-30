@@ -247,6 +247,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
 
     sector = 'CHI'
 
+    cost_data_year = 2020
+
 
     data = get_lcoih(data, titles, year)
 
@@ -279,6 +281,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
         ############## Computing total useful energy demand ##################
 
         IUD1tot = data['IUD1'][:, :, 0].sum(axis=1)
+
+        #Initialise investment
+        data['IWI1'][:, :, 0] = 0.0
 
         #Start the computation of shares
         for t in range(1, no_it+1):
@@ -381,7 +386,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
                 # ExogSales specification!
                 Utot = IUD1t[r]
                 
-                dSk = np.zeros((len(titles['ITTI'])))
+                
                 dUk = np.zeros((len(titles['ITTI'])))
                 dUkTK = np.zeros((len(titles['ITTI'])))
                 dUkREG = np.zeros((len(titles['ITTI'])))
@@ -399,7 +404,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
                 # This will be the difference between ued based on the endogenous ued, and what the endogenous ued would have been
                 # if total demand had not grown.
 
-                dUkREG = -(endo_ued - endo_shares*IUD1lt[r,np.newaxis])*isReg[r, :].reshape([len(titles['ITTI'])])
+                dUkREG = np.where((endo_ued - endo_shares*IUD1lt[r,np.newaxis])>0.0,-(endo_ued - endo_shares*IUD1lt[r,np.newaxis])*isReg[r, :].reshape([len(titles['ITTI'])]),0.0)
 
 
                 # Sum effect of exogenous sales additions (if any) with
@@ -448,21 +453,29 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
             #Useful heat by technology, calculate based on new market shares #Regional totals
             data['IUD1'][:, :, 0] = data['IWS1'][:, :, 0]* IUD1t[:, np.newaxis]
 
-            # Capacity by technology
+            #Capacity by technology
             data['IWK1'][:, :, 0] = divide(data['IUD1'][:, :, 0],
                                               data['BIC1'][:, :, ctti["13 Capacity factor mean"]]*8766)
-            #add number of devices replaced due to breakdowns = IWK1_lagged/lifetime to yearly capacity additions
-            #note some values of IWI1 negative
+            
+            #Investment by technology, based on eol replacements 
+            breakdowns = divide(time_lag['IWK1'][:, :, 0]*dt,
+                                                            data['BIC1'][:, :, ctti['5 Lifetime (years)']])
+            
+            breakdowns_partial = (data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]*(1 - 
+                                                    divide(dt,data['BIC1'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK1'][:, :, 0]
+            
+            eol_condition = data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] >= 0.0
 
-            data["IWI1"][:, :, 0] = 0
-            for r in range(len(titles['RTI'])):
-                for tech in range(len(titles['ITTI'])):
-                    if(data['IWK1'][r, tech, 0]-time_lag['IWK1'][r, tech, 0]) > 0:
-                        data["IWI1"][r, tech, 0] = (data['IWK1'][r, tech, 0]-data_dt['IWK1'][r, tech, 0])/dt
+            eol_condition_partial = -breakdowns < data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] < 0.0
 
-            data["IWI1"][:, :, 0] = data["IWI1"][:, :, 0] + np.where(data['BIC1'][:, :, ctti['5 Lifetime (years)']] !=0.0,
-                                                            divide(data_dt['IWK1'][:, :, 0],
-                                                            data['BIC1'][:, :, ctti['5 Lifetime (years)']]),0.0)
+            eol_replacements_t = np.where(eol_condition, breakdowns, 0.0)
+            
+            eol_replacements_t = np.where(eol_condition_partial, breakdowns_partial, eol_replacements_t)
+
+            investment_t = np.where((data['IWK1'][:, :, 0]-data_dt['IWK1'][:, :, 0]) > 0, 
+                data['IWK1'][:, :, 0]-data_dt['IWK1'][:, :, 0]+eol_replacements_t, eol_replacements_t)
+            
+            data['IWI1'][:, :, 0] += investment_t
 
             #Update emissions
             #IHW1 is the global average emissions per unit of UED (GWh). IHW1 has units of kt of CO2/GWh
@@ -494,8 +507,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
 
             bi = np.zeros((len(titles['RTI']),len(titles['ITTI'])))
             for r in range(len(titles['RTI'])):
-                bi[r,:] = np.matmul(data['IWB1'][0, :, :],data['IWI1'][r, :, 0])
-            dw = np.sum(bi, axis=0)*dt
+                bi[r,:] = np.matmul(data['IWB1'][0, :, :],investment_t)
+            dw = np.sum(bi, axis=0)
 
             # # Cumulative capacity incl. learning spill-over effects
             data["IWW1"][0, :, 0] = data_dt['IWW1'][0, :, 0] + dw
@@ -504,12 +517,13 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
             data['BIC1'] = copy.deepcopy(data_dt['BIC1'])
             #
             # # Learning-by-doing effects on investment
-            for tech in range(len(titles['ITTI'])):
+            if year > cost_data_year:
+                for tech in range(len(titles['ITTI'])):
 
-                if data['IWW1'][0, tech, 0] > 0.1:
+                    if data['IWW1'][0, tech, 0] > 0.1:
 
-                    data['BIC1'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] = data_dt['BIC1'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] * \
-                                                                           (1.0 + data['BIC1'][:, tech, ctti['15 Learning exponent']] * dw[tech]/data['IWW1'][0, tech, 0])
+                        data['BIC1'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] = data_dt['BIC1'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] * \
+                                                                            (1.0 + data['BIC1'][:, tech, ctti['15 Learning exponent']] * dw[tech]/data['IWW1'][0, tech, 0])
 
             # =================================================================
             # Update the time-loop variables
