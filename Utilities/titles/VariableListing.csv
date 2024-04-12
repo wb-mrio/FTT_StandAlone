@@ -2,12 +2,14 @@ Variable name,Variable description,Unit,Dim1,Dim2,Dim3,Dim4,Domain,History start
 PRSCX,Price levels (2010=100) from E3ME,index,RTI,NA,NA,TIME,FTT-P,-,-,2010,From E3ME results,Y,Y
 PRSC15,Price levels in 2015 (2010=100),index,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,Y,Y
 RPOP,Population by age and gender,Thousands,RTI,NA,NA,TIME,General,1970,-,2001,-,,Y
+
 PFRE,Price of electricity use [E3ME],euros/toe,RTI,FUTI,NA,TIME,General,-,2016,2010,From E3ME results,,Y
 PFRC,Price of coal use [E3ME],euros/toe,RTI,FUTI,NA,TIME,General,-,2016,2010,From E3ME results,,Y
 PFRO,Price of heavy oil use [E3ME],euros/toe,RTI,FUTI,NA,TIME,General,1970,2016,2010,From E3ME results,,Y
 PFRM,Price of middle distillates [E3ME],euros/toe,RTI,FUTI,NA,TIME,General,-,2016,2010,From E3ME results,,Y
 PFRB,Price of biofuel use (incl taxes) [E3ME],euros/toe,RTI,FUTI,NA,TIME,General,-,2016,2010,From E3ME results,,Y
 PFRH,Endogenous energy price with tax [E3ME],euros/toe,RTI,FUTI,NA,TIME,General,1970,2016,2010,From E3ME results,,Y
+
 PRSC13,Price levels in 2013 (2010=100),index,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,,Y
 MWMC,FTT:Power marginal costs,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,,Y
 MWLO,FTT:Power optimal/initial load factors,%,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,,Y
@@ -170,6 +172,7 @@ TEWB,FTT-Transport Technology spill-over matrix,,NA,VTTI,VTTI,NA,FTT-Tr,,,,,,
 TEWA,FTT-Transport Technology substitution matrix,,NA,VTTI,VTTI,NA,FTT-Tr,,,,,,
 PFRG,Price of gas (euros/toe) [E3ME],euros/toe,RTI,FUTI,NA,TIME,General,-,2016,2010,From E3ME results,,Y
 TETH,FTT-Transport Efficiency ,,RTI,VYTI,NA,NA,FTT-Tr,,,,,,
+
 TETC,FTT-Transport levelised costs with taxes,$/pkm,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,,Y
 TESH,FTT-Transport Vehicle sales,th-veh,RTI,VYTI,NA,NA,FTT-Tr,,,,,Y,Y
 TESF,FTT-Transport Survival function,th-veh,RTI,VYTI,NA,NA,FTT-Tr,,,,,,
@@ -191,6 +194,7 @@ RHSM,FTT-Transport Hydrogen blending mandate,share H2 in freight,RTI,NA,NA,TIME,
 RFLT,FTT-Transport Fleet stocks in use (from survival),th-veh,RTI,NA,NA,TIME,FTT-Tr,,,2001,,,
 REVS,FTT-Transport vehicle scrappage,th-veh/y,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,,
 RBFM,FTT-Transport Biofuel blending mandate,%,RTI,NA,NA,TIME,FTT-Tr,,,2001,,,
+
 BTTC,FTT-Transport Cost matrix,,RTI,VTTI,C3TI,NA,FTT-Tr,,,2014,,,
 BTCI,FTT-Transport  initial cost matrix,,RTI,VTTI,C3TI,NA,FTT-Tr,,,2014,,,
 TDA1,FTT-Tr last year of shares data,,RTI,NA,NA,NA,FTT-Tr,,,,,,
@@ -377,3 +381,8 @@ MTCDX,METC standard deviation,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,From E3M
 MCFCX,FTT:Power load factor scaling cost component,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,-,Y,Y
 ZTFT,FTT:Freight fuel tax,,RTI,FTTI,NA,TIME,FTT-Fr,-,-,2001,-,Y,Y
 MTFT,FTT:Power fuel tax,,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,,,
+REX,Local exchange rate (2010=100),index,RTI,NA,NA,TIME,FTT-P,-,-,2010,,Y,Y
+EX,Exchange rate (2010 = 100),index,RTI,NA,NA,TIME,FTT-P,-,-,2010,,Y,Y
+PRSC,Price Levels (2010=100) ,index,RTI,NA,NA,TIME,FTT-P,-,-,2010,,Y,Y
+REPP,"Carbon Price (Nominal, 2010=100)",2010 Euros,RTI,NA,NA,TIME,FTT-P,-,-,2010,,Y,Y
+REX13,Local exchange rate 2013,index,RTI,NA,NA,TIME,FTT-P,-,-,2001,,Y,Y

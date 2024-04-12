@@ -135,7 +135,10 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
     data['BCET'][:, :, c2ti['21 Empty']] = copy.deepcopy(data['MGAM'][:, :, 0])
 
     # Add in carbon costs due to EU ETS
-    data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = copy.deepcopy(data['MCOCX'][:, :, 0])
+    #data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = copy.deepcopy(data['MCOCX'][:, :, 0])
+    # create variable to apply to carbon costs then convert shape to match BCET
+    convert_cp = (data['REPP'][:,0,0]/(data['PRSC'][:,0,0]/data['EX'][:,0,0])/(data['PRSC13'][:,0,0]/data['EX13'][:,0,0])*data['REX13'][33,0,0])/(1000*3.666)
+    data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = data['BCET'][:, :, 14] * convert_cp[:, np.newaxis]
 
     # Copy over PRSC/EX values
 
@@ -147,9 +150,13 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
     T_Scal = 10      # Time scaling factor used in the share dynamics
 
     # Initialisation, which corresponds to lines 389 to 556 in fortran
+    # Changing from PRSCX to PRSC for emulation and CP calculation
     if year == 2013:
-        data['PRSC13'] = copy.deepcopy(data['PRSCX'])
-        data['EX13'] = copy.deepcopy(data['EXX'])
+        #data['PRSC13'] = copy.deepcopy(data['PRSCX'])
+        #data['EX13'] = copy.deepcopy(data['EXX'])
+        data['PRSC13'] = copy.deepcopy(data['PRSC'])
+        data['EX13'] = copy.deepcopy(data['EX'])
+
 
         data['MEWL'][:, :, 0] = data["MWLO"][:, :, 0]
         data['MEWK'][:, :, 0] = np.divide(data['MEWG'][:, :, 0], data['MEWL'][:, :, 0],
@@ -484,7 +491,10 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             data['BCET'][:, :, c2ti['21 Empty']] = copy.deepcopy(data['MGAM'][:, :, 0])
 
             # Add in carbon costs due to EU ETS
-            data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = copy.deepcopy(data['MCOCX'][:, :, 0])
+            #data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = copy.deepcopy(data['MCOCX'][:, :, 0])
+            convert_cp = (data['REPP'][:,0,0]/(data['PRSC'][:,0,0]/data['EX'][:,0,0])/(data['PRSC13'][:,0,0]/data['EX13'][:,0,0])*data['REX13'][33,0,0])/(1000*3.666)
+            data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = data['BCET'][:, :, 14] * convert_cp[:, np.newaxis]
+
 
             # Learning-by-doing effects on investment
             if year > histend['BCET']:
@@ -580,15 +590,19 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
         data_dt['MWIY'] = np.zeros([len(titles['RTI']), len(titles['T2TI']), 1])
 
+        # Create new regulation variable for emulation
+        isReg = np.zeros([len(titles['RTI']), len(titles['T2TI'])])
+        isReg = data['MEWR'][:, :, 0]
+        
         # Create the regulation variable
-        division = np.zeros_like(data_dt['MEWR'][:, :, 0])
-        np.divide((data_dt['MEWK'][:, :, 0] - data['MEWR'][:, :, 0]), data['MEWR'][:, :, 0], \
-                  out=division, where=data['MEWR'][:, :, 0]>0)
-        isReg = 0.5 + 0.5*np.tanh(1.5+10* division)
+        # division = np.zeros_like(data_dt['MEWR'][:, :, 0])
+        # np.divide((data_dt['MEWK'][:, :, 0] - data['MEWR'][:, :, 0]), data['MEWR'][:, :, 0], \
+        #           out=division, where=data['MEWR'][:, :, 0]>0)
+        # isReg = 0.5 + 0.5*np.tanh(1.5+10* division)
        
 
-        isReg[data['MEWR'][:, :, 0] == 0.0] = 1.0
-        isReg[data['MEWR'][:, :, 0] == -1.0] = 0.0
+        # isReg[data['MEWR'][:, :, 0] == 0.0] = 1.0
+        # isReg[data['MEWR'][:, :, 0] == -1.0] = 0.0
 
         # Call the survival function routine.
 #        data = survival_function(data, time_lag, histend, year, titles)
@@ -851,7 +865,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             data['BCET'][:, :, c2ti['21 Empty']] = copy.deepcopy(data['MGAM'][:, :, 0])
 
             # Add in carbon costs due to EU ETS
-            data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = copy.deepcopy(data['MCOCX'][:, :, 0])
+            #data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = copy.deepcopy(data['MCOCX'][:, :, 0])
+            convert_cp = (data['REPP'][:,0,0]/(data['PRSC'][:,0,0]/data['EX'][:,0,0])/(data['PRSC13'][:,0,0]/data['EX13'][:,0,0])*data['REX13'][33,0,0])/(1000*3.666)
+            data['BCET'][:, :, c2ti['1 Carbon Costs ($/MWh)']] = data['BCET'][:, :, 14] * convert_cp[:, np.newaxis]          
 
             # Learning-by-doing effects on investment
             for tech in range(len(titles['T2TI'])):

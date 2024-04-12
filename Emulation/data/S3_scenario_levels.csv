@@ -1,0 +1,9 @@
+Scenario,reg_levels,cp_levels,backgr_levels
+S3_0,{'ROW': 0},{'ROW': 0},"   learning_solar  learning_wind  ...  lifetime_wind  grid_expansion_lead
+0        -0.33829      -0.135143  ...           27.0                  1.0
+
+[1 rows x 5 columns]"
+S3_1,{'ROW': 0},{'ROW': 0},"   learning_solar  learning_wind  ...  lifetime_wind  grid_expansion_lead
+0        -0.33829      -0.135143  ...           27.0                  1.0
+
+[1 rows x 5 columns]"
