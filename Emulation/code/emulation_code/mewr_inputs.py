@@ -2,6 +2,7 @@
 """
 Created on Fri Dec  1 12:56:58 2023
 
+## Why do we have this?? Isn't it changed like the other variables??
 Code for generating new MEWR input sheets for all countries, except PK as 
 produced from old masterfile
 

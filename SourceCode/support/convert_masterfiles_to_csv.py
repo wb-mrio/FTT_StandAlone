@@ -464,7 +464,7 @@ if __name__ == '__main__':
     # ENTER SCENARIO NUMBERS HERE! This will dictate which sheets are read in.
 
     models = {#'FTT-Tr': [[0, 2], 'FTT-Tr_31x71_2023'],
-              'FTT-P': [[0, 1, 2], 'FTT-P-24x71_2024']}
+              'FTT-P': [[3], 'FTT-P-24x71_2024']}
             #  'FTT-H': [[0], 'FTT-H-13x70_2021'],
             #  'FTT-S': [[0], 'FTT-S-26x70_2021']}
 
