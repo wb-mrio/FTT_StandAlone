@@ -26,7 +26,8 @@ from scipy.stats import poisson, binom, uniform, norm, randint
 import csv
 import copy
 
-os.chdir("C:/Users/ib400/OneDrive - University of Exeter/Documents/GitHub/FTT_StandAlone")
+base_path = r'C:\Users\ib400\OneDrive - University of Exeter\Desktop\PhD\GitHub\FTT_Standalone'
+os.chdir(base_path)
 
 #%% load objects 
 
@@ -35,7 +36,7 @@ sheet_names = ['BCET', 'MEWT', 'MEWR', 'MEFI']
 base_scenario = 'S0'
 amb_scenario = 'S3'
 #master_path = f'Inputs/_Masterfiles/FTT-P/FTT-P-24x70_2021_{base_scenario}.xlsx'
-master_path = f'Inputs/_Masterfiles/FTT-P/FTT-P-24x71_2022_{base_scenario}.xlsx'
+master_path = f'Inputs/_Masterfiles/FTT-P/FTT-P-24x71_2024_{base_scenario}.xlsx'
 scenario_levels = pd.read_csv('Emulation/data/scenarios/S3_scenario_levels.csv')
 
 # load reg and backgr var data
@@ -143,11 +144,12 @@ def uncertainty_inputs(scenario_levels = scenario_levels):
 
 #%% Produces input master sheet for ambition adjusted inputs - reg only
 
-def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, input_data = input_data): # take out S0 and change func name
+def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, input_data = input_data): 
     
     scenario_levels = scenario_levels.copy()
     amb_scenario = amb_scenario
     new_scen_code = scenario_levels.loc['ID'] 
+    sheet_names = ['MEWR', 'MEWT', 'MEFI']
     
     # List comprehension to filter elements that end with '_reg' and remove suffix
     regions = [country[:-4] for country in list(scenario_levels.index) if country.endswith('_reg')]
@@ -164,8 +166,6 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
             scenario_levels.loc[region + '_reg'] = scenario_levels.loc['E+_reg']
         
 
-        
-    sheet_names = ['MEWR', 'MEWT', 'MEFI']
     new_sheets = pd.DataFrame()
     
     # create data frame of updates
@@ -303,7 +303,7 @@ def region_ambition_cp(scenario_levels = scenario_levels, cp_df = cp_df): # take
 
 
 #%% Example usage
-master_path = "Inputs/_MasterFiles/FTT-P/FTT-P-24x71_2022_S0.xlsx"
+master_path = "Inputs/_MasterFiles/FTT-P/FTT-P-24x71_2024_S0.xlsx"
 
 for i in tqdm(range(0, len(scenario_levels))):
         region_ambition_reg(scenario_levels=scenario_levels.iloc[i])

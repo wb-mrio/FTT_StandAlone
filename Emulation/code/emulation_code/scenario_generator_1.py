@@ -19,14 +19,13 @@ import csv
 import copy
 import matplotlib.pyplot as plt
 
-os.chdir("C:/Users/ib400/OneDrive - University of Exeter/Documents/GitHub/FTT_StandAlone")
-
+os.chdir('C:\\Users\\ib400\\OneDrive - University of Exeter\\Desktop\\PhD\\GitHub\\FTT_StandAlone')
 
 #%% ####### Permutation - use for both reg and CP
 # How will it work with the baseline?? Maybe we have enough space to just create them this time
 # Vary inputs using ambition_vary.regional_ambition and some sort of permutation
 
-def ambition_generator(regions = ['E+','US', 'CN', 'IN', 'ROW'], Nscens = 1):
+def ambition_generator(regions = ['E+','US', 'CN', 'IN', 'BR', 'ROW'], Nscens = 1):
     
     Nscens = Nscens
     # List of countries
@@ -52,39 +51,41 @@ def uncertainty_generator(Nscens = 1):
     # Random sampling within ranges
     Nscens = Nscens
     
-    # Monte carlo permutation of key variables
+    # LHS/ Monte carlo sampling of key variables
     MC_df = pd.DataFrame(columns = ['learning_solar', 'learning_wind', 
                                     'lifetime_solar', 'lifetime_wind', 'grid_expansion_lead',
                                     'south_discr', 'north_discr'])
 
-    # Ranges taken from literature/ expert elicitation
-    learning_rate_solar = norm(-0.303, 0.047)         # Learning rate solar
-    learning_rate_wind = norm(-0.158, 0.045)             # Learning rate wind
-    lifetime_solar = randint(25, 35)                           # Lifetime of solar panel
-    lifetime_wind = randint(25, 35)
-    grid_expansion_duration = randint(1, 3)               # The lead time of solar
-    #gamma = norm(loc=1, scale=0.2)                       # Scaling factor of gamma
-    #fuel_costs = norm(loc=1, scale=0.2)                  # Scaling factor of gamma
+    # Generate uniform samples within the specified range (taken from lit)
+    # loc = lower_bound of parameter range, scale = upper-lower bounds
+    learning_rate_solar = uniform(loc= -0.303, 
+                                  scale=0.047-(-0.303)).rvs(size=(Nscens,))
+    learning_rate_wind = uniform(loc= -0.158, 
+                                  scale=0.045-(-0.158)).rvs(size=(Nscens,))
+    lifetime_solar = randint(25, 35).rvs(size = Nscens)                       
+    lifetime_wind = randint(25, 35).rvs(size = Nscens)
+    grid_expansion_duration = randint(1, 4).rvs(size = Nscens)   
+    
+    # Discount rates
     global_north = []
     global_south = []
     
-    #
     for _ in range(Nscens):
-        random_numbers = sorted([random.uniform(0.05, 0.2) for _ in range(2)])
+        # Generate 2 random discount rates
+        random_numbers = sorted([round(random.uniform(0.05, 0.25), 3) for _ in range(2)])
+        # Assign the larger to the global south, smaller to global north
         global_south.append(random_numbers[1])
         global_north.append(random_numbers[0])
     
-    MC_samples = np.vstack([learning_rate_solar.rvs(Nscens),                    # BCET
-                            learning_rate_wind.rvs(Nscens),                     # BCET
-                            lifetime_solar.rvs(Nscens),                               # BCET & MEWA
-                            lifetime_wind.rvs(Nscens),
-                            #gamma.rvs(Nscens),                                  # MGAM # change for big economies
-                            #fuel_costs.rvs(Nscens),                             # BCET # need to cahnge indices
-                            grid_expansion_duration.rvs(Nscens),
+    # Collate variables
+    MC_samples = np.vstack([learning_rate_solar,                    
+                            learning_rate_wind,                   
+                            lifetime_solar,                             
+                            lifetime_wind,
+                            grid_expansion_duration,
                             global_south,
-                            global_north]).transpose() # BCET & MEWA same for all VREs
+                            global_north]).transpose() 
 
-    # For output, could do this earlier for readability
     MC_samples = pd.DataFrame(MC_samples, columns= MC_df.columns)
     
     
@@ -117,5 +118,5 @@ def scen_generator(Nscens = 5, scen_code = 'S3', regions = ['E+','US', 'CN', 'IN
     return scenario_levels
 
 #%% Example scen_generator, check csv is empty first, this could do with automating
-scenario_levels = scen_generator(Nscens=100, regions= ['E+','US', 'CN', 'IN', 'ROW'])
+scenario_levels = scen_generator(Nscens=201, regions= ['E+','US', 'CN', 'IN', 'ROW'])
 

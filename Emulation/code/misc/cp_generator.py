@@ -2,7 +2,8 @@
 """
 Created on Mon Oct  2 10:22:14 2023
 
-Carbon Tax Generation Script
+Carbon Tax Generation Script from E3ME data, only needed for generating S{}_REPP.csv
+which is then used for rest of the work flow
 
 
 @author: ib400

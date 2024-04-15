@@ -2,7 +2,7 @@
 """
 Created on Fri Nov 17 10:16:19 2023
 
-Output save functions
+Output save functions to be performed after model runs
 
 @author: ib400
 """

@@ -5,6 +5,10 @@ model_class.py
 =========================================
 
 Model Class file for FTT Stand alone.
+
+NOTE: If running scenarios with no masterfile, such as for emulation, comment
+        out line 148 : initialise_csv_files(self.ftt_modules, self.scenarios)
+        
 #####################################
 
 ModelRun class: main class for operation of model.
@@ -142,7 +146,7 @@ class ModelRun:
         self.dims, self.histend, self.domain, self.forstart = dims_f.load_dims()
         
         # Set up csv files if they do not exist yet
-        initialise_csv_files(self.ftt_modules, self.scenarios)
+        #initialise_csv_files(self.ftt_modules, self.scenarios)
         
         # Retrieve inputs
         self.input = in_f.load_data(self.titles, self.dims, self.timeline,
