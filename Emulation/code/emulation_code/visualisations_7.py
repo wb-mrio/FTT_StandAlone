@@ -11,11 +11,13 @@ import os
 import pandas as pd
 import numpy as np
 from plotnine import ggplot, aes, geom_bar, facet_wrap, labs, geom_line
+os.chdir(r'C:\Users\ib400\OneDrive - University of Exeter\Desktop\PhD\GitHub\FTT_StandAlone')
 
 #%%
 # load csv
+df = pd.read_csv('Output\S0_S3_long.csv')
 
-
+#%%
 # Plotting with plotnine
 # designate variables and countries of interest
 countries = ['US', 'CN', 'DE', 'IN']
@@ -30,7 +32,7 @@ df_long = df[df['country_short'].isin(countries) \
              
 
 
-plot = ggplot(df_long[df_long['scenario'] == 'S3'], aes(x='year', y='value', color = 'technology')) + \
+ggplot(df_long[df_long['scenario'] == 'S0'], aes(x='year', y='value', color = 'technology')) + \
             geom_line() + \
                       facet_wrap('~ country') + \
         labs(title='Comparison of Variables by Technology and Country',
