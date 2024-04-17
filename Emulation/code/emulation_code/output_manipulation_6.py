@@ -15,9 +15,11 @@ import pandas as pd
 import numpy as np
 import matplotlib
 import pickle
-import SourceCode.support.titles_functions as titles_f
 
 os.chdir(r'C:\Users\ib400\OneDrive - University of Exeter\Desktop\PhD\GitHub\FTT_StandAlone')
+
+import SourceCode.support.titles_functions as titles_f
+
 #%%
 titles = titles_f.load_titles()
 
@@ -75,7 +77,7 @@ year_list = []
 for scenario, variables in output_data.items():
     for variable, dimensions in variables.items():
 
-        print(variable)
+        print(f'Converting {variable} of {scenario} to long format)
         if variable == 'MEWW':
             indices = np.indices(dimensions.shape).reshape(dimensions.ndim, -1).T
 
@@ -128,9 +130,10 @@ df = pd.DataFrame({
     'country': country_list,
     'country_short' : country_short_list,
     'technology': technology_list,
-    'value': value_list,
-    'year': year_list
+    'year': year_list,
+    'value': value_list
 })
+#%%
 
 df.to_csv(f'Output\emulation_data_long.csv',
           index = False)
