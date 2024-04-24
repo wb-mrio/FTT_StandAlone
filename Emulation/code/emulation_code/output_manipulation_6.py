@@ -17,13 +17,12 @@ import matplotlib
 import pickle
 
 os.chdir(r'C:\Users\ib400\OneDrive - University of Exeter\Desktop\PhD\GitHub\FTT_StandAlone')
-
 import SourceCode.support.titles_functions as titles_f
 
 #%%
 titles = titles_f.load_titles()
 
-scen_levels = pd.read_csv('Emulation/data/scenarios/S3_scenario_levels.csv')
+scen_levels = pd.read_csv('Emulation/scenarios/S3_scenario_levels.csv')
 
 # combine scenario data and output
 data = {}
@@ -46,11 +45,10 @@ for ID in scen_levels['ID']:
 ### Baseline
 
 # path to output of model runs
-emulation_scens = scen_levels['ID']
+emulation_scens = scen_levels['ID'][0:50]
 scens_to_compare = list(emulation_scens) # ['S0', 'S3']
-countries_to_compare = ['US', 'CN', 'IN', 'DE', 'UK']
 vars_to_compare =  ['MEWS', 'MEWK', \
-                  'MEWG', 'MEWE', 'MEWW']
+                  'MEWG', 'MEWE', 'MEWW', 'METC']
     
 output_data = {}
 for scen in scens_to_compare:
@@ -77,7 +75,7 @@ year_list = []
 for scenario, variables in output_data.items():
     for variable, dimensions in variables.items():
 
-        print(f'Converting {variable} of {scenario} to long format)
+        print(f'Converting {variable} for {scenario}')
         if variable == 'MEWW':
             indices = np.indices(dimensions.shape).reshape(dimensions.ndim, -1).T
 
@@ -122,7 +120,7 @@ for scenario, variables in output_data.items():
                 # Append value to the value list
                 value_list.append(value) 
             
-
+#%%
 # Create DataFrame from the lists
 df = pd.DataFrame({
     'scenario': scenario_list,
@@ -133,9 +131,22 @@ df = pd.DataFrame({
     'year': year_list,
     'value': value_list
 })
+
 #%%
+# Calculate number of batches
+num_batches = len(df['scenario'].unique())
+batch_size = len(df) // num_batches
 
-df.to_csv(f'Output\emulation_data_long.csv',
-          index = False)
+# Iterate over batches and save each one
+for i in range(num_batches):
+    start_index = i * batch_size
+    end_index = (i + 1) * batch_size
+    batch_df = df.iloc[start_index:end_index]  # Get a chunk of the DataFrame
+    batch_df.to_csv(f'Emulation/data/batch_{i}.csv', index=False)  # Save the batch to a CSV file
+    print(f'Batch {i}/{num_batches} saved')
 
-
+# remaining_rows = len(df) % num_batches
+# if remaining_rows > 0:
+#     last_batch = df.iloc[-remaining_rows:]
+#     last_batch.to_csv(f'Emulation/data_r/batch_{i}.csv', index=False)
+#     print(f'Last batch of {remaining_rows} saved')
