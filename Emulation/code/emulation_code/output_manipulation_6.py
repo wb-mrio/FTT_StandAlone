@@ -45,7 +45,7 @@ for ID in scen_levels['ID']:
 ### Baseline
 
 # path to output of model runs
-emulation_scens = scen_levels['ID'][0:50]
+emulation_scens = scen_levels['ID']
 scens_to_compare = list(emulation_scens) # ['S0', 'S3']
 vars_to_compare =  ['MEWS', 'MEWK', \
                   'MEWG', 'MEWE', 'MEWW', 'METC']
@@ -145,7 +145,7 @@ for i in range(num_batches):
     batch_df.to_csv(f'Emulation/data/batch_{i}.csv', index=False)  # Save the batch to a CSV file
     print(f'Batch {i}/{num_batches} saved')
 
-# remaining_rows = len(df) % num_batches
+remaining_rows = len(df) % num_batches
 # if remaining_rows > 0:
 #     last_batch = df.iloc[-remaining_rows:]
 #     last_batch.to_csv(f'Emulation/data_r/batch_{i}.csv', index=False)
