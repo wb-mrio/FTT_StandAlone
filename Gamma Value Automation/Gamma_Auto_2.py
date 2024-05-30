@@ -116,6 +116,10 @@ def S_dot_hist_f(S_h,N): #The historical rate of change of shares right before t
 
 
 def L_f(shar_dot, shar_dot_hist, N):
+    '''
+    Calculates the ratio of the rate of change of shares 
+    to the historical rate of change of shares
+    '''
     L=np.zeros(N)
     shar_dot_avg = shar_dot.sum(axis=1)/5
     for i in range(N):

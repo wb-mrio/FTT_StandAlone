@@ -1,4 +1,4 @@
- "Code snippets which will be useful for gamma automation"
+'''Code snippets which will be useful for gamma automatio'''
 
 from SourceCode.model_class import ModelRun
 model = ModelRun()
