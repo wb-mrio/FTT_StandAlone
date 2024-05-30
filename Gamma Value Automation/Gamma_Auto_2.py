@@ -25,16 +25,16 @@ import pandas as pd
 import math
 
 
-Shares = pd.read_csv("IWS1_AT.csv", index_col = 0)
+Shares = pd.read_csv("Gamma Value Automation/IWS1_AT.csv", index_col = 0)
 S_h = Shares.iloc[:,11:16].values
-Costs = pd.read_csv("costs.csv", index_col = 0)
+Costs = pd.read_csv("Gamma Value Automation/costs.csv", index_col = 0)
 dC = Costs.iloc[:,1].values
 C = Costs.iloc[:,0].values
 
-A = pd.read_csv("IWA1.csv", index_col = 0).values
+A = pd.read_csv("Gamma Value Automation/IWA1.csv", index_col = 0).values
 
 
-gamma=pd.read_csv("IAM1_AT.csv", index_col = 0)
+gamma=pd.read_csv("Gamma Value Automation/IAM1_AT.csv", index_col = 0)
 gamma = 0.00*gamma.iloc[:,0].values
 
 
@@ -51,7 +51,7 @@ def sdij(dC_1, dC_2):
 
 
 def Fij(C_1,C_2, gamma_1, gamma_2, dC_1, dC_2):
-    Fij_=0.5*(1+np.tanh(5*(C_2-C_1+gamma_2-gamma_1)/(4*sdij(dC_1, dC_2))))
+    Fij_=0.5*(1+np.tanh(5*(C_2*(1+gamma_2)-C_1*(1+gamma_1))/(4*sdij(dC_1, dC_2))))
     return Fij_
 
 
@@ -144,14 +144,16 @@ for iter in range(200):
     for i in range(N):
         if gradient_ratio[i] < 0:
             if shar_dot_hist[i] < 0:
-                gamma[i] += 1
+                gamma[i] += 0.01
             if shar_dot_hist[i] > 0:
-                gamma[i] -= 1
+                gamma[i] -= 0.01
         if gradient_ratio[i] > 0:
             if gradient_ratio[i] < 0.01:
-                gamma[i] -= 1
+                gamma[i] -= 0.01
             if gradient_ratio[i] > 100:
-                gamma[i] += 1
+                gamma[i] += 0.01
+        if gamma[i] > 1: gamma[i] = 1
+        if gamma[i] < -1: gamma[i] = -1
 
 
 
