@@ -1,0 +1,14 @@
+,Indirect Heating Coal,Indirect Heating Oil,Indirect Heating Gas,Indirect Heating Biomass,Indirect Heating Electric,Indirect Heating Steam Distributed,Heat Pumps (Electricity),Direct Heating Coal,Direct Heating Oil,Direct Heating Gas,Direct Heating Biomass,Direct Heating Electric,Direct Heating Steam Distributed
+Indirect Heating Coal,0.04,0.04,0.04,0.04,0.04,0,0.04,0.0,0.0,0.0,0.0,0.0,0
+Indirect Heating Oil,0.04,0.04,0.04,0.04,0.04,0,0.04,0.0,0.0,0.0,0.0,0.0,0
+Indirect Heating Gas,0.04,0.04,0.04,0.04,0.04,0,0.04,0.0,0.0,0.0,0.0,0.0,0
+Indirect Heating Biomass,0.04,0.04,0.04,0.04,0.04,0,0.04,0.0,0.0,0.0,0.0,0.0,0
+Indirect Heating Electric,0.04,0.04,0.04,0.04,0.04,0,0.04,0.0,0.0,0.0,0.0,0.0,0
+Indirect Heating Steam Distributed,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0
+Heat Pumps (Electricity),0.05,0.05,0.05,0.05,0.05,0,0.05,0.0,0.0,0.0,0.0,0.0,0
+Direct Heating Coal,0.0,0.0,0.0,0.0,0.0,0,0.0,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0
+Direct Heating Oil,0.0,0.0,0.0,0.0,0.0,0,0.0,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0
+Direct Heating Gas,0.0,0.0,0.0,0.0,0.0,0,0.0,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0
+Direct Heating Biomass,0.0,0.0,0.0,0.0,0.0,0,0.0,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0
+Direct Heating Electric,0.0,0.0,0.0,0.0,0.0,0,0.0,0.08,0.08,0.08,0.08,0.08,0
+Direct Heating Steam Distributed,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0
