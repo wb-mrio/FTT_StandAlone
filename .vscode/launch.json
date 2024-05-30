@@ -1,12 +1,19 @@
 {
     "configurations": [
         {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": false,
+            "justMyCode": false
         },
         {
             "name": "Python: Debug File",
@@ -15,7 +22,15 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "env": {"NUMBA_DISABLE_JIT": "1"}
+            "env": {
+                "NUMBA_DISABLE_JIT": "1"
+            }
         },
+        {
+            "name": "Python Debugger: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}"
+        }
     ]
 }
