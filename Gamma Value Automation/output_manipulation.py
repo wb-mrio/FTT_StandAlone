@@ -9,12 +9,14 @@ Developments and tasks:
 
 @author: ib400
 """
+#%%
 
 import os 
 import pandas as pd
 import numpy as np
-import matplotlib
+import matplotlib.pyplot as plt
 import pickle
+
 #%%
 os.chdir(r'C:\Users\ib400\OneDrive - University of Exeter\Desktop\PhD\GitHub\FTT_StandAlone')
 import SourceCode.support.titles_functions as titles_f
@@ -47,3 +49,24 @@ for var in output.keys():
 
 
 # %%
+
+# Plot the data
+plt.figure(figsize=(12, 6))
+
+plt.plot(output['MEWS'][35, :, 0], marker='o', label='Variable1')
+
+#%%
+plt.plot(df.index, df['Variable2'], marker='x', label='Variable2')
+
+# Add title and labels
+plt.title('Time Series Comparison of Variable1 and Variable2')
+plt.xlabel('Date')
+plt.ylabel('Values')
+plt.legend()
+
+# Rotate the x-axis labels for better readability
+plt.xticks(rotation=45)
+
+# Show the plot
+plt.grid(True)
+plt.show()
