@@ -1,13 +1,21 @@
 '''Code snippets which will be useful for gamma automation'''
+# Third party imports
+import numpy as np
+from tqdm import tqdm
 
+# Local library imports
+# Separate FTT modules
 
+from SourceCode import model_class
 
-from SourceCode.model_class import ModelRun
-model = ModelRun()
-model.timeline = np.arange(model.simulation_start, model.model_end+1)
+scenario = 'S0'
+# %%
+model = model_class.ModelRun()
+# %%
+model.timeline = np.arange(model.histend['MEWG']-5, model.histend['MEWG']+5)
 years = list(model.timeline)
 years = [int(x) for x in years]
-model.output = {scenario: {var: np.full_like(model.input[scenario][var], 0) for var in model.input[scenario]} for scenario in model.input}
+model.output = {scenario: {var: np.full_like(model.input[scenario][var][:,:,:,:10], 0) for var in model.input[scenario]}}
 for year_index, year in enumerate(model.timeline):
                 model.variables, model.lags = model.solve_year(year,year_index,scenario)
 
@@ -18,6 +26,6 @@ for year_index, year in enumerate(model.timeline):
                     else:
                         model.output[scenario][var][:, :, :, 0] = model.variables[var]
 
+shares = model.output['S0']['MEWS']
 
-def rate_of_change(shares):
-    shares_dot = shares[t] - shares[t-1]
+shares

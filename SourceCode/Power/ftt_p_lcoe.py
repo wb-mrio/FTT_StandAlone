@@ -245,7 +245,8 @@ def get_lcoe(data, titles):
         lcoe_mu_no_policy       = np.sum(npv_expenses_mu_no_policy, axis=1) / utility_tot        
         lcoe_mu_only_co2        = np.sum(npv_expenses_mu_only_co2, axis=1) / utility_tot 
         lcoe_mu_all_policies    = np.sum(npv_expenses_mu_all_policies, axis=1) / utility_tot - data['MEFI'][r, :, 0]
-        lcoe_mu_gamma           = lcoe_mu_all_policies + data['MGAM'][r, :, 0]
+        # TODO make gamma values relative!!!
+        lcoe_mu_gamma           = lcoe_mu_all_policies*(1 + data['MGAM'][r, :, 0])
 
         # 4b levelised cost – average units 
         lcoe_all_but_co2        = np.sum(npv_expenses_all_but_co2, axis=1) / utility_tot - data['MEFI'][r, :, 0]    
