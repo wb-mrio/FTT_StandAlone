@@ -689,7 +689,7 @@ def construct_graphic_data(graphic,type_):
 
     full_df = None
 
-    with open('Output\Results.pickle', 'rb') as f:
+    with open('Output\\Results.pickle', 'rb') as f:
         output = pickle.load(f)
     title_list = pd.read_excel('{}\\Utilities\\Titles\\classification_titles.xlsx'.format(rootdir),sheet_name=None)
     # agg_all = pd.read_excel("{}\\Utilities\\Titles\\Grouping.xlsx".format(rootdir),sheet_name=None,index_col=0)
@@ -980,7 +980,7 @@ def construct_gamma_graphic_data(model, region, start_year, type_):
 
     full_df = None
 
-    with open('Output\Gamma.pickle', 'rb') as f:
+    with open('Output\\Gamma.pickle', 'rb') as f:
         output = pickle.load(f)
 
     title_list = pd.read_excel(f'{rootdir}\\Utilities\\Titles\\classification_titles.xlsx', sheet_name=None)
@@ -1317,7 +1317,7 @@ def run_model():
 
     run_entries_cache = {}
     results =  model.output
-    with open('Output\Gamma.pickle', 'wb') as f:
+    with open('Output\\Gamma.pickle', 'wb') as f:
         pickle.dump(results,f)
     with open("{}\\Output\\Gamma.json".format(rootdir), 'w') as f:
         json.dump(scenarios_log, f)
