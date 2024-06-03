@@ -159,7 +159,7 @@ TLCD,FTT-Transport log(levelised costs),,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,,
 TJET,FTT-Transport Fuel converter,,NA,VTTI,JTI,NA,FTT-Tr,,,,,,
 TJEF,FTT-Transport fuel use,th toe,RTI,JTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
 TGAM,FTT-Transport Gamma Values,,RTI,VTTI,NA,TIME,FTT-Tr,,,2014,,,
-TEWW,FTT-Transport cumulative sales,th-veh,NA,VTTI,NA,TIME,FTT-Tr,,2022,2012,,Y,Y
+TEWW,FTT-Transport cumulative sales,th-veh,NA,VTTI,NA,TIME,FTT-Tr,,,2012,,Y,Y
 TEWS,FTT-Transport Market shares,,RTI,VTTI,NA,TIME,FTT-Tr,,2019,1990,,Y,Y
 TEWK,FTT-Transport fleet size,th-veh,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
 TEWI,FTT-Transport sales,th-veh,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
@@ -316,12 +316,12 @@ ZSLR,FTT-Fr Small large ratio,ratio,RTI,NA,NA,NA,FTT-Fr,,,,,Y,Y
 ZJTT,FTT-Fr Tech Change Function,,RTI,NA,NA,TIME,FTT-Fr,,2019,1990,,Y,Y
 ZJET,FTT-Fr Technology to fuel user conversion matrix,,NA,FTTI,JTI,NA,FTT-Fr,,,,,Y,Y
 ZCEZ,FTT-Fr T-Scaling,,RTI,NA,NA,TIME,FTT-Fr,,,2019,,Y,Y
-ZTLC,FTT-Fr LCOF without policy,2010 Euros/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZTLD,FTT-Fr  LCOF sd,2010 Euros/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZTTC,FTT-Fr LCOF with policy,2010 Euros/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZTTD,FTT-Fr LCOF with policy sd,2010 Euros/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZTLL,FTT-Fr LCOF logarithmic space with gamma,log - 2010Euros/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZTDD,FTT-Fr log space with gamma sd,log - 2010Euros/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
+ZTLC,FTT-Fr LCOF without policy,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
+ZTLD,FTT-Fr  LCOF sd,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
+ZTTC,FTT-Fr LCOF with policy,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
+ZTTD,FTT-Fr LCOF with policy sd,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
+ZTLL,FTT-Fr LCOF logarithmic space with gamma,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
+ZTDD,FTT-Fr log space with gamma sd,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZEWG,FTT-Fr Capacity by technology (number of vehicles),No. vehicles,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZEWY,FTT-Fr Investment by Technology,No. vehicles,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZESD,FTT-Fr Difference between small and large truck shares,%,RTI,LODZ,NA,TIME,FTT-Fr,,,2001,,Y,Y
@@ -358,16 +358,13 @@ MCOCX,Carbon costs by technology from E3ME,2013$/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,
 MCOC,FTT:Power CO2 cost component,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,Y,Y
 MCNA,FTT:Power Net curtailed electricity by technology (GWh/y),GWh,RTI,T2TI,NA,TIME,FTT-P,,,2001,,Y,Y
 MCGA,FTT:Power Gross curtailed electricity by technology (GWh/y),GWh,RTI,T2TI,NA,TIME,FTT-P,,,2001,,Y,Y
-REPPX,FTT:P regional emission permit price,(euro/tC),RTI,NA,NA,TIME,FTT-P,,,2010,,,
 MCFC,FTT:Power load factor scaling cost component,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,Y,Y
 MCCS,FTT:Power technology to fuel use conversion matrix incl CCS,na,NA,T2TI,JTI,NA,FTT-P,-,-,2001,-,Y,Y
 MADG,Additional generation due storage losses and curtailment,GWh,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,Y,Y
 FRETX,Exogenous FRET (from E3ME run),ktoe,RTI,FUTI,NA,TIME,General,-,-,2010,From E3ME results,Y,Y
 EXX,Exchange rate (2010=100) from E3ME,index,RTI,NA,NA,TIME,FTT-P,-,-,2010,From E3ME results,Y,Y
 EX13,Exchange rate in 2013 (2010=100),index,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,,Y
-REXX,EU local currency per euro rates from E3ME,index,RTI,NA,NA,TIME,FTT-P,-,-,2010,From E3ME results,Y,Y
-REX13,EU local currency per euro rates,index,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,,Y
-BCET,FTT:Power matrix of technology costs,various,RTI,T2TI,C2TI,NA,FTT-P,-,2020,2001,-,Y,Y
+BCET,FTT:Power matrix of technology costs,various,RTI,T2TI,C2TI,NA,FTT-P,-,-,2001,-,Y,Y
 IFT1,FTT-IH-CHI Fuel tax (2010 Euros/MWh) ,2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-CHI,-,-,2000,-,Y,Y
 IFT2,FTT-IH-FBT Fuel tax (2010 Euros/MWh),2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-FBT,-,-,2000,-,Y,Y
 IFT3,FTT-IH-MTM Fuel tax (2010 Euros/MWh) ,2010 Euros/MWh,RTI,ITTI,NA,TIME,FTT-IH-MTM,-,-,2000,-,Y,Y
@@ -380,4 +377,4 @@ MTCDX,METC standard deviation,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,From E3M
 MCFCX,FTT:Power load factor scaling cost component,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,-,Y,Y
 ZTFT,FTT:Freight fuel tax,,RTI,FTTI,NA,TIME,FTT-Fr,-,-,2001,-,Y,Y
 MTFT,FTT:Power fuel tax,,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,,,
-MSRC,FTT:Power rate of change of capacity shares by tech,na,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,,Y
+MSRC,FTT:Power rate of change of capacity shares by tech,na,RTI,T2TI,NA,TIME,FTT-P,-,-,2002,-,,Y

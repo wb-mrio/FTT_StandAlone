@@ -285,6 +285,10 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
         data['MEWS'][:, :, 0] = np.divide(data['MEWK'][:,:,0], data['MEWK'][:,:,0].sum(axis=1)[:,np.newaxis],
                                           where=data['MEWK'][:, :, 0].sum(axis=1)[:,np.newaxis] > 0.0)
+        
+        # Calculate rate of change of shares (for gamma value automation)
+        if year > 2001:
+            data['MSRC'][:,:,0] = data['MEWS'][:, :, 0] - time_lag['MEWS'][:, :, 0]
 
         # If first year, get initial MC, dMC for DSPCH
         if not time_lag['MMCD'][:, :, 0].any():
@@ -733,6 +737,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # =============================================================
             #  Update variables
             # =============================================================
+
+            # Calculate rate of change of shares (for gamma value automation)
+            data['MSRC'][:, :, 0] = data['MEWS'][:, :, 0] - time_lag['MEWS'][:, :, 0]
 
             # Adjust capacity factors for VRE due to curtailment, and to cover efficiency losses during
             # Gross Curtailed electricity
