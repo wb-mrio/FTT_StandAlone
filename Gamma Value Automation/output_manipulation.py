@@ -57,12 +57,23 @@ for var in output.keys():
 
 # Plot the data
 plt.figure(figsize=(12, 6))
-# Variables to change 
-var = 'MEWS'
-country = 'US'
-r = titles['RTI_short']
 
-plt.plot(output['MEWS'][35, 18, 0, :], marker='o')
+# Variables to change 
+var = 'MEWK'
+
+# Edit region by code
+country = 'CN'
+r = titles['RTI_short'].index(country)
+
+# Edit region by number (easier for mutli-region)
+r = [33, 40] # US & CN
+
+# Technology
+tech = 18 # Solar PV
+
+
+
+plt.plot(output['MSRC'][r, tech, 0, :], marker='o')
 
 #%%
 # plt.plot(df.index, df['Variable2'], marker='x', label='Variable2')
