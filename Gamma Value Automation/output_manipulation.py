@@ -70,10 +70,14 @@ r = [33, 40] # US & CN
 
 # Technology
 tech = 18 # Solar PV
+print(titles['T2TI'][tech])
 
 
+for country_index in r:
+    plt.plot(output['MSRC'][country_index, tech, 0, :], marker='o')
 
-plt.plot(output['MSRC'][r, tech, 0, :], marker='o')
+
+plt.show()
 
 #%%
 # plt.plot(df.index, df['Variable2'], marker='x', label='Variable2')
