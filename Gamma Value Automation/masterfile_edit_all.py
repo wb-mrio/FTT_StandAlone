@@ -13,94 +13,33 @@ import numpy as np
 from openpyxl import load_workbook
 import os
 
-#%% Defining paths and model variables
+# %%
 
-model_to_change = "FTT-P"
-master_path = "FTT-P-24x71_2022_S0.xlsx"
-dir_excel = os.path.join(f"Inputs\_Masterfiles\{model_to_change}", master_path)
-sheet_name = "MGAM"
+def convert_all(master_path, model_dir, value, sheet_name="MGAM"):
+    master_path = master_path
+    model_dir = model_dir
+    value = value
+    sheet_name = sheet_name
+    
+    # Number of regions, set to 71 for all
+    n_regions = 71
+    snipppet_length = 35
+    iter_length = snipppet_length + 1
 
-# Number of regions, set to 71 for all
-n_regions = 71
+    columns = np.arange(2001, 2101)
+    index = np.arange(1, snipppet_length + 1)
+    changes_df = pd.DataFrame(columns=columns, index=index)
+    changes_df = changes_df.fillna(value)
 
+    # Editing all gamma values to 0
+    with pd.ExcelWriter(os.path.join(model_dir, master_path), mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
 
-columns = np.arange(2000, 2101)
-index = np.arange(1, n_regions + 1)
-changes_df = pd.DataFrame(columns=columns, index=index)
-changes_df = changes_df.fillna(-1)
-
-
-#%%
-# Editing all gamma values to 0
-with pd.ExcelWriter(dir_excel, mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
-
-    for i in np.arange(0, n_regions):
-        onshore_generation.iloc[[i]].to_excel(writer, sheet_name= sheet_name,
-                                            startcol=12, startrow=onshore_ind+i*36, header=False, index=False)
-        offshore_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                            startcol=12, startrow=offshore_ind+i*36, header=False, index=False)
-        solar_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                            startcol=12, startrow=solar_ind+i*36, header=False, index=False)
-        csp_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                        startcol=12, startrow=thermal_ind+i*36, header=False, index=False)
-        lhydro_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                            startcol=12, startrow=lhydro_ind+i*36, header=False, index=False)
-        phs_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                        startcol=12, startrow=phs_ind+i*36, header=False, index=False)
-        tidal_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                            startcol=12, startrow=tidal_ind+i*36, header=False, index=False)
-        sbiomass_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                            startcol=12, startrow=sbiomass_ind+i*36, header=False, index=False)
-        biogas_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                            startcol=12, startrow=biogas_ind+i*36, header=False, index=False)
-        geoth_generation.iloc[[i]].to_excel(writer, sheet_name="MEWG",
-                                            startcol=12, startrow=geoth_ind+i*36, header=False, index=False)
-
-        onshore_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=onshore_ind+i*36, header=False, index=False)
-        offshore_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=offshore_ind+i*36, header=False, index=False)
-        solar_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=solar_ind+i*36, header=False, index=False)
-        csp_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                startcol=6, startrow=thermal_ind+i*36, header=False, index=False)
-        lhydro_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=lhydro_ind+i*36, header=False, index=False)
-        phs_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                startcol=6, startrow=phs_ind+i*36, header=False, index=False)
-        tidal_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=tidal_ind+i*36, header=False, index=False)
-        sbiomass_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=sbiomass_ind+i*36, header=False, index=False)
-        biogas_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=biogas_ind+i*36, header=False, index=False)
-        geoth_capacity_exogenous.iloc[[i]].to_excel(writer, sheet_name="MWKA",
-                                                    startcol=6, startrow=geoth_ind+i*36, header=False, index=False)
-        
-        onshore_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=onshore_ind+i*36, header=False, index=False,)
-        offshore_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=offshore_ind+i*36, header=False, index=False)
-        solar_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=solar_ind+i*36, header=False, index=False)
-        csp_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                startcol=6, startrow=thermal_ind+i*36, header=False, index=False)
-        lhydro_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=lhydro_ind+i*36, header=False, index=False)
-        phs_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                startcol=6, startrow=phs_ind+i*36, header=False, index=False)
-        tidal_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=tidal_ind+i*36, header=False, index=False)
-        sbiomass_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=sbiomass_ind+i*36, header=False, index=False)
-        biogas_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=biogas_ind+i*36, header=False, index=False)
-        geoth_cf.iloc[[i]].to_excel(writer, sheet_name="MWLO",
-                                    startcol=6, startrow=geoth_ind+i*36, header=False, index=False)
-
-
-
-
-
-
+        for i in np.arange(0, n_regions + 1):
+            # startcol is just the place in the sheet the data starts and the +5 is to skip the header
+            changes_df.to_excel(writer, sheet_name= sheet_name,
+                                                startcol=2, startrow = i*iter_length+5, header=False, index=False)
+# %%
+convert_all(model_dir = "Inputs/_Masterfiles/FTT-P", master_path = "FTT-P-24x71_2022_S0.xlsx", sheet_name = "MGAM", value = 0)
+# %%
+check = pd.read_excel("Inputs\_Masterfiles\FTT-P\FTT-P-24x71_2022_S0.xlsx", sheet_name="MGAM")
 # %%
