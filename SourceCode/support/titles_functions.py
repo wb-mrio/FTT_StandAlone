@@ -57,7 +57,8 @@ def load_titles():
                 titles_dict[f'{sheet}_shares_roc_var'] = column_values[1:]
             if column_values[0] == 'histend_var': 
                 titles_dict[f'{sheet}_histend_var'] = column_values[1:]
-
+            if column_values[0] == 'Gamma_Value': 
+                titles_dict[f'Gamma_Value'] = column_values[1:]
 
 
     # Return titles dictionary

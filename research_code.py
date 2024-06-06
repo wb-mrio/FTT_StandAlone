@@ -96,15 +96,79 @@ def roc_ratio(automation_variables):
     
     '''
     
+    # Initialising variables
+    automation_variables = automation_variables
+    N = len(automation_variables)
+    L = np.zeros(N)
+    # get the histend variable
+    histend_var = model.titles['Models_histend_var']
+    # get year for that variable
+    hist = model.histend[histend_var]
+
+    
+
+    for i in range(N):
+
+        shar_dot_avg[i] = automation_variables[i][5:].sum(axis=1)/5
+        shar_dot_hist[i] = automation_variables[i][0:5].sum(axis=1)/5
+
+        if shar_dot_hist[i] == 0:
+            L[i] = 0
+        else:
+            L[i] = shar_dot_avg[i]/shar_dot_hist[i]
+    
+        
+    
+    return L # do we want it to return the share_dot_avg and share_dot_hist as well?
 
 
-    return automation_variables
+    
 # %%
 def automation_algorithm(automation_variables):
     '''
     This function should contain the automation algorithm
     '''
+    for iter in range(200):
+
+    shares = automation_variables
+
+    shar_dot = S_dot_f(gamma, shares, A, C, dC,N)
+
+    shar_dot_hist = S_dot_hist_f(S_h, N)
+
+    gradient_ratio = L_f(shar_dot, shar_dot_hist, N)
+
+    # looping through technologies
+    for i in range(N):
+        # Check if gradient ratio is negative
+        if gradient_ratio[i] < 0:
+            # Check if historical average roc is negative
+            if shar_dot_hist[i] < 0:
+                # If yes, add to gamma value
+                gamma[i] += 0.01
+            # Check if historical average roc is positive
+            if shar_dot_hist[i] > 0:
+                # If yes, subtract from gamma value
+                gamma[i] -= 0.01
+        # Check if gradient ratio is positive
+        if gradient_ratio[i] > 0:
+            # Check if gradient ratio is very small
+            if gradient_ratio[i] < 0.01:
+                gamma[i] -= 0.01
+            # Check if gradient ratio is very large
+            if gradient_ratio[i] > 100:
+                gamma[i] += 0.01
+        # Check if gamma value is within bounds
+        if gamma[i] > 1: gamma[i] = 1
+        if gamma[i] < -1: gamma[i] = -1
+
+
+
+    print(gamma)
+
+
     return automation_variables
+
 # %%
 def gamma_auto(model):
     # Initialising automation variables
