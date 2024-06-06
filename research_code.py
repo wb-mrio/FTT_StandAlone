@@ -97,6 +97,7 @@ def roc_ratio(automation_variables, model):
     '''
     
     # Initialising variables
+    titles = model.titles
     automation_variables = automation_variables
     regions = len(model.titles['RTI_short'])
     N = len(model.titles['T2TI']) # no. techs
@@ -104,94 +105,116 @@ def roc_ratio(automation_variables, model):
     ## Initiailising containers
     shar_dot_avg = np.zeros(len(model.titles['T2TI'])) # container for average roc
     shar_dot_hist = np.zeros(len(model.titles['T2TI'])) # container for average hist roc
-    L = np.zeros(len(model.titles['T2TI'])) # container for ratio of average roc to average hist roc
+    L = np.zeros([len(titles['RTI']), len(titles['T2TI'])]) # container for ratio of average roc to average hist roc
 
+    # Temporary line for dealing with Nans
     automation_variables['FTT-P']['MSRC'] = np.nan_to_num(automation_variables['FTT-P']['MSRC'])
     
     # Loop through regions
     for reg in range(regions):
         # Loop through technologies
         for i in range(N):
-
-            shar_dot_avg[i] = automation_variables['FTT-P']['MSRC'][reg][i][5:].sum(axis=1)/5 
-            shar_dot_hist[i] = automation_variables['FTT-P']['MSRC'][reg][i][0:5].sum(axis=1)/5
+            # seems to be an extra dimension in there set at 0 
+            shar_dot_avg[i] = automation_variables['FTT-P']['MSRC'][reg][i][0][5:].sum()/5  
+            
+            shar_dot_hist[i] = automation_variables['FTT-P']['MSRC'][reg][i][0][0:5].sum()/5
 
             if shar_dot_hist[i] == 0:
-                L[i] = 0
+                L[reg][i] = 0
             else:
-                L[i] = shar_dot_avg[i]/shar_dot_hist[i]
+                L[reg][i] = shar_dot_avg[i]/shar_dot_hist[i]
         
         
     
-    return L # do we want it to return the share_dot_avg and share_dot_hist as well?
+    return L, shar_dot_avg, shar_dot_hist # do we want it to return the share_dot_avg as well?
 
     #### Different names for share vars
     
 # %%
-# def automation_algorithm(automation_variables):
-#     '''
-#     This function should contain the automation algorithm
-#     '''
-#     for iter in range(200):
+def automation_algorithm(automation_variables, L, shar_dot_hist, reg):
+    '''
+    This function should contain the automation algorithm
+    '''
+    #for iter in range(200): activate later
 
-#     shares = automation_variables
+    gamma = automation_variables['FTT-P']['MGAM'][reg, :, 0, 0] # taking just first col of gammas
+    # ok I completely forgot that if you don't do deep copy it automatically updates the original variable
+    # this has cost me a depressingly long time
 
-#     shar_dot = S_dot_f(gamma, shares, A, C, dC,N)
+    N = len(model.titles['T2TI']) # no. techs, do we need model within this function to get these?
 
-#     shar_dot_hist = S_dot_hist_f(S_h, N)
+    gradient_ratio = L[reg]
 
-#     gradient_ratio = L_f(shar_dot, shar_dot_hist, N)
+    for iter in range(10):
 
-#     # looping through technologies
-#     for i in range(N):
-#         # Check if gradient ratio is negative
-#         if gradient_ratio[i] < 0:
-#             # Check if historical average roc is negative
-#             if shar_dot_hist[i] < 0:
-#                 # If yes, add to gamma value
-#                 gamma[i] += 0.01
-#             # Check if historical average roc is positive
-#             if shar_dot_hist[i] > 0:
-#                 # If yes, subtract from gamma value
-#                 gamma[i] -= 0.01
-#         # Check if gradient ratio is positive
-#         if gradient_ratio[i] > 0:
-#             # Check if gradient ratio is very small
-#             if gradient_ratio[i] < 0.01:
-#                 gamma[i] -= 0.01
-#             # Check if gradient ratio is very large
-#             if gradient_ratio[i] > 100:
-#                 gamma[i] += 0.01
-#         # Check if gamma value is within bounds
-#         if gamma[i] > 1: gamma[i] = 1
-#         if gamma[i] < -1: gamma[i] = -1
+        # looping through technologies
+        for i in range(N):
+            # Check if gradient ratio is negative
+            if gradient_ratio[i] < 0:
+                # Check if historical average roc is negative
+                if shar_dot_hist[i] < 0:
+                    # If yes, add to gamma value
+                    gamma[i] += 0.01
+                # Check if historical average roc is positive
+                if shar_dot_hist[i] > 0:
+                    # If yes, subtract from gamma value
+                    gamma[i] -= 0.01
+            # Check if gradient ratio is positive
+            if gradient_ratio[i] > 0:
+                # Check if gradient ratio is very small
+                if gradient_ratio[i] < 0.01:
+                    gamma[i] -= 0.01
+                # Check if gradient ratio is very large
+                if gradient_ratio[i] > 100:
+                    gamma[i] += 0.01
+            # Check if gamma value is within bounds
+            if gamma[i] > 1: gamma[i] = 1 # this just picks the first value in the gammas, they're the same but this seems wrong
+            if gamma[i] < -1: gamma[i] = -1
 
+    gamma = np.tile(gamma.reshape(-1, 1), (1, 10)).reshape(24, 1, 10) # reshape format for whole period
 
+    automation_variables['FTT-P']['MGAM'][reg, :, :, :] = gamma
 
-#     print(gamma)
-
-
-#     return automation_variables
+    return automation_variables
 
 # %%
 def gamma_auto(model):
     # Initialising automation variables
     automation_variables = automation_init(model)
 
+    # Determine roc, outputs 71 x 24 matrix
+    L, shar_dot_avg, shar_dot_hist = roc_ratio(automation_variables, model)
+
+
     # Iterative loop for gamma convergence goes here
     # Automation code goes here!!!!! (in loop)
+
 
     # Updating automation variables (in loop)
     automation_variables = automation_var_update(automation_variables,model)
 
-    return automation_variables
+    return automation_variables, L, shar_dot_avg, shar_dot_hist
+
+
 
 # %%
 model = model_class.ModelRun()
+
+
 # %%
-automation_variables = gamma_auto(model)
+automation_variables, L, shar_dot_avg, shar_dot_hist = gamma_auto(model)
+
+
+
 #%%
-roc_ratio(automation_variables, model)
+reg = 0 # this will be provided by the loop
+automation_variables, gamma = automation_algorithm(automation_variables, L, shar_dot_hist, reg)
+
+for reg in range(71):
+    automation_variables, gamma = automation_algorithm(automation_variables, L, shar_dot_hist, reg)
+    # Update gamma values in model input
+    model.input["Gamma"]["MGAM"][reg,:,0,:] = gamma.reshape(-1,1)
+
 # $$
 #    How to ensure gamma values are overwritten? Check Jamie's code
 #    model.input["Gamma"][gamma_code][reg_pos,:,0,:] = np.array(gamma_values).reshape(-1,1)
@@ -205,4 +228,4 @@ roc_ratio(automation_variables, model)
 
     # gamma_df.to_csv(os.path.join(rootdir,base_dir,gamma_file))
 
-# %%
+
