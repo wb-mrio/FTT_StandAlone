@@ -461,10 +461,12 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
             
             breakdowns_partial = (data['IWS1'][:, :, 0]  - (data_dt['IWS1'][:, :, 0] - 
                                                     divide(data_dt['IWS1'][:, :, 0]*dt,data['BIC1'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK1'][:, :, 0]
+            breakdowns_partial = (data['IWS1'][:, :, 0]  - (data_dt['IWS1'][:, :, 0] - 
+                                                    divide(data_dt['IWS1'][:, :, 0]*dt,data['BIC1'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK1'][:, :, 0]
             
             eol_condition = data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] >= 0.0
 
-            eol_condition_partial = (-breakdowns < data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]) & (data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]< 0.0)
+            eol_condition_partial = (-breakdowns < data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]) | (data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] < 0.0)
 
             eol_replacements_t = np.where(eol_condition, breakdowns, 0.0)
             

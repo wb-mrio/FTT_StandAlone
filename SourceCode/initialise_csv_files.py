@@ -32,9 +32,15 @@ def initialise_csv_files(ftt_modules, scenarios):
     None
     """
     # Get the masterfiles
-    ftt_modules = ftt_modules.split(', ')
-    scenarios = scenarios.split(', ')
-
+    if isinstance(ftt_modules, str):
+        ftt_modules = [ftt_modules]
+    else:
+        ftt_modules = ftt_modules.split(', ')
+    if isinstance(scenarios, str):
+        scenarios = [scenarios]
+    else:
+        scenarios = scenarios.split(', ')
+    
     model_list = generate_model_list(ftt_modules, scenarios)
 
     # Convert masterfiles to csv
@@ -106,5 +112,7 @@ def generate_model_list(ftt_modules, scenarios):
                 file_root = current_file_root 
         if module_scenarios:
             models[module] = [module_scenarios, file_root]
+        else:
+            models[module] = scenarios
     return models
 

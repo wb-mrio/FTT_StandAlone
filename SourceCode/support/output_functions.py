@@ -26,7 +26,7 @@ def save_all(output):
 
         scenario = output[scen]
         
-        with open(f'Output\Results_{scen}.pickle', 'wb') as f:
+        with open(f'Output\\Results_{scen}.pickle', 'wb') as f:
             pickle.dump(scenario, f)
             
             print(scen, f' saved to Output/Results_{scen}.pickle')
