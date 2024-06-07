@@ -460,12 +460,12 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
             breakdowns = divide(time_lag['IWK4'][:, :, 0]*dt,
                                                             data['BIC4'][:, :, ctti['5 Lifetime (years)']])
 
-            breakdowns_partial = (data['IWS4'][:, :, 0]  - data_dt['IWS4'][:, :, 0]*(1 - 
-                                                    divide(dt,data['BIC4'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK4'][:, :, 0]
+            breakdowns_partial = (data['IWS4'][:, :, 0]  - (data_dt['IWS4'][:, :, 0] - 
+                                                    divide(data_dt['IWS4'][:, :, 0]*dt,data['BIC4'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK4'][:, :, 0]
             
             eol_condition = data['IWS4'][:, :, 0]  - data_dt['IWS4'][:, :, 0] >= 0.0
 
-            eol_condition_partial = -breakdowns < data['IWS2'][:, :, 0]  - data_dt['IWS2'][:, :, 0] < 0.0
+            eol_condition_partial = (-breakdowns < data['IWS4'][:, :, 0]  - data_dt['IWS4'][:, :, 0]) & (data['IWS4'][:, :, 0]  - data_dt['IWS4'][:, :, 0]< 0.0)
 
             eol_replacements_t = np.where(eol_condition, breakdowns, 0.0)
             
@@ -508,7 +508,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
 
             bi = np.zeros((len(titles['RTI']),len(titles['ITTI'])))
             for r in range(len(titles['RTI'])):
-                bi[r,:] = np.matmul(data['IWB4'][0, :, :],investment_t)
+                bi[r,:] = np.matmul(data['IWB4'][0, :, :],investment_t[r,:])
             dw = np.sum(bi, axis=0)
 
             # # Cumulative capacity incl. learning spill-over effects
@@ -524,7 +524,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
                     if data['IWW4'][0, tech, 0] > 0.1:
 
                         data['BIC4'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] = data_dt['BIC4'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] * \
+
                                                                             (1.0 + data['BIC4'][:, tech, ctti['15 Learning exponent']] * dw[tech]/data['IWW4'][0, tech, 0])
+
 
             # =================================================================
             # Update the time-loop variables

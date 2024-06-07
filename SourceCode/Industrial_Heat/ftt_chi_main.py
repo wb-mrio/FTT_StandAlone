@@ -464,7 +464,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
             
             eol_condition = data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] >= 0.0
 
-            eol_condition_partial = (-breakdowns < data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]) & (data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] < 0.0)
+
+            eol_condition_partial = (-breakdowns < data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]) & (data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]< 0.0)
+
 
             eol_replacements_t = np.where(eol_condition, breakdowns, 0.0)
             

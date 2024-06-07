@@ -458,12 +458,12 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
             breakdowns = divide(time_lag['IWK2'][:, :, 0]*dt,
                                                             data['BIC2'][:, :, ctti['5 Lifetime (years)']])
 
-            breakdowns_partial = (data['IWS2'][:, :, 0]  - data_dt['IWS2'][:, :, 0]*(1 - 
-                                                    divide(dt,data['BIC2'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK2'][:, :, 0]
+            breakdowns_partial = (data['IWS2'][:, :, 0]  - (data_dt['IWS2'][:, :, 0] - 
+                                                    divide(data_dt['IWS2'][:, :, 0]*dt,data['BIC2'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK2'][:, :, 0]
             
             eol_condition = data['IWS2'][:, :, 0]  - data_dt['IWS2'][:, :, 0] >= 0.0
 
-            eol_condition_partial = -breakdowns < data['IWS2'][:, :, 0]  - data_dt['IWS2'][:, :, 0] < 0.0
+            eol_condition_partial = (-breakdowns < data['IWS2'][:, :, 0]  - data_dt['IWS2'][:, :, 0]) & (data['IWS2'][:, :, 0]  - data_dt['IWS2'][:, :, 0]< 0.0)
 
             eol_replacements_t = np.where(eol_condition, breakdowns, 0.0)
             
@@ -503,23 +503,25 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
 
             bi = np.zeros((len(titles['RTI']),len(titles['ITTI'])))
             for r in range(len(titles['RTI'])):
-                bi[r,:] = np.matmul(data['IWB2'][0, :, :],investment_t)
+                bi[r,:] = np.matmul(data['IWB2'][0, :, :],investment_t[r,:])
             dw = np.sum(bi, axis=0)
 
             # # Cumulative capacity incl. learning spill-over effects
             data["IWW2"][0, :, 0] = data_dt['IWW2'][0, :, 0] + dw
             #
-            # # Copy over the technology cost categories that do not change (all except prices which are updated through learning-by-doing below)
+            # Copy over the technology cost categories that do not change (all except prices which are updated through learning-by-doing below)
             data['BIC2'] = copy.deepcopy(data_dt['BIC2'])
             #
-            # # Learning-by-doing effects on investment
+            # Learning-by-doing effects on investment
             if year > cost_data_year:
                 for tech in range(len(titles['ITTI'])):
 
                     if data['IWW2'][0, tech, 0] > 0.1:
 
+
                         data['BIC2'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] = data_dt['BIC2'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] * \
                                                                             (1.0 + data['BIC2'][:, tech, ctti['15 Learning exponent']] * dw[tech]/data['IWW2'][0, tech, 0])
+
 
             # =================================================================
             # Update the time-loop variables
