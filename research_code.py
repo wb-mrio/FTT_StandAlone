@@ -91,45 +91,68 @@ def automation_var_update(automation_variables, model):
 
     return automation_variables
 # %%
-def roc_ratio(automation_variables, model, reg):
+def roc_ratio(automation_variables, model):
     '''
     This function should calculate the average historical ROC and the simulated ROC for each module
     Then, it should calculate the ratio between them
     ratio = average_roc / average_hist_roc
     
     '''
+    scenario = 'S0'
     
     # Initialising variables
-    titles = model.titles
-    automation_variables = automation_variables
+    modules = model.ftt_modules
     regions = len(model.titles['RTI_short'])
-    N = len(model.titles['T2TI']) # no. techs
 
-    ## Initiailising containers
-    shar_dot_avg = np.zeros(len(model.titles['T2TI'])) # container for average roc
-    shar_dot_hist = np.zeros(len(model.titles['T2TI'])) # container for average hist roc
-    L = np.zeros([len(titles['RTI']), len(titles['T2TI'])]) # container for ratio of average roc to average hist roc
 
-    # Temporary line for dealing with Nans
-    automation_variables['FTT-P']['MSRC'] = np.nan_to_num(automation_variables['FTT-P']['MSRC'])
-    
-    # Loop through regions
-    
-    # Loop through technologies
-    for i in range(N):
-        # seems to be an extra dimension in there set at 0 
-        shar_dot_avg[i] = automation_variables['FTT-P']['MSRC'][reg][i][0][5:].sum()/5  
+    # Identifying the variables needed for automation
+    share_variables = dict(zip(model.titles['Models_short'] , model.titles['Models_shares_var']))
+    roc_variables = dict(zip(model.titles['Models_short'] ,model.titles['Models_shares_roc_var']))
+    gamma_variables = dict(zip(model.titles['Models_short'] ,model.titles['Gamma_Value']))
+    histend_vars = dict(zip(model.titles['Models_short'] , model.titles['Models_histend_var']))
+    techs_vars = dict(zip(model.titles['Models_short'] , model.titles['tech_var']))
+
+
+    # Looping through all FTT modules
+    for module in model.titles['Models_short']:
+        if module in modules:
+            # Get variable for tech list
+            tech_var = techs_vars[module]
+            # Get number of technologies
+            N_techs = len(model.titles[tech_var])
+
+            # Initialize containers for rates of change
+            roc_gradient = np.zeros([regions, N_techs])  # container for ratio of average roc to average hist roc for all regions
+            hist_share_avg = np.zeros((regions, N_techs))  # container for average roc for all regions
+            sim_share_avg = np.zeros((regions, N_techs))  # container for average hist roc for all regions
         
-        shar_dot_hist[i] = automation_variables['FTT-P']['MSRC'][reg][i][0][0:5].sum()/5
 
-        if shar_dot_hist[i] == 0:
-            L[reg][i] = 0
-        else:
-            L[reg][i] = shar_dot_avg[i]/shar_dot_hist[i]
-    
+            for reg in range(regions):
+                # Temporary line for dealing with Nans
+                #automation_variables['FTT-P']['MSRC'] = np.nan_to_num(automation_variables['FTT-P']['MSRC'])
+                            
+                # Loop through technologies
+                for i in range(N_techs):
+                    # seems to be an extra dimension in there set at 0 
+                    sim_share_avg[reg][i] = automation_variables[module][roc_variables[module]][reg][i][0][4:].sum()/4  
+                    
+                    hist_share_avg[reg][i] = automation_variables[module][roc_variables[module]][reg][i][0][0:4].sum()/4
+
+                    if hist_share_avg[reg][i] == 0:
+                        roc_gradient[reg][i] = 0
+                    else:
+                        roc_gradient[reg][i] = sim_share_avg[reg][i]/hist_share_avg[reg][i]
+
+            automation_variables[module]['roc_gradient'] = roc_gradient
+            automation_variables[module]['hist_share_avg'] = hist_share_avg
+            automation_variables[module]['sim_share_avg'] = sim_share_avg # maybe remove?
+
+            # Temporary line for dealing with Nans
+            #automation_variables['FTT-P']['MSRC'] = np.nan_to_num(automation_variables['FTT-P']['MSRC'])
+                        
         
     
-    return L, shar_dot_avg, shar_dot_hist # do we want it to return the share_dot_avg as well?
+    return automation_variables # do we want it to return the share_dot_avg as well?
 
     #### Different names for share vars
     
@@ -138,7 +161,22 @@ def automation_algorithm(automation_variables, L, shar_dot_hist, reg):
     '''
     This function should contain the automation algorithm
     '''
-    #for iter in range(200): activate later
+    # Initialising variables
+    scenario = 'S0'
+    
+    # Initialising variables
+    modules = model.ftt_modules
+    regions = len(model.titles['RTI_short'])
+
+
+    # Identifying the variables needed for automation
+    share_variables = dict(zip(model.titles['Models_short'] , model.titles['Models_shares_var']))
+    roc_variables = dict(zip(model.titles['Models_short'] ,model.titles['Models_shares_roc_var']))
+    gamma_variables = dict(zip(model.titles['Models_short'] ,model.titles['Gamma_Value']))
+    histend_vars = dict(zip(model.titles['Models_short'] , model.titles['Models_histend_var']))
+    techs_vars = dict(zip(model.titles['Models_short'] , model.titles['tech_var']))
+
+#########come back heree
 
     gamma = automation_variables['FTT-P']['MGAM'][reg, :, 0, 0] # taking just first col of gammas
     # ok I completely forgot that if you don't do deep copy it automatically updates the original variable
@@ -188,14 +226,11 @@ def gamma_auto(model):
     for iter in tqdm(range(3)):
         if iter == 0:
             print('stop')
+
+        # Calculate ROC ratio
+        automation_variables = roc_ratio(automation_variables, model)
             
-        #shares = S_f(gamma, S_h, A, C, dC,N) thow does this line come in?
-        # automation_var_update??
-
         for reg in range(len(model.titles['RTI_short'])):
-
-            # Determine roc, outputs 71 x 24 matrix
-            L, shar_dot_avg, shar_dot_hist = roc_ratio(automation_variables, model, reg)
 
             # Automation code goes here!!!!! (in loop)
             automation_variables = automation_algorithm(automation_variables, L, shar_dot_hist, reg)
@@ -210,11 +245,18 @@ def gamma_auto(model):
 
 
 
-# %%
+# %% ###################   START OF MAIN CODE RUN
+
+
+
 model = model_class.ModelRun()
 
 
-# %%
+
+
+
+
+# %% Run combined function
 automation_variables = gamma_auto(model)
 
 #%%
@@ -222,7 +264,7 @@ automation_variables = automation_init(model)
 print(automation_variables['FTT-P']['MGAM'][0, :, 0, :])
 
 #%%
-L, shar_dot_avg, shar_dot_hist = roc_ratio(automation_variables, model)
+automation_variables = roc_ratio(automation_variables, model)
 print(automation_variables['FTT-P']['MGAM'][0, :, 0, :])
 
 #%%
