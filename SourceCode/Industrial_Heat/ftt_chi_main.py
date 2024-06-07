@@ -459,12 +459,12 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
             breakdowns = divide(time_lag['IWK1'][:, :, 0]*dt,
                                                             data['BIC1'][:, :, ctti['5 Lifetime (years)']])
             
-            breakdowns_partial = (data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]*(1 - 
-                                                    divide(dt,data['BIC1'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK1'][:, :, 0]
+            breakdowns_partial = (data['IWS1'][:, :, 0]  - (data_dt['IWS1'][:, :, 0] - 
+                                                    divide(data_dt['IWS1'][:, :, 0]*dt,data['BIC1'][:, :, ctti['5 Lifetime (years)']])))*time_lag['IWK1'][:, :, 0]
             
             eol_condition = data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] >= 0.0
 
-            eol_condition_partial = -breakdowns < data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0] < 0.0
+            eol_condition_partial = (-breakdowns < data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]) & (data['IWS1'][:, :, 0]  - data_dt['IWS1'][:, :, 0]< 0.0)
 
             eol_replacements_t = np.where(eol_condition, breakdowns, 0.0)
             
@@ -505,7 +505,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
 
             bi = np.zeros((len(titles['RTI']),len(titles['ITTI'])))
             for r in range(len(titles['RTI'])):
-                bi[r,:] = np.matmul(data['IWB1'][0, :, :],investment_t)
+                bi[r,:] = np.matmul(data['IWB1'][0, :, :],investment_t[r,:])
             dw = np.sum(bi, axis=0)
 
             # # Cumulative capacity incl. learning spill-over effects
