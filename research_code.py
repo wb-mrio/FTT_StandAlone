@@ -145,7 +145,6 @@ def roc_ratio(automation_variables, model):
 
             automation_variables[module]['roc_gradient'] = roc_gradient
             automation_variables[module]['hist_share_avg'] = hist_share_avg
-            automation_variables[module]['sim_share_avg'] = sim_share_avg # maybe remove?
 
             # Temporary line for dealing with Nans
             #automation_variables['FTT-P']['MSRC'] = np.nan_to_num(automation_variables['FTT-P']['MSRC'])
@@ -157,10 +156,74 @@ def roc_ratio(automation_variables, model):
     #### Different names for share vars
     
 # %%
-def automation_algorithm(automation_variables, L, shar_dot_hist, reg):
+def automation_algorithm(automation_variables, model):
     '''
     This function should contain the automation algorithm
     '''
+
+            # Get number of technologies
+            N_techs = len(model.titles[techs_vars[module]])
+
+            for reg in range(regions):
+                # Temporary line for dealing with Nans
+                #automation_variables['FTT-P']['MSRC'] = np.nan_to_num(automation_variables['FTT-P']['MSRC'])
+                
+                # take first column of gammas, will be broadcast later
+                # this can be either side of the tech loop, not sure which is best  
+                gamma = automation_variables[module][gamma_variables[module]][reg, :, 0, 0] # taking just first col of gammas
+                automation_variables[module][gamma_variables[module]+'_LAG'][reg, :, 0, 0] = gamma
+
+                # Loop through technologies
+                for i in range(N_techs):
+                    
+                    # Get gradient between hsitorical and simulated ROC
+                    gradient_ratio = automation_variables[module]['roc_gradient'][reg, i]
+                    hist_share_avg = automation_variables[module]['hist_share_avg'][reg, i]
+
+                    # Check if gradient ratio is negative
+                    if gradient_ratio < 0:
+                        # Check if historical average roc is negative
+                        if hist_share_avg < 0:
+                            # If yes, add to gamma value
+                            gamma[i] += 0.01
+                        # Check if historical average roc is positive
+                        if hist_share_avg > 0:
+                            # If yes, subtract from gamma value
+                            gamma[i] -= 0.01
+                    # Check if gradient ratio is positive
+                    if gradient_ratio > 0:
+                        # Check if gradient ratio is very small
+                        if gradient_ratio < 0.5:
+                            # Historical gradient is steeper than simulated gradient
+                            # If steep and negative, add to gamma value
+                            if hist_share_avg < 0:
+                                gamma[i] += 0.01
+                            # If steep and positive, subtract from gamma value
+                            if hist_share_avg > 0:
+                                gamma[i] -= 0.01
+                        # Check if gradient ratio is very large
+                        if gradient_ratio > 2:
+                            # Simulated gradient is steeper than historical gradient
+                            # If steep and negative, subtract from gamma value
+                            if hist_share_avg < 0:
+                                gamma[i] -= 0.01
+                            # If steep and positive, add to gamma value
+                            if hist_share_avg > 0:
+                                gamma[i] += 0.01
+                    # Check if gamma value is within bounds
+                    if gamma[i] > 1: gamma[i] = 1 
+                    if gamma[i] < -1: gamma[i] = -1
+
+
+                gamma = np.tile(gamma.reshape(-1, 1), (1, 8)).reshape(24, 1, 8) # reshape format for whole period
+
+                automation_variables[module][gamma_variables[module]][reg, :, :, :] = copy.deepcopy(gamma)
+                print('Gamma values updated for region', model.titles['RTI'][reg])
+
+    return automation_variables
+
+# %%
+def gamma_auto(model):
     # Initialising variables
     scenario = 'S0'
     
@@ -176,74 +239,49 @@ def automation_algorithm(automation_variables, L, shar_dot_hist, reg):
     histend_vars = dict(zip(model.titles['Models_short'] , model.titles['Models_histend_var']))
     techs_vars = dict(zip(model.titles['Models_short'] , model.titles['tech_var']))
 
-#########come back heree
-
-    gamma = automation_variables['FTT-P']['MGAM'][reg, :, 0, 0] # taking just first col of gammas
-    # ok I completely forgot that if you don't do deep copy it automatically updates the original variable
-    # this has cost me a depressingly long time
-
-    N = len(model.titles['T2TI']) # no. techs, do we need model within this function to get these?
-
-    gradient_ratio = L[reg]
-
-    # looping through technologies
-    for i in range(N):
-        # Check if gradient ratio is negative
-        if gradient_ratio[i] < 0:
-            # Check if historical average roc is negative
-            if shar_dot_hist[i] < 0:
-                # If yes, add to gamma value
-                gamma[i] += 0.01
-            # Check if historical average roc is positive
-            if shar_dot_hist[i] > 0:
-                # If yes, subtract from gamma value
-                gamma[i] -= 0.01
-        # Check if gradient ratio is positive
-        if gradient_ratio[i] > 0:
-            # Check if gradient ratio is very small
-            if gradient_ratio[i] < 0.01:
-                gamma[i] -= 0.01
-            # Check if gradient ratio is very large
-            if gradient_ratio[i] > 100:
-                gamma[i] += 0.01
-        # Check if gamma value is within bounds
-        if gamma[i] > 1: gamma[i] = 1 # this just picks the first value in the gammas, they're the same but this seems wrong
-        if gamma[i] < -1: gamma[i] = -1
-
-    gamma = np.tile(gamma.reshape(-1, 1), (1, 10)).reshape(24, 1, 10) # reshape format for whole period
-
-    automation_variables['FTT-P']['MGAM'][reg, :, :, :] = copy.deepcopy(gamma)
-    
-
-    return automation_variables
-
-# %%
-def gamma_auto(model):
+    for module in model.titles['Models_short']:
+        if module in modules:
     # Initialising automation variables
     automation_variables = automation_init(model)
 
     # Iterative loop for gamma convergence goes here
-    for iter in tqdm(range(3)):
-        if iter == 0:
-            print('stop')
+    for iter in tqdm(range(10)):
+
+        # have region and module loop here
 
         # Calculate ROC ratio
         automation_variables = roc_ratio(automation_variables, model)
-            
-        for reg in range(len(model.titles['RTI_short'])):
+        
+        # Perform automation algorithm
+        automation_variables = automation_algorithm(automation_variables, model)
 
-            # Automation code goes here!!!!! (in loop)
-            automation_variables = automation_algorithm(automation_variables, L, shar_dot_hist, reg)
+        # Check for convergence in region and module loop
+        if all(np.absolute(gamma - gamma_lag)) < 0.01:
+            break
 
-            print('region', reg, 'done')
-
-        # Updating automation variables (in loop)
+        # Updating automation variables
         automation_variables = automation_var_update(automation_variables,model)
-        print('iteration', iter, 'done')
+        print('Gamma automation iteration:', iter, 'completed')
 
     return automation_variables
 
+##%
 
+def gamma_save(automation_variables, model):
+
+
+    # $$
+#    How to ensure gamma values are overwritten? Check Jamie's code
+#    model.input["Gamma"][gamma_code][reg_pos,:,0,:] = np.array(gamma_values).reshape(-1,1)
+    # model_folder = models.loc[ftt,"Short name"]
+
+    # gamma_file = "{}_{}.csv".format(gamma_code,reg)
+    # base_dir = "Inputs\\S0\\{}\\".format(model_folder)
+
+    # gamma_df = pd.read_csv(os.path.join(rootdir,base_dir,gamma_file),index_col=0)
+    # gamma_df.loc[:,:] = np.array(gamma_values).reshape(-1,1)
+
+    # gamma_df.to_csv(os.path.join(rootdir,base_dir,gamma_file))
 
 # %% ###################   START OF MAIN CODE RUN
 
@@ -268,8 +306,8 @@ automation_variables = roc_ratio(automation_variables, model)
 print(automation_variables['FTT-P']['MGAM'][0, :, 0, :])
 
 #%%
-reg = 0
-automation_variables = automation_algorithm(automation_variables, L, shar_dot_hist, reg)
+
+automation_variables = automation_algorithm(automation_variables, model)
 print(automation_variables['FTT-P']['MGAM'][0, :, 0, :])
 
 #%%
@@ -291,17 +329,6 @@ reg = 0 # this will be provided by the loop
 automation_variables = automation_algorithm(automation_variables, L, shar_dot_hist, reg)
 
 
-# $$
-#    How to ensure gamma values are overwritten? Check Jamie's code
-#    model.input["Gamma"][gamma_code][reg_pos,:,0,:] = np.array(gamma_values).reshape(-1,1)
-    # model_folder = models.loc[ftt,"Short name"]
 
-    # gamma_file = "{}_{}.csv".format(gamma_code,reg)
-    # base_dir = "Inputs\\S0\\{}\\".format(model_folder)
-
-    # gamma_df = pd.read_csv(os.path.join(rootdir,base_dir,gamma_file),index_col=0)
-    # gamma_df.loc[:,:] = np.array(gamma_values).reshape(-1,1)
-
-    # gamma_df.to_csv(os.path.join(rootdir,base_dir,gamma_file))
 
 
