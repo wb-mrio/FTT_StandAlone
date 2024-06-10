@@ -524,7 +524,6 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):#, #specs, co
                     if data['IWW4'][0, tech, 0] > 0.1:
 
                         data['BIC4'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] = data_dt['BIC4'][:, tech, ctti['1 Investment cost mean (MEuro per MW)']] * \
-
                                                                             (1.0 + data['BIC4'][:, tech, ctti['15 Learning exponent']] * dw[tech]/data['IWW4'][0, tech, 0])
 
 
