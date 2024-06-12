@@ -42,7 +42,6 @@ tl = model.timeline
 scens = model.scenarios
 
 # Call the 'run' method of the ModelRun class to solve the model
-#%%
 model.run()
 
 # Fetch ModelRun attributes, for examination
