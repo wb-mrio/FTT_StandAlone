@@ -3,13 +3,13 @@
 Created on Wed Jan 16 17:10:10 2019
 
 This script extracts all the data from FTT excel sheets in the
-"/In/FTTAssumptions/[model]" folders and and saves them in separate csv files.
+"/In/FTTAssumptions/[model]" folders and saves them in separate csv files.
 
-The user can select one or more scenarios to convert from the excel sheet. The 
-script overwrites when called directly, but does not when called from the run_file
-
-If you run this as a script, it will overwrite existing files. You can select
-the models at the end of this file (if __name__ == '__main__')
+The user can select one or more scenarios to convert from the excel sheet:
+    1. If running this code as a script, set the input files in the final lines of the code
+    2. If the script is run at the start of the model run, it will automatically
+    detect which files to convert, based on available csv files and whether
+    the masterfile is newer than the csv files. 
 
 @author: MM and Femke Nijsse
 """
@@ -20,11 +20,12 @@ import sys
 
 import pandas as pd
 import numpy as np
+import datetime
 
 # Get the absolute path of the current script
 current_script_path = os.path.abspath(__file__)
 
-# Get the absolute path of the root directory (assuming the root directory is two levels up from the current script)
+# Get the absolute path of the root directory
 root_directory_path = os.path.dirname(os.path.dirname(os.path.dirname(current_script_path)))
 
 # Path to the 'support' directory
@@ -36,26 +37,16 @@ if support_directory_path not in sys.path:
 
 from titles_functions import load_titles
 
-#%%
-# Function definitions
-def generate_file_list(var_dict, dirp_up, models):
-    """Generate a list of all the CSV filenames to be created."""
-    file_list = []
-    for model in models:
-        scenarios = models[model][0]  # Get the list of scenarios for this model
-        for scen in scenarios: # Loop over the scenarios
-            out_dir = os.path.join(dirp_up, f'S{scen}', model)
-            for var in var_dict[model]:
-                filename = os.path.join(out_dir, f"{var}.csv")
-                file_list.append(filename)
-    return file_list
+#%% Function definitions
 
-def csv_exists(filename):
+def csv_exists(file_path):
     """Check if a CSV file already exists."""
-    return os.path.isfile(filename)
+    return os.path.isfile(file_path)
+
 
 def read_data(models, model, dir_masterfiles, scen, sheets):
-    """Read the masterfiles
+    """
+    Read the masterfiles
     
     Returns:
         raw_data: the dataframe with all the excel data"""
@@ -84,16 +75,17 @@ def extract_data(raw_data, sheet_name, row_start, rdim, ci, cf):
 
 def get_sheets_to_convert(var_dict, model, scen):
     """ Get all the variables to convert to CSV files
-    There are three options:
-        First one (TODO) is to check which files don't exist, and make these
-        Second option is to do all the S0 files
-        Third option is for other scenarios, for which variables are sorted out
-        based on whether they are different from S0 to S2
+    There are two options:
+        1. Convert all variables from excel sheet (for S0)
+        2. Convert only policy variables (for other scenarios). 
+    You can change which variables are in all scenarios in the FTT_variables file, column Scenario
     """
+    
     # In the baseline scenario, all variables are converted
     if scen == 0:
         vars_to_convert = [var for var in var_dict[model] if var_dict[model][var]['Read in?']]
-    # In the other scenarios, only policy va
+    
+    # In the other scenarios, only policy variables are converted
     else:
         vars_to_convert = [var for var in var_dict[model] if \
                    (var_dict[model][var]['Scenario'] == "All" and var_dict[model][var]['Read in?'])]
@@ -102,45 +94,111 @@ def get_sheets_to_convert(var_dict, model, scen):
 
     return vars_to_convert, sheets
 
+def are_csvs_older_than_masterfiles(vars_to_convert, out_dir, models, \
+                                      model, scen, dir_masterfiles):
+    """
+    Find which files were last modified. If masterfile is newest then newest
+    csv files, overwrite all csv files.
+    
+    Returns true if the csvs need updating and are older
+    """
+    
+    def find_last_time_csv_modified(vars_to_convert, out_dir):
+        """
+        For a given module and scenario, compares the most recent date
+        a csv file was last updated
+        """
+        # Take old time to compare to
+        last_time_modified = datetime.datetime(2021, 1, 1)
+        
+        for var in vars_to_convert:
+            out_fn = os.path.join(out_dir, f"{var}.csv")
+            out_fn_reg = os.path.join(out_dir, f"{var}_BE.csv")
+            if csv_exists(out_fn):
+                time_modified = os.path.getmtime(out_fn)
+            elif csv_exists(out_fn_reg):
+                time_modified = os.path.getmtime(out_fn_reg)
+            else:
+                print(f"var does not exist: {var}")
+                print(f"vars_to_convert: {vars_to_convert}")
+                continue
+            
+            time_modified =  datetime.datetime.fromtimestamp(time_modified)
+            if time_modified > last_time_modified:
+                last_time_modified = time_modified
+        
+        return last_time_modified
+    
+    def find_last_time_masterfile_modified(models, model, scen, dir_masterfiles):
+        """
+        For a given module and scenario, compares the most recent date
+        a csv file was last updated
+        """
+        # Check whether the excel files exist
+        raw_f = models[model][1]
+        raw_p = os.path.join(dir_masterfiles, model, f'{raw_f}_S{scen}.xlsx')
+        time_modified = os.path.getmtime(raw_p)
+        time_modified = datetime.datetime.fromtimestamp(time_modified)
+        return time_modified
+    
+    csv_time_mod = find_last_time_csv_modified(vars_to_convert[model], out_dir)
+    master_time_mod = find_last_time_masterfile_modified(models, model, scen, dir_masterfiles)
+    
+    if master_time_mod > csv_time_mod:
+        print("There are new updates to the Masterfile, so csv files will be updated")
+    return master_time_mod > csv_time_mod
+
 def get_remaining_variables(vars_to_convert, out_dir, model, \
-                            var_dict, gamma_options, overwrite_existing):
-
-    """Remove variables that already exist from list to convert"""
-    if overwrite_existing:
-
+                            var_dict, gamma_options, overwrite_existing_csvs):
+    """
+    Remove variables from the to-convert list if:
+        a) We do not overwrite existing csv and
+        b) They already exist
+    
+    Returns:
+        * the remaining variables to convert
+        * the gamma user input (unchanged if not applicable)
+    """
+    
+    # Keep all variables (possibly excl gamma) in the to-convert list if:
+    if overwrite_existing_csvs:
+        
         for var in vars_to_convert:
 
-            # We want to double check if the user wants to overwrite gamma values
-            if var_dict[model][var]["Conversion?"] == "GAMMA":
+            # Check if the user wants to overwrite gamma values
+            if var_dict[model][var]["Conversion?"] == "GAMMA" or var=="MGAM":
                 gamma_options["Overwrite user input"] = \
                     gamma_input_on_overwrite(out_dir, var, gamma_options)
         
         return vars_to_convert, gamma_options
+    
+    # Remove variables from list if we do not overwrite AND they already exist
     vars_to_convert_remaining = []
-    for var in vars_to_convert:
-        
+    for var in vars_to_convert:     
         out_fn = os.path.join(out_dir, f"{var}.csv")
         out_fn_reg = os.path.join(out_dir, f"{var}_BE.csv")
+        
         exists = (csv_exists(out_fn) or csv_exists(out_fn_reg))
                 
         if not exists:
             vars_to_convert_remaining.append(var)
+    
     return vars_to_convert_remaining, gamma_options
 
 
 def gamma_input_on_overwrite(out_dir, var, gamma_options):
-    """ When the script is run as a script, and
-    the gamma csv files already exist, confirm with
-    the user if you want to overwrite, given that
-    the user may not want to lose their calibrated gamma
-    values """
+    """
+    When the script is run as a script, and the gamma csv files already exist,
+    confirm with the user if you want to overwrite, given that
+    the user may not want to lose their calibrated gamma values 
+    """
     
-    costvar_to_gam_dict = {"BTTC": "TGAM", "BHTC": "HGAM", "ZCET": "ZGAM"}
+    costvar_to_gam_dict = {"MGAM": "MGAM", "BTTC": "TGAM", "BHTC": "HGAM", "ZCET": "ZGAM"}
     var_gamma = costvar_to_gam_dict[var]
     out_fn = os.path.join(out_dir, f"{var_gamma}_BE.csv")
     
-    # Break if you can't overwrite
-    if not gamma_options["Overwrite possible"]:
+    # Break if no user input is required
+    if not gamma_options["Ask user input"]:
         return None
 
     if gamma_options["Overwrite user input"] is None:
@@ -188,7 +246,6 @@ def set_up_cols(model, var, var_dict, dims, timeline_dict):
     return cdim, col_title
 
 
-    
 def write_to_csv(data, row_title, col_title, var, out_dir, reg=None):
     """Write the variables to a csv file, or to multiple csv files for 3D vars"""
     if reg:
@@ -257,6 +314,7 @@ def directories_setup():
         print(f'Classification titles file not found at {titles_path}.')
     
     return dir_inputs, dir_masterfiles, titles_path
+
 
 def variable_setup(dir_masterfiles, models):
     """Set up the various containers and metadata for variables:
@@ -333,24 +391,31 @@ def get_model_classification(titles_path, variables_df):
 #%%
 # Main function
 
-def convert_masterfiles_to_csv(models, gamma_overwrite_pos="not possible", overwrite_existing=False):
+def convert_masterfiles_to_csv(models, ask_user_input=False, overwrite_existing_csvs=False):
     """
     The main function to convert masterfiles to csv files. 
-    Depending on how you run it, it can have two types of behaviour:
+    Depending on how you run it, it can have three types of behaviour:
         a) If you run it as a script, it will overwrite files. It will
         ask for confirmation before overwriting the gamma values
-        b) If you call it from another function, it will only generate
-        new file if the files do not yet exist.
+        b) If you call it from another function
+            b1) It will generate csvs if files don't exist yet
+            b2) It will overwrite files if the masterfiles are newer than the csv files
+               This will include gamma values. 
     """
+    
     # Define paths, directories and subfolders
     dir_inputs, dir_masterfiles, titles_path = directories_setup()
     variables_df_dict, var_dict, vars_to_convert, scenarios, timeline_dict = \
             variable_setup(dir_masterfiles, models)
+            
+    overwrite_existing_csvs_input = overwrite_existing_csvs
                
     for model in models.keys():
+        overwrite_existing_csvs = overwrite_existing_csvs_input    # Reset to input value for each model
+        
         variables_df = variables_df_dict[model]
         dims = get_model_classification(titles_path, variables_df)
-        gamma_options = {"Overwrite possible": gamma_overwrite_pos, 
+        gamma_options = {"Ask user input": ask_user_input, 
                           "Overwrite user input": None}    
         
         ### ----------------------------------------------------------------------- ###
@@ -367,13 +432,20 @@ def convert_masterfiles_to_csv(models, gamma_overwrite_pos="not possible", overw
             out_dir = os.path.join(dir_inputs, f'S{scen}', model)
             if not os.path.exists(out_dir):
                 os.makedirs(out_dir)
-                        
+            
+            # Check if masterfiles are updated since last csv update (unless explicitly overwriting)
+            if not overwrite_existing_csvs: 
+                # Overwrite existing csv files when masterfile has more recently been updated
+                overwrite_existing_csvs = are_csvs_older_than_masterfiles(
+                        vars_to_convert, out_dir, models, model, scen, dir_masterfiles
+                        )
+            
             # Remove the variables for which csv files exist (except if they need overwriting)
             vars_to_convert[model], gamma_options = \
                     get_remaining_variables(vars_to_convert[model], out_dir, model, \
-                                            var_dict, gamma_options, overwrite_existing)
+                                            var_dict, gamma_options, overwrite_existing_csvs)
             
-            if len(vars_to_convert[model])==0:
+            if len(vars_to_convert[model]) == 0:
                 print("All variables already exist, no need to create CSV files")
                 continue
             
@@ -394,7 +466,7 @@ def convert_masterfiles_to_csv(models, gamma_overwrite_pos="not possible", overw
             row_start = 5
             regs = dims['RSHORTTI']
     
-            ## Read in sheet by sheet
+            # Read in sheet by sheet
             ci = 2              # Column indenting
             for i, var in enumerate(vars_to_convert[model]):
     
@@ -410,7 +482,10 @@ def convert_masterfiles_to_csv(models, gamma_overwrite_pos="not possible", overw
                 if ndims == 3:
                     
                     var_dict[model][var]['Data'][scen] = {}
-                    gamma_options["Overwrite user input"] = None  
+                    
+                    if var == "MGAM" and gamma_options["Overwrite user input"] == "skip":
+                        continue
+                    
                     for i, reg in enumerate(regs):          
                         ri = row_start + i*(rdim + sep)
                         data = extract_data(raw_data, sheet_name, ri, rdim, ci, cf)
@@ -458,14 +533,13 @@ def convert_masterfiles_to_csv(models, gamma_overwrite_pos="not possible", overw
 if __name__ == '__main__':
     """If you run this as a script, it will overwrite existing files"""
     # Structure of dict:
-    # Model name: [Model name, scenarios to read in, excel file]
+    # Model name: [Model name, [scenarios to read in], excel file]
     # Scenario 0 = Baseline
     # Scenario 1 = 2-degree scenario (default)
     # Scenario 2 = 1.5-degree scenario (default)
-    # ENTER SCENARIO NUMBERS HERE! This will dictate which sheets are read in.
 
-    models = {#'FTT-Tr': [[0, 2], 'FTT-Tr_31x71_2023'],
-              'FTT-P': [[0, 1, 2], 'FTT-P-24x71_2024']}
+    models = {'FTT-Tr': [[0], 'FTT-Tr_31x71_2023'],
+              'FTT-P': [[0], 'FTT-P-24x71_2022']}
             #  'FTT-H': [[0], 'FTT-H-13x70_2021'],
             #  'FTT-S': [[0], 'FTT-S-26x70_2021']}
 
@@ -477,4 +551,4 @@ if __name__ == '__main__':
     # }
 
     var_dict = convert_masterfiles_to_csv(
-        models, gamma_overwrite_pos="possible", overwrite_existing=True)
+        models, ask_user_input=True, overwrite_existing_csvs=True)

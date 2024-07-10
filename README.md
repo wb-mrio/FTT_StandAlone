@@ -3,11 +3,11 @@
 ## Future Technology Transformation
 This repository contains a family of Future Technology Transformation (FTT) models. Models that are included are:
 
-* FTT:Power (Mercure, 2012) - data up to 2019, update to 2021 expected in October
-* FTT:Heat (Knobloch et al, 2017) -  data up to 2020
+* FTT:Power (Mercure, 2012) - data up to 2018, update to 2021 expected in June
+* FTT:Heat (Knobloch et al, 2017) data up to 2020
 * FTT:Industrial heat *under construction*
 * FTT:Transport (Mercure et al, 2018) - data up to 2022
-* FTT:Freight - data up to 2018
+* FTT:Freight *under construction, update expected in 2024*
 
 ## Theoretical background
 The FTT family of models are based on [evolutionary economics](https://en.wikipedia.org/wiki/Evolutionary_economics). The uptake of new technologies typically follows an S-curve, which can be represented well with evolutionary dynamics (Mercure et al, 2012). The core equations for all of the models in the model family are coupled logistic equations of the [Lotka-Volterra family](https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations), also known as the predator-prey equations. These equations are used to determine the evolution of the shares of various technologies in the models. Each model contains between ~10 to 25 technologies competing for market share. 

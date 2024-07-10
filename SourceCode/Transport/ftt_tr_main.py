@@ -308,8 +308,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
                             continue
 
                         S_veh_k = data_dt['TEWS'][r, v2, 0]
-                        Aik = data['TEWA'][0, v1 , v2] / data['BTTC'][r, v1, c3ti['17 Turnover rate']]
-                        Aki = data['TEWA'][0, v2 , v1] / data['BTTC'][r, v2, c3ti['17 Turnover rate']]
+                        Aik = data['TEWA'][0, v1 , v2] * data['BTTC'][r, v1, c3ti['17 Turnover rate']]
+                        Aki = data['TEWA'][0, v2 , v1] * data['BTTC'][r, v2, c3ti['17 Turnover rate']]
 
                         # Propagating width of variations in perceived costs
                         dFik = 1.414 * sqrt((data_dt['TLCD'][r, v1, 0] * data_dt['TLCD'][r, v1, 0] 
