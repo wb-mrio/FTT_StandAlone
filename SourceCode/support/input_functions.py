@@ -151,6 +151,8 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                         # Distinction whether the last dimension is time or not
                         if dims_length[3] > 1:
                             try:
+                                print(scen)
+                                print(var)
                                 data[scen][var][reg_index, i, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[i][var_tl_fit]
                             except (IndexError, ValueError) as e:
                                 input_functions_message(scen, var, dims, read, var_tl_fit, reg_index)
@@ -214,10 +216,11 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                                 raise(e)
 
                         # If there is no third dimension
-                        elif dims_length[2] == 1:
+                        # Quick fix for sectorcoupling variable which has no 3rd dim but also no time
+                        elif dims_length[2] == 1 and var != 'SectorCouplingAssumps':
                             try:
                                 data[scen][var][0, :, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[:][var_tl_fit]
-                            except (IndexError, ValueError) as e:
+                            except (IndexError, ValueError, KeyError) as e:
                                 input_functions_message(scen, var, dims, read, timeline=var_tl_fit)
                                 raise(e)
 
