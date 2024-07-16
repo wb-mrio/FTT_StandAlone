@@ -30,27 +30,37 @@ import numpy as np
 import os
 
 
+# Get the absolute path of the current script
+current_script_path = os.path.abspath(__file__)
 
-base_path = r'C:\Users\ib400\OneDrive - University of Exeter\Desktop\PhD\GitHub\FTT_Standalone'
-# base_path jsut for writing, can be removed after
-os.chdir(base_path)
+# Get the absolute path of the root directory (assuming the root directory is 3 levels up from the current script)
+root_directory_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_script_path))))
+
+# Path to the 'support' directory
+emulation_directory_path = os.path.join(root_directory_path, 'Emulation', 'code', 'emulation_code')
+
+# Add the 'support' directory to sys.path if it's not already there
+if emulation_directory_path not in sys.path:
+    sys.path.append(emulation_directory_path)
+
+
+os.chdir(root_directory_path)
 
 
 #%% 
 
-path_to_model = "..\FTT_StandAlone"
 
 # Change depending on scenario
 #scen = 'S2' ## this needs sorting and the scens need to be generalised
 scenario_list = ['S0', 'S3']
 
 # create dictionaries to store input files
-# dictionaries used for generalisaiotn and multiple scenarios
+# dictionaries used for generalisation and multiple scenarios
 file_paths = {}
 
 # Load the Excel workbook
 for scen in scenario_list:
-    file_paths[scen] = os.path.join(path_to_model, f"Inputs\\_Masterfiles\\FTT-P\\FTT-P-24x71_2024_{scen}.xlsx")
+    file_paths[scen] = os.path.join(root_directory_path, f"Inputs\\_Masterfiles\\FTT-P\\FTT-P-24x71_2024_{scen}.xlsx")
 
 
 # Dictionary to store DataFrames with variable names based on scenarios
@@ -131,8 +141,8 @@ def compare_scenarios(scen_base, scen_compare, keep_equal = False):
     keep_equal = keep_equal
     
     # create file names
-    baseline = f'update_data/output_workbook_{scen_base}.xlsx'
-    comparison = f'update_data/output_workbook_{scen_compare}.xlsx'
+    baseline = f'Emulation/data/output_workbook_{scen_base}.xlsx'
+    comparison = f'Emulation/data/output_workbook_{scen_compare}.xlsx'
     
 
     # Get the sheet names from both workbooks

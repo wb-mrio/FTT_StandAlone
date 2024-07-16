@@ -25,9 +25,28 @@ import numpy as np
 from scipy.stats import poisson, binom, uniform, norm, randint
 import csv
 import copy
+import sys
 
-base_path = r'C:\Users\ib400\OneDrive - University of Exeter\Desktop\PhD\GitHub\FTT_Standalone'
-os.chdir(base_path)
+
+
+# Get the absolute path of the current script
+current_script_path = os.path.abspath(__file__)
+
+# Get the absolute path of the root directory (assuming the root directory is 3 levels up from the current script)
+root_directory_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_script_path))))
+
+# Path to the 'support' directory
+emulation_directory_path = os.path.join(root_directory_path, 'Emulation', 'code', 'emulation_code')
+
+# Add the 'support' directory to sys.path if it's not already there
+if emulation_directory_path not in sys.path:
+    sys.path.append(emulation_directory_path)
+
+
+os.chdir(root_directory_path)
+
+from SourceCode.support.titles_functions import load_titles
+titles = load_titles()
 
 #%% load objects 
 
@@ -63,7 +82,11 @@ for sheet_name in sheet_names[1:]:
 cp_path = f'Emulation/data/cp_ambit/{amb_scenario}_REPP.csv' # this input will not have varied Background vars, put outside?
 cp_df = pd.read_csv(cp_path)
 
+# Load demand data
+demand_path = f'Emulation/data/mewd_electricity_{amb_scenario}.xlsx'
+demand_df = pd.read_excel(demand_path)
 
+# Other background variables dealt with below
 
 
 #%%
@@ -85,22 +108,48 @@ def uncertainty_inputs(scenario_levels = scenario_levels):
         bcet = pd.concat([bcet, bcet_raw.iloc[j:j+25]]).reset_index(drop = True) # outside function?
     #bcet = bcet.iloc[:,1:] # drop country number col
     
-    # implement updates
+    ## implement updates
+    # solar 
     solar_update = bcet['Unnamed: 1'] == 'Solar PV'
     bcet.loc[solar_update, 16] = scenario_levels['learning_solar'] # learning rate update
     bcet.loc[solar_update, 9] = scenario_levels['lifetime_solar'] # lifetime update
-    bcet.loc[solar_update, 10] = scenario_levels['grid_expansion_lead'] # leadtime update
+    bcet.loc[solar_update, 10] = scenario_levels['solar_lead'] # leadtime update
+    # wind
     onshore_update = bcet['Unnamed: 1'] == 'Onshore'
     bcet.loc[onshore_update, 16] = scenario_levels['learning_wind'] # learning rate update
     bcet.loc[onshore_update, 9] = scenario_levels['lifetime_wind'] # lifetime update
-    bcet.loc[onshore_update, 10] = scenario_levels['grid_expansion_lead'] # leadtime update
+    bcet.loc[onshore_update, 10] = scenario_levels['onshore_lead'] # leadtime update
     offshore_update = bcet['Unnamed: 1'] == 'Offshore'
     bcet.loc[offshore_update, 16] = scenario_levels['learning_wind']  # learning rate update
     bcet.loc[offshore_update, 9] = scenario_levels['lifetime_wind'] # lifetime update
-    bcet.loc[offshore_update, 10] = scenario_levels['grid_expansion_lead'] # leadtime update
+    bcet.loc[offshore_update, 10] = scenario_levels['offshore_lead'] # leadtime update
     
-            
+    # gas price
+    gas_update = bcet['Unnamed: 1'] == 'CCGT'
+    gas_price = bcet.loc[gas_update, 5] 
+    gas_std = bcet.loc[gas_update, 6] 
+    gas_lower = gas_price - (gas_std*2)
+    gas_upper = gas_price + (gas_std*2)
+    gas_diff = gas_upper - gas_lower
+    gas_vary = gas_diff * scenario_levels['gas_price']
+    gas_price_new = gas_lower + gas_vary
+    bcet.loc[gas_update, 5] = gas_price_new
+
+    # coal price
+    coal_update = bcet['Unnamed: 1'] == 'Coal'
+    coal_price = bcet.loc[coal_update, 5]
+    coal_std = bcet.loc[coal_update, 6]
+    coal_lower = coal_price - (coal_std*2)
+    coal_upper = coal_price + (coal_std*2)
+    coal_diff = coal_upper - coal_lower
+    coal_vary = coal_diff * scenario_levels['coal_price']
+    coal_price_new = coal_lower + coal_vary
+    bcet.loc[coal_update, 5] = coal_price_new
+    
+    
+         
     ### COME BACK HERE ######
+    # This may need to come out as we need it at different times n 
     global_n_regions =  ['BE', 'DK', 'DE', 'EL', 'ES', 'FR', 'IE', 'IT', 'LX', 
                         'NL', 'AT', 'PT', 'FI', 'SW', 'UK', 'CZ', 'EN', 'CY', 'LV', 'LT',
                         'HU', 'MT', 'PL', 'SI', 'SK', 'BG', 'RO', 'NO', 'CH', 'IS',
@@ -137,10 +186,27 @@ def uncertainty_inputs(scenario_levels = scenario_levels):
         country_df.to_csv(folder_path + '/' + f'{sheet_out}.csv', index = False, header = False)
         print(f'Sheet {sheet_out} saved to {folder_path}')
 
-# #%%    
-# # discount rate needs adding
-# for i in range(0, len(scenario_levels)):
-#      uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
+#%%
+# function for updating background variables not in BCET
+regions = titles['RTI_short']
+for reg in range(0, len(regions)):
+    reg_short = titles['RTI_short'][reg]
+    reg_long = titles['RTI'][reg]
+
+    mewd_base = pd.read_csv(f'Inputs/{base_scenario}/FTT-P/MEWDX_{reg_short}.csv')
+    mewd_el_lower = mewd_base.iloc[7, 1:] * 0.9 # electricity demand
+    mewd_el_upper = mewd_base.iloc[7, 1:] * 1.1 # electricity demand
+
+    mewd_el_diff = mewd_el_upper - mewd_el_lower
+    mewd_el_update = mewd_el_lower + (mewd_el_diff * scenario_levels['elec_demand'][0]) ## this needs to be general
+
+
+    # update demand
+    mewd_updated = mewd_base.copy()
+    mewd_updated.iloc[7, 1:] = mewd_el_update
+
+    mewd_updated.to_csv(f'Inputs/{scen_code}/FTT-P/MEWDX_{reg_short}.csv', index = False, header = False)
+    print(f'Sheet MEWDX_{reg_short} saved to {scen_code}/FTT-P')
 
 #%% Produces input master sheet for ambition adjusted inputs - reg only
 
@@ -159,11 +225,11 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
                    'PT','FI','SW','UK','CZ','EN','CY','LV','LT','HU','MT','PL',
                    'SI','SK','BG','RO','HR', 'NO','CH']
     
-    if 'E+' in regions:
+    if 'EA' in regions:
             # Add the additional countries to the dictionary with the same value as 'E+'
         regions = regions + europe_plus
         for region in europe_plus:
-            scenario_levels.loc[region + '_reg'] = scenario_levels.loc['E+_reg']
+            scenario_levels.loc[region + '_reg'] = scenario_levels.loc['EA_reg']
         
 
     new_sheets = pd.DataFrame()
@@ -179,7 +245,7 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
                 
                 ambition = scenario_levels[country + '_reg']
             else:
-                ambition = scenario_levels['ROW_reg']
+                ambition = scenario_levels['ROW_reg'] 
             
             meta = var_df.iloc[row, 0:5]
             upper_bound = var_df.iloc[row]
