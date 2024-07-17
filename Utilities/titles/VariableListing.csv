@@ -87,6 +87,7 @@ MEWG,FTT-P Generation by technology (GWh),GWh,RTI,T2TI,NA,TIME,FTT-P,-,2021,2001
 MEWE,FTT:Power CO2 emissions,MtCO2/y,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,,Y
 MEWDX,Exogenous demand for energy resources,PJ,RTI,JTI,NA,TIME,FTT-P,-,-,2010,From E3ME results,,Y
 MEWD,FTT:Power demand for fuels (PJ),PJ,RTI,JTI,NA,TIME,FTT-P,-,-,2010,-,,Y
+MWDL,FTT:Power lagged demand,PJ,RTI,JTI,NA,TIME,FTT-P,,,2010,-,,Y
 MEWC,"LCOE bare, no policies, no carbon cost (2013$/MWh)",$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,,Y
 MEWB,Spillover learning matrix,%,NA,T2TI,T2TI,NA,FTT-P,-,-,2001,-,,Y
 MEWA,Substitution matrix,rate,RTI,T2TI,T2TI,NA,FTT-P,-,-,2001,-,,Y
@@ -132,12 +133,12 @@ HWSA,FTT-Heat Exogenous market share changes,%,RTI,HTTI,NA,TIME,FTT-H,,,2001,,,
 HEFI,FTT-Heat Feed-in-tariff,%,RTI,HTTI,NA,TIME,FTT-H,,,2001,,,
 HETR,FTT-Heat Turn-over rate,%,RTI,HTTI,NA,TIME,FTT-H,,,2001,,,
 BHTC,FTT-Heat Cost matrix,,RTI,HTTI,C4TI,NA,FTT-H,,,2014,,,
-HEWG,FTT-Heat Useful heat by boiler,GWh/y,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
-HEWE,FTT-Heat Emissions,Mt/y,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
+HEWG,FTT-Heat Useful heat by boiler,GWh,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
+HEWE,FTT-Heat Emissions,Mt,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
 HJHF,FTT-Heat Fuel use for heating,GWh,RTI,JTI,NA,TIME,FTT-H,,,2014,,Y,Y
 HEWP,FTT-Heat Price rates by boiler,,RTI,HTTI,NA,TIME,FTT-H,,,2010,,,
 HEWK,FTT-Heat Capacity,GW,RTI,HTTI,NA,TIME,FTT-H,,,,,Y,Y
-HEWI,FTT-Heat Capacity Additions,GW/y,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
+HEWI,FTT-Heat Capacity Additions,GW,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
 HEWC,FTT-Heat LCOH no policies,Eur/kWhUD,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
 HETC,FTT-Heat LCOH all policies,Eur/kWhUD,RTI,HTTI,NA,TIME,FTT-H,,,2014,,Y,Y
 HGC1,FTT-Heat LCOH w policies & Gamma,Eur/kWhUD,RTI,HTTI,NA,TIME,FTT-H,,,2014,,,
@@ -166,7 +167,7 @@ TEWS,FTT-Transport Market shares,,RTI,VTTI,NA,TIME,FTT-Tr,,2019,1990,,Y,Y
 TEWK,FTT-Transport fleet size,th-veh,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
 TEWI,FTT-Transport sales,th-veh,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
 TEWG,FTT-Transport demand by technology,mln km/y,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
-TEWE,FTT-Transport emissions,Mt/y,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
+TEWE,FTT-Transport emissions,Mt,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
 TEWC,FTT-Transport levelised costs (no taxes),$/pkm,RTI,VTTI,NA,TIME,FTT-Tr,,,2017,,Y,Y
 TEWB,FTT-Transport Technology spill-over matrix,,NA,VTTI,VTTI,NA,FTT-Tr,,,,,,
 TEWA,FTT-Transport Technology substitution matrix,,NA,VTTI,VTTI,NA,FTT-Tr,,,,,,
@@ -357,14 +358,14 @@ FU14A,Fuel demand for heating in 2014,GWh,RTI,JTI,NA,NA,FTT-H,-,-,,-,,Y
 FU14B,Fuel demand for heating in 2014,th toe,RTI,JTI,NA,NA,FTT-H,-,-,,-,,Y
 MCSC,FTT:Power cost-supply curves,na,RTI,ERTI,CSCTI,NA,FTT-P,-,-,2001,-,Y,Y
 MCRT,FTT:Power curtailment of VRE (% of generation),%,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,Y,Y
-MCRG,Curtailment,GWh/y,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,Y,Y
+MCRG,Curtailment,GWh,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,Y,Y
 MCOCX,Carbon costs by technology from E3ME,2013$/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2010,From E3ME results,Y,Y
 MCOC,FTT:Power CO2 cost component,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,Y,Y
-MCNA,FTT:Power Net curtailed electricity by technology (GWh/y),GWh/y,RTI,T2TI,NA,TIME,FTT-P,,,2001,,Y,Y
-MCGA,FTT:Power Gross curtailed electricity by technology (GWh/y),GWh/y,RTI,T2TI,NA,TIME,FTT-P,,,2001,,Y,Y
+MCNA,FTT:Power Net curtailed electricity by technology (GWh/y),GWh,RTI,NA,NA,TIME,FTT-P,,,2001,,Y,Y
+MCGA,FTT:Power Gross curtailed electricity by technology (GWh/y),GWh,RTI,NA,NA,TIME,FTT-P,,,2001,,Y,Y
 MCFC,FTT:Power load factor scaling cost component,$2013/MWh,RTI,T2TI,NA,TIME,FTT-P,-,-,2001,-,Y,Y
 MCCS,FTT:Power technology to fuel use conversion matrix incl CCS,na,NA,T2TI,JTI,NA,FTT-P,-,-,2001,-,Y,Y
-MADG,Additional generation due storage losses and curtailment,GWh/y,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,Y,Y
+MADG,Additional generation due storage losses and curtailment,GWh,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,Y,Y
 FRETX,Exogenous FRET (from E3ME run),ktoe,RTI,FUTI,NA,TIME,General,-,-,2010,From E3ME results,Y,Y
 EXX,Exchange rate (2010=100) from E3ME,index,RTI,NA,NA,TIME,FTT-P,-,-,2010,From E3ME results,Y,Y
 EX13,Exchange rate in 2013 (2010=100),index,RTI,NA,NA,TIME,FTT-P,-,-,2001,-,,Y

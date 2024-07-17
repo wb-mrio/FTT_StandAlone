@@ -3,7 +3,7 @@
 ftt_p_costc.py
 =========================================
 Power cost-supply curves module.
-################################
+
 
 Cost-supply curves give the cost of a resource as a function of its quantity, and
 hence provide the **marginal cost** of each resource. For example, if a fossil fuel
@@ -120,7 +120,7 @@ def interp(X, Y, X0, L):
 # -------------------------- marginal calculation ------------------------------
 # -----------------------------------------------------------------------------
 #@njit(fastmath=True)
-def marginal_function(MEPD, RERY, MPTR, BCSC, HistC, MRCL, MERC, MRED, MRES, dt, MERCX):
+def marginal_function(MEPD, RERY, MPTR, BCSC, HistC, MRCL, MERC, MRED, MRES, dt):
     '''
     Marginal cost of production of non renewable resources.
 
@@ -230,7 +230,6 @@ def marginal_function(MEPD, RERY, MPTR, BCSC, HistC, MRCL, MERC, MRED, MRES, dt,
 
         # Write back new marginal cost values (same value for all regions)
         MERC[:, j, 0] = copy.deepcopy(P[j])
-        MERC[:, j, 0] = copy.deepcopy(MERCX[:, j, 0])
         
         # Sum resources. 
         HistCSUM = np.sum(HistC, axis=1)
@@ -249,7 +248,7 @@ def marginal_function(MEPD, RERY, MPTR, BCSC, HistC, MRCL, MERC, MRED, MRES, dt,
 # -----------------------------------------------------------------------------
 
 #@njit(fastmath=True) ## Doesn't work!
-def cost_curves(BCET, BCSC, MEWD, MEWG, MEWL, MEPD, MERC, MRCL, RERY, MPTR, MRED, MRES, rti, t2ti, erti, year, dt, MERCX):
+def cost_curves(BCET, BCSC, MEWD, MEWG, MEWL, MEPD, MERC, MRCL, RERY, MPTR, MRED, MRES, rti, t2ti, erti, year, dt):
     '''
     FTT: Power cost-supply curves routine.
     This calculates the cost of resources given the available supply.
@@ -369,7 +368,7 @@ def cost_curves(BCET, BCSC, MEWD, MEWG, MEWL, MEPD, MERC, MRCL, RERY, MPTR, MRED
 
         RERY, BCSC, HistC, MERC, MRED, MRES = \
                 marginal_function(
-                MEPD, RERY, MPTR, BCSC, HistC, MRCL, MERC, MRED, MRES, dt, MERCX
+                MEPD, RERY, MPTR, BCSC, HistC, MRCL, MERC, MRED, MRES, dt
                 )
 
 
@@ -384,8 +383,6 @@ def cost_curves(BCET, BCSC, MEWD, MEWG, MEWL, MEPD, MERC, MRCL, RERY, MPTR, MRED
                     BCET[r, j, 4] = \
                         BCET[r, j, 4] + \
                         (MERC[r, tech_to_resource[j], 0] - MRCL[r, tech_to_resource[j], 0]) * 3.6 / BCET[r, j, 13]
-                    # BCET[r, j, 4] = BCET[r, j, 4] + (MERCX[r, tech_to_resource[j], 0] - MRCL[r, tech_to_resource[j], 0]) * 3.6/BCET[r, j, 13]
-
                 # For renewable resources: interpolate MEPD into the cost curves.
                 # Decreasing capacity factor type of limit
                 elif(BCET[r, j, 11] == 0):
@@ -395,20 +392,17 @@ def cost_curves(BCET, BCSC, MEWD, MEWG, MEWL, MEPD, MERC, MRCL, RERY, MPTR, MRED
 
                     # Note: the curve is in the form of an inverse capacity factor in BCSC
                     X0 = MEPD[r, tech_to_resource[j], 0]/3.6 #PJ -> TWh
-                    if X0> 0.0:
+                    if X0 > 0.0:
                         Y0, Ind = interp(X, Y, X0, L)
                     MERC[r, tech_to_resource[j], 0] = 1.0/(Y0 + 0.000001)
-                    # TODO: SET Exog MERC
-                    # MERC[r, tech_to_resource[j], 0] = copy.deepcopy(MERCX[r, tech_to_resource[j], 0])
                     BCET[r, j, 10] = 1.0/(Y0 + 0.000001)         # We use an inverse here
-                    # BCET[r, j, 10] = copy.deepcopy(MERCX[r, tech_to_resource[j], 0])
                     # For variable renewables (e.g. wind, solar, wave)
                     # the overall (average) capacity factor decreases as new units have lower and lower CFs
 
-                    if(MEWG[r, j, 0] > 0.01 and Ind > 1 and X0 > 0):
+                    if(MEWG[r, j, 0] > 0.01 and Ind >= 1 and X0 > 0):
 
                         # Average capacity factor costs up to the point of use (integrate CSCurve divided by total use)
-                        CFvar[1:Ind + 1] = 1.0/(Y[1:Ind + 1] + 0.000001)/(Ind)
+                        CFvar[1:Ind + 1] = 1.0 / (Y[1:Ind + 1] + 0.000001) / (Ind)
                         CFvar2 = sum(CFvar[1:Ind + 1])
                         if CFvar2 > 0:
 
@@ -418,8 +412,6 @@ def cost_curves(BCET, BCSC, MEWD, MEWG, MEWL, MEPD, MERC, MRCL, RERY, MPTR, MRED
                     # Fix: CSP is more efficient than PV by a factor 2
                     if j == 19 :
                         BCET[r, j, 10] = 1.0/(Y0 + 0.0000001) * 2.0
-
-                        # BCET[r, j, 10] = MERCX[r, tech_to_resource[j], 0] * 2.0
 
                 # Increasing investment term type of limit
                 elif(BCET[r, j, 11] == 3):
@@ -431,11 +423,8 @@ def cost_curves(BCET, BCSC, MEWD, MEWG, MEWL, MEPD, MERC, MRCL, RERY, MPTR, MRED
                     X0 = MEPD[r, tech_to_resource[j], 0] / 3.6 #PJ -> TWh
                     if X0> 0.0:
                         Y0, I = interp(X, Y, X0, L)
-                    MERC[r, tech_to_resource[j], 0] = copy.deepcopy(Y0)
-                    # TODO: SET Exog MERC
-                    # MERC[r, tech_to_resource[j], 0] = copy.deepcopy(MERCX[r, tech_to_resource[j], 0])
-                    BCET[r, j, 2] = copy.deepcopy(Y0)
-                    # BCET[r, j, 2] = copy.deepcopy(MERCX[r, tech_to_resource[j], 0])
+                    MERC[r, tech_to_resource[j], 0] = Y0
+                    BCET[r, j, 2] = Y0
 
     # Add REN resources left in MRED, MRES
     

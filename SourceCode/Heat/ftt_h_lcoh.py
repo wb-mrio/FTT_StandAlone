@@ -8,7 +8,7 @@ Created on Wed Feb 21 11:54:30 2024
 ftt_h_lcoh.py
 =========================================
 Domestic Heat FTT module.
-####################################
+
 
 This is the main file for FTT: Heat, which models technological
 diffusion of domestic heat technologies due to consumer decision making. 
@@ -22,9 +22,8 @@ Local library imports:
     Support functions:
 
     - `divide <divide.html>`__
-        Bespoke element-wise divide which replaces divide-by-zeros with zeros
-    - `estimation <econometrics_functions.html>`__
-        Predict future values according to the estimated coefficients.
+        Element-wise divide which replaces divide-by-zeros with zeros
+
 
 Functions included:
     - get_lcoh
@@ -43,7 +42,7 @@ import numpy as np
 # Local library imports
 from SourceCode.support.divide import divide
 
-# %% LOCH
+# %% LCOH
 # --------------------------------------------------------------------------
 # -------------------------- LCOH function ---------------------------------
 # --------------------------------------------------------------------------

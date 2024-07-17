@@ -4,3 +4,4 @@ __pycache__/
 *$py.class
 *.pickle
 Output/Scenarios.json
+settings.ini

@@ -245,7 +245,7 @@ def directories_setup():
     dir_file = os.path.dirname(os.path.realpath(__file__))
     dir_root = Path(dir_file).parents[1] 
     dir_inputs = os.path.join(dir_root, "Inputs")  
-    dir_masterfiles = os.path.join(dir_root, "Inputs\_MasterFiles")  
+    dir_masterfiles = os.path.join(dir_root, "Inputs", "_MasterFiles")
     # Classifications
 
     titles_file = 'classification_titles.xlsx'

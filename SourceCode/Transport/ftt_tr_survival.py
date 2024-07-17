@@ -86,7 +86,7 @@ def survival_function(data, time_lag, histend, year, titles):
     Returns
     ----------
     data: dictionary of NumPy arrays
-        Model variables for the given year of solution
+        Model variables for the current year
     """
         
     survival_ratio = get_survival_ratio(data['TESF'])

@@ -35,7 +35,6 @@ Functions included:
 """
 # Standard library imports
 from math import sqrt
-import copy
 import warnings
 
 # Third party imports
@@ -60,7 +59,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
     data: dictionary of NumPy arrays
         Model variables for the given year of solution
     time_lag: type
-        Description
+        Model variables in previous year
     iter_lag: type
         Description
     titles: dictionary of lists
@@ -92,9 +91,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
     sector = 'residential'
     #sector_index = titles['Sectors_short'].index(sector)
 
-    data['PRSC14'] = copy.deepcopy(time_lag['PRSC14'] )
+    data['PRSC14'] = np.copy(time_lag['PRSC14'] )
     if year == 2014:
-        data['PRSC14'] = copy.deepcopy(data['PRSCX'])
+        data['PRSC14'] = np.copy(data['PRSCX'])
 
     # Calculate the LCOH for each heating technology
     # Call the function
@@ -123,7 +122,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
                 # Market shares (based on useful energy demand)
                 data['HEWS'][r, :, 0] = data['HEWG'][r, :, 0] / data['RHUD'][r, 0, 0]
                 # Shares of final energy demand (without electricity)
-                #data['HESR'][:, :, 0] = copy.deepcopy(data['HEWF'][:, :, 0])
+                #data['HESR'][:, :, 0] = data['HEWF'][:, :, 0]
                 #data['HESR'][r, :, 0] = data['HEWF'][r, :, 0] * data['BHTC'][r, :, c4ti["19 RES calc"]] / np.sum(data['HEWF'] * data['BHTC'][r, :, c4ti["19 RES calc"]])
 
                 # CORRECTION TO MARKET SHARES
@@ -178,7 +177,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
         # If switch is set to 1, then an exogenous price rate is used
         # Otherwise, the price rates are set to endogenous
 
-        #data['HFPR'][:, :, 0] = copy.deepcopy(data['HFFC'][:, :, 0])
+        #data['HFPR'][:, :, 0] = data['HFFC'][:, :, 0]
 
         # Now transform price rates by fuel to price rates by boiler
         #data['HEWP'][:, :, 0] = np.matmul(data['HFFC'][:, :, 0], data['HJET'][0, :, :].T)
@@ -213,7 +212,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
 
         # First, fill the time loop variables with the their lagged equivalents
         for var in time_lag.keys():
-            data_dt[var] = copy.deepcopy(time_lag[var])
+            data_dt[var] = np.copy(time_lag[var])
 
         
         # Create the regulation variable
@@ -465,7 +464,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
             data, hewi_t = get_sales(data, data_dt, time_lag, titles, dt, t, endo_eol)
 
             # TODO: HEWP = HFPR not HFFC
-            #data['HFPR'][:, :, 0] = copy.deepcopy(data['HFFC'][:, :, 0])
+            #data['HFPR'][:, :, 0] = data['HFFC'][:, :, 0]
 
             data['HEWP'][:, 0, 0] = data['HFFC'][:, 4, 0]
             data['HEWP'][:, 1, 0] = data['HFFC'][:, 4, 0]
@@ -504,24 +503,27 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
             data['HEWW'][0, :, 0] = data_dt['HEWW'][0, :, 0] + dw
 
             # Copy over the technology cost categories that do not change (all except prices which are updated through learning-by-doing below)
-            data['BHTC'] = copy.deepcopy(data_dt['BHTC'])
+            data['BHTC'] = np.copy(data_dt['BHTC'])
 
             # Learning-by-doing effects on investment and efficiency
             for b in range(len(titles['HTTI'])):
 
                 if data['HEWW'][0, b, 0] > 0.0001:
 
-                    data['BHTC'][:, b, c4ti['1 Inv cost mean (EUR/Kw)']] = (data_dt['BHTC'][:, b, c4ti['1 Inv cost mean (EUR/Kw)']]  \
-                                                                             *(1.0 + data['BHTC'][:, b, c4ti['7 Investment LR']] * dw[b]/data['HEWW'][0, b, 0]))
-                    data['BHTC'][:, b, c4ti['2 Inv Cost SD']] = (data_dt['BHTC'][:, b, c4ti['2 Inv Cost SD']]  \
-                                                                             *(1.0 + data['BHTC'][:, b, c4ti['7 Investment LR']] * dw[b]/data['HEWW'][0, b, 0]))
-                    data['BHTC'][:, b, c4ti['9 Conversion efficiency']] = (data_dt['BHTC'][:, b, c4ti['9 Conversion efficiency']] \
-                                                                            * 1.0 / (1.0 + data['BHTC'][:, b, c4ti['20 Efficiency LR']] * dw[b]/data['HEWW'][0, b, 0]))
+                    data['BHTC'][:, b, c4ti['1 Inv cost mean (EUR/Kw)']] = (
+                            data_dt['BHTC'][:, b, c4ti['1 Inv cost mean (EUR/Kw)']]  
+                            * (1.0 + data['BHTC'][:, b, c4ti['7 Investment LR']] * dw[b] / data['HEWW'][0, b, 0]))
+                    data['BHTC'][:, b, c4ti['2 Inv Cost SD']] = (
+                            data_dt['BHTC'][:, b, c4ti['2 Inv Cost SD']] 
+                            * (1.0 + data['BHTC'][:, b, c4ti['7 Investment LR']] * dw[b] / data['HEWW'][0, b, 0]))
+                    data['BHTC'][:, b, c4ti['9 Conversion efficiency']] = (
+                            data_dt['BHTC'][:, b, c4ti['9 Conversion efficiency']] 
+                            * 1.0 / (1.0 + data['BHTC'][:, b, c4ti['20 Efficiency LR']] * dw[b]/data['HEWW'][0, b, 0]))
 
 
-            #Total investment in new capacity in a year (m 2014 euros):
-              #HEWI is the continuous time amount of new capacity built per unit time dI/dt (GW/y)
-              #BHTC(:,:,1) are the investment costs (2014Euro/kW)
+            # Total investment in new capacity in a year (m 2014 euros):
+            # HEWI is the continuous time amount of new capacity built per unit time dI/dt (GW/y)
+            # BHTC are the investment costs (2014Euro/kW)
             data['HWIY'][:,:,0] = data['HWIY'][:,:,0] + data['HEWI'][:,:,0]*dt*data['BHTC'][:,:,0]/data['PRSC14'][:,0,0,np.newaxis]
             # Save investment cost for front end
             data["HWIC"][:, :, 0] = data["BHTC"][:, :, c4ti['1 Inv cost mean (EUR/Kw)']]
@@ -538,7 +540,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, specs):
             #Update time loop variables:
             for var in data_dt.keys():
 
-                data_dt[var] = copy.deepcopy(data[var])
+                data_dt[var] = np.copy(data[var])
 
 
     return data

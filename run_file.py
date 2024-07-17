@@ -4,11 +4,10 @@
 run_file.py
 =========================================
 Run file for FTT Stand alone.
-#############################
 
 
 Programme calls the FTT stand-alone model run class, and executes model run.
-Call this file from the command line (or terminal) to run FTT Stand Alone.
+Run this script from Spyder or VS Code directly, or call it from the command line (or terminal) to run FTT Stand Alone.
 
 Local library imports:
 

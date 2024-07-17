@@ -59,7 +59,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
     data: dictionary of NumPy arrays
         Model variables for the given year of solution
     time_lag: type
-        Description
+        Model variables in previous year
     iter_lag: type
         Description
     titles: dictionary of lists
