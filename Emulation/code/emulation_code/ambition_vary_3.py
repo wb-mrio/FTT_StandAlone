@@ -113,16 +113,16 @@ def uncertainty_inputs(scenario_levels = scenario_levels):
     solar_update = bcet['Unnamed: 1'] == 'Solar PV'
     bcet.loc[solar_update, 16] = scenario_levels['learning_solar'] # learning rate update
     bcet.loc[solar_update, 9] = scenario_levels['lifetime_solar'] # lifetime update
-    bcet.loc[solar_update, 10] = scenario_levels['solar_lead'] # leadtime update
+    bcet.loc[solar_update, 10] = scenario_levels['lead_solar'] # leadtime update
     # wind
     onshore_update = bcet['Unnamed: 1'] == 'Onshore'
     bcet.loc[onshore_update, 16] = scenario_levels['learning_wind'] # learning rate update
     bcet.loc[onshore_update, 9] = scenario_levels['lifetime_wind'] # lifetime update
-    bcet.loc[onshore_update, 10] = scenario_levels['onshore_lead'] # leadtime update
+    bcet.loc[onshore_update, 10] = scenario_levels['lead_onshore'] # leadtime update
     offshore_update = bcet['Unnamed: 1'] == 'Offshore'
     bcet.loc[offshore_update, 16] = scenario_levels['learning_wind']  # learning rate update
     bcet.loc[offshore_update, 9] = scenario_levels['lifetime_wind'] # lifetime update
-    bcet.loc[offshore_update, 10] = scenario_levels['offshore_lead'] # leadtime update
+    bcet.loc[offshore_update, 10] = scenario_levels['lead_offshore'] # leadtime update
     
     # gas price
     gas_update = bcet['Unnamed: 1'] == 'CCGT'
@@ -186,27 +186,57 @@ def uncertainty_inputs(scenario_levels = scenario_levels):
         country_df.to_csv(folder_path + '/' + f'{sheet_out}.csv', index = False, header = False)
         print(f'Sheet {sheet_out} saved to {folder_path}')
 
-#%%
-# function for updating background variables not in BCET
-regions = titles['RTI_short']
-for reg in range(0, len(regions)):
-    reg_short = titles['RTI_short'][reg]
-    reg_long = titles['RTI'][reg]
-
-    mewd_base = pd.read_csv(f'Inputs/{base_scenario}/FTT-P/MEWDX_{reg_short}.csv')
-    mewd_el_lower = mewd_base.iloc[7, 1:] * 0.9 # electricity demand
-    mewd_el_upper = mewd_base.iloc[7, 1:] * 1.1 # electricity demand
-
-    mewd_el_diff = mewd_el_upper - mewd_el_lower
-    mewd_el_update = mewd_el_lower + (mewd_el_diff * scenario_levels['elec_demand'][0]) ## this needs to be general
+#%% function for updating background variables not in BCET
+def uncertainty_inputs_non_bcet(scenario_levels = scenario_levels):
+    scenario_levels = scenario_levels
+    scen_code = scenario_levels['ID']   
 
 
-    # update demand
-    mewd_updated = mewd_base.copy()
-    mewd_updated.iloc[7, 1:] = mewd_el_update
+    for reg in range(0, len(titles['RTI_short'])):
 
-    mewd_updated.to_csv(f'Inputs/{scen_code}/FTT-P/MEWDX_{reg_short}.csv', index = False, header = False)
-    print(f'Sheet MEWDX_{reg_short} saved to {scen_code}/FTT-P')
+        ### Electricity demand
+        reg_short = titles['RTI_short'][reg]
+        reg_long = titles['RTI'][reg]
+        
+
+        mewd_base = pd.read_csv(f'Inputs/{base_scenario}/FTT-P/MEWDX_{reg_short}.csv')
+        mewd_el_lower = mewd_base.iloc[7, 1:] * 0.9 # electricity demand
+        mewd_el_upper = mewd_base.iloc[7, 1:] * 1.1 # electricity demand
+
+        mewd_el_diff = mewd_el_upper - mewd_el_lower
+        mewd_el_update = mewd_el_lower + (mewd_el_diff * scenario_levels['elec_demand']) ## this needs to be general
+
+
+        # update demand
+        mewd_updated = mewd_base.copy()
+        mewd_updated.iloc[7, 1:] = mewd_el_update
+
+        mewd_updated.to_csv(f'Inputs/{scen_code}/FTT-P/MEWDX_{reg_short}.csv', index = False, header = False)
+        print(f'Sheet MEWDX_{reg_short} saved to {scen_code}/FTT-P')
+
+
+        ### Technical potential
+        tech_base = pd.read_csv(f'Inputs/{base_scenario}/General/MCSC_{reg_short}.csv')
+        tech_lower = tech_base.iloc[1:, 3] * 0.8 # technical potential
+        tech_upper = tech_base.iloc[1:, 3] * 1.2 # technical potential
+
+        tech_diff = tech_upper - tech_lower
+        tech_update = tech_lower + (tech_diff * scenario_levels['tech_potential']) 
+
+        # update tech potential
+        tech_updated = tech_base.copy()
+        tech_updated.iloc[1:, 3] = tech_update
+
+        gen_dir_path = f'Inputs/{scen_code}/General'
+
+        # Create the directory if it doesn't exist
+        os.makedirs(gen_dir_path, exist_ok=True)
+
+        tech_updated.to_csv(f'Inputs/{scen_code}/General/MCSC_{reg_short}.csv', index = False, header = False)
+        print(f'Sheet MCSC_{reg_short} saved to {scen_code}/General')
+
+
+
 
 #%% Produces input master sheet for ambition adjusted inputs - reg only
 
@@ -224,6 +254,12 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
     europe_plus = ['BE', 'DK', 'DE', 'EL', 'ES','FR','IE','IT','LX','NL','AT',
                    'PT','FI','SW','UK','CZ','EN','CY','LV','LT','HU','MT','PL',
                    'SI','SK','BG','RO','HR', 'NO','CH']
+    
+    global_n_regions =  ['BE', 'DK', 'DE', 'EL', 'ES', 'FR', 'IE', 'IT', 'LX', 
+                        'NL', 'AT', 'PT', 'FI', 'SW', 'UK', 'CZ', 'EN', 'CY', 'LV', 'LT',
+                        'HU', 'MT', 'PL', 'SI', 'SK', 'BG', 'RO', 'NO', 'CH', 'IS',
+                        'HR', 'TR', 'MK', 'US', 'JA', 'CA', 'AU', 'NZ', 'RS', 'RA',
+                        'CN'] # This is not DRY
     
     if 'EA' in regions:
             # Add the additional countries to the dictionary with the same value as 'E+'
@@ -244,8 +280,10 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
                 country = var_df['Country'].iloc[row]
                 
                 ambition = scenario_levels[country + '_reg']
+            elif var_df['Country'].iloc[row] in global_n_regions:
+                ambition = scenario_levels['RGN_reg']
             else:
-                ambition = scenario_levels['ROW_reg'] 
+                ambition = scenario_levels['RGS_reg']
             
             meta = var_df.iloc[row, 0:5]
             upper_bound = var_df.iloc[row]
@@ -330,11 +368,17 @@ def region_ambition_cp(scenario_levels = scenario_levels, cp_df = cp_df): # take
                    'PT','FI','SW','UK','CZ','EN','CY','LV','LT','HU','MT','PL',
                    'SI','SK','BG','RO','HR', 'NO','CH']
     
-    if 'E+' in regions:
+    global_n_regions =  ['BE', 'DK', 'DE', 'EL', 'ES', 'FR', 'IE', 'IT', 'LX', 
+                        'NL', 'AT', 'PT', 'FI', 'SW', 'UK', 'CZ', 'EN', 'CY', 'LV', 'LT',
+                        'HU', 'MT', 'PL', 'SI', 'SK', 'BG', 'RO', 'NO', 'CH', 'IS',
+                        'HR', 'TR', 'MK', 'US', 'JA', 'CA', 'AU', 'NZ', 'RS', 'RA',
+                        'CN'] # This is not DRY
+    
+    if 'EA' in regions:
             # Add the additional countries to the dictionary with the same value as 'E+'
         regions = regions + europe_plus
         for region in europe_plus:
-            scenario_levels.loc[region + '_cp'] = scenario_levels.loc['E+_cp']
+            scenario_levels.loc[region + '_cp'] = scenario_levels.loc['EA_cp']
   
     # create adjusted cp data frame
     cp_df = cp_df.rename(columns={'Unnamed: 0': ''})
@@ -344,8 +388,10 @@ def region_ambition_cp(scenario_levels = scenario_levels, cp_df = cp_df): # take
         # assign ambition levels
         if country in regions:
             ambition = scenario_levels.loc[country + '_cp'] 
+        elif country in global_n_regions:
+            ambition = scenario_levels['RGN_cp']
         else:
-            ambition = scenario_levels.loc['ROW_cp']
+            ambition = scenario_levels['RGS_cp']
         
         
         # Multiply all values in the row (except country col and 2010) by the ambition value
@@ -375,6 +421,7 @@ for i in tqdm(range(0, len(scenario_levels))):
         region_ambition_reg(scenario_levels=scenario_levels.iloc[i])
         region_ambition_cp(scenario_levels = scenario_levels.iloc[i])
         uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
+        uncertainty_inputs_non_bcet(scenario_levels=scenario_levels.iloc[i])
     
 
 #%% ## Possible developments

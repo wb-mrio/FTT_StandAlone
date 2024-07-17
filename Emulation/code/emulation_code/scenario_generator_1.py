@@ -129,12 +129,14 @@ def scen_generator(Nscens, regions, scen_code = 'S3'):
     
     # Saving data for recreation of scenarios
     # Specify the file path where you want to save the CSV file
-    csv_file = f'Emulation/data/scenarios/{scen_code}_scenario_levels.csv'
+    csv_file = os.path.join(root_directory_path, 'Emulation', 'data', 'scenarios', f'{scen_code}_scenario_levels.csv')
     scenario_levels.to_csv(csv_file, index = False)
     print(f'Data for {scen_code} scenarios saved to {csv_file}')
     
     return scenario_levels
 
 #%% Example scen_generator, check csv is empty first, this could do with automating
-scenario_levels = scen_generator(Nscens=201, regions= ['E+','US', 'CN', 'IN', 'ROW'])
+scenario_levels = scen_generator(Nscens=401, regions = ['EA','US', 'CN', 'IN', 'BR', 'RGS', 'RGN'])
 
+
+# %%

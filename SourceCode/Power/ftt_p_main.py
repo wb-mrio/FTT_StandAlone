@@ -58,6 +58,7 @@ Functions included:
 
 # Third party imports
 import numpy as np
+import copy
 
 # Local library imports
 from SourceCode.support.divide import divide
