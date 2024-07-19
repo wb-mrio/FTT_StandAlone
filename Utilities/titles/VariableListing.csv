@@ -298,7 +298,6 @@ IXS5,FTT-IH-OIS exogenous share changes,%,RTI,ITTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
 RVKZ,FTT-Fr Demand,Million Tkm,RTI,NA,NA,TIME,FTT-Fr,,2018,1995,,,Y
 RFLZ,FTT-Fr Number in Fleet,veh,RTI,NA,NA,TIME,FTT-Fr,,2019,1995,,,Y
 ZEWS,FTT-Fr Market Shares,%,RTI,FTTI,NA,TIME,FTT-Fr,,2019,2001,,Y,Y
-RVEH,FTT-Fr Historical Vehicle Sales,k/y,RTI,NA,NA,TIME,FTT-Fr,,2019,1995,,,
 ZREG,FTT-Fr regulations,,RTI,FTTI,NA,TIME,FTT-Fr,,2019,2018,,,Y
 ZWSA,FTT-Fr Exogenous market share,%,RTI,FTTI,NA,TIME,FTT-Fr,,2019,2018,,,Y
 ZTVT,FTT-Fr vehicle tax,$,RTI,FTTI,NA,TIME,FTT-Fr,,2019,2018,,,Y
@@ -308,9 +307,7 @@ RZCO,FTT-Fr Registration carbon tax,$/(gCO2/km),RTI,NA,NA,TIME,FTT-Fr,,2019,2018
 ZCET,FTT-Fr Matrix of Cost Components,Various,RTI,FTTI,C6TI,NA,FTT-Fr,,,,,,
 ZEWA,FTT-Fr Substitution matrix,,NA,FTTI,FTTI,NA,FTT-Fr,,,,,,
 ZEWB,FTT-Fr Spillover matrix,,NA,FTTI,FTTI,NA,FTT-Fr,,,,,,
-RVHH,FTT-Fr Sales History,,RTI,NA,NA,TIME,FTT-Fr,,2019,1990,,,
 ZESF,FTT-Fr Survival function,,RTI,NA,NA,TIME,FTT-Fr,,2019,1990,,,
-ZSFD,FTT-Fr Survival Function Age Derivative,,RTI,NA,NA,TIME,FTT-Fr,,2019,1990,,,
 ZLOD,FTT-Fr Load Factors,t/v,RTI,LODZ,NA,NA,FTT-Fr,,,,,,
 ZSLR,FTT-Fr Small large ratio,ratio,RTI,NA,NA,NA,FTT-Fr,,,,,,
 ZJTT,FTT-Fr Tech Change Function,,RTI,NA,NA,TIME,FTT-Fr,,2019,1990,,,
@@ -332,7 +329,7 @@ ZEST,FTT-Fr Service by Technology (MTkm),MTkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
 ZJEF,FTT-Fr Fuel use,ktoe,RTI,NA,NA,TIME,FTT-Fr,,,2001,,,Y
 ZJNJ,FTT-Fr Fuel use by fuel type,ktoe,RTI,JTI,NA,TIME,FTT-Fr,,,2001,,,
 ZEWE,FTT-Fr Emissions,MTCO2,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,Y
-ZEWW,FTT-Fr Cumulative Capacities,No. vehicles,NA,FTTI,NA,TIME,FTT-Fr,,,2001,,,Y
+ZEWW,FTT-Fr Cumulative Capacities,No. vehicles,NA,FTTI,NA,TIME,FTT-Fr,,2018,2018,,,Y
 ZWIY,FTT-Fr Investment by Technology (monetary value),$,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,Y
 ZGAM,FTT-Fr Gamma values,,RTI,FTTI,NA,TIME,FTT-Fr,,,2014,,,
 noit,Number of iterations per year,,NA,NA,NA,NA,General,,,2000,,,

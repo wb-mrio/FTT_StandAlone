@@ -265,7 +265,7 @@ def costs_to_gam(data, var, reg, timeline_dict, dims, out_dir):
     """
 
     costvar_to_gam_dict = {"BTTC": "TGAM", "BHTC": "HGAM", "ZCET": "ZGAM"}
-    gamma_index = {"BTTC": 14, "BHTC": 13, "ZCET": 14}
+    gamma_index = {"BTTC": 14, "BHTC": 13, "ZCET": 13}
     gamma_row_titles = {"BTTC": "VTTI", "BHTC": "HTTI", "ZCET": "FTTI"}
     gamma_var = costvar_to_gam_dict[var]
     gamma_1D = data[gamma_index[var]]

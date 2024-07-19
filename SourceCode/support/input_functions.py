@@ -130,10 +130,8 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                     var_tl = list(range(int(forstart[var]), timeline[-1]+1))
                     var_tl_fit = [year for year in var_tl if year in timeline]
                     var_tl_inds = [i for i, year in enumerate(timeline) if year in var_tl]
-                    #print(csv.columns, var)
                     csv.columns = [int(year) for year in csv.columns]
 
-                    #print(file)
                     read = csv.loc[:, var_tl]
 
                 else:
@@ -151,8 +149,6 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                         # Distinction whether the last dimension is time or not
                         if dims_length[3] > 1:
                             try:
-                                print(scen)
-                                print(var)
                                 data[scen][var][reg_index, i, 0, var_tl_inds[0]:var_tl_inds[-1]+1] = read.iloc[i][var_tl_fit]
                             except (IndexError, ValueError) as e:
                                 input_functions_message(scen, var, dims, read, var_tl_fit, reg_index)
