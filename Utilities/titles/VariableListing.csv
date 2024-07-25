@@ -313,12 +313,13 @@ ZSLR,FTT-Fr Small large ratio,ratio,RTI,NA,NA,NA,FTT-Fr,,,,,,
 ZJTT,FTT-Fr Tech Change Function,,RTI,NA,NA,TIME,FTT-Fr,,2019,1990,,,
 ZJET,FTT-Fr Technology to fuel user conversion matrix,,NA,FTTI,JTI,NA,FTT-Fr,,,,,,
 ZCEZ,FTT-Fr T-Scaling,,RTI,NA,NA,TIME,FTT-Fr,,,2019,,,
-ZTLC,FTT-Fr LCOF without policy,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZTLD,FTT-Fr LCOF sd,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
-ZTTC,FTT-Fr LCOF with policy,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZTTD,FTT-Fr LCOF with policy sd,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
-ZTLL,FTT-Fr LCOF logarithmic space with gamma,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
-ZTDD,FTT-Fr log space with gamma sd,2010 Euros,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
+ZTLC,FTT-Fr LCOF without policy,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,Y
+ZTLD,FTT-Fr LCOF sd,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
+ZTTC,FTT-Fr LCOF with policy,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,Y
+ZTTD,FTT-Fr LCOF with policy sd,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
+ZTLL,FTT-Fr LCOF logarithmic space with gamma,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
+ZTDD,FTT-Fr log space with gamma sd,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
+ZEGC,FTT-Fr LCOF with policy and gamma,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZEWK,FTT-Fr Capacity by technology (number of vehicles),No. vehicles,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZEWI,FTT-Fr New sales,No. vehicles,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZESD,FTT-Fr Difference between small and large truck shares,%,RTI,LODZ,NA,TIME,FTT-Fr,,,2001,,,
@@ -331,7 +332,7 @@ ZJNJ,FTT-Fr Fuel use by fuel type,ktoe,RTI,JTI,NA,TIME,FTT-Fr,,,2001,,,
 ZEWE,FTT-Fr Emissions,MTCO2,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,Y
 ZEWW,FTT-Fr Cumulative Capacities,No. vehicles,NA,FTTI,NA,TIME,FTT-Fr,,2018,2018,,,Y
 ZWIY,FTT-Fr Investment by Technology (monetary value),$,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,Y
-ZGAM,FTT-Fr Gamma values,,RTI,FTTI,NA,TIME,FTT-Fr,,,2014,,,
+ZGAM,FTT-Fr Gamma values,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2014,,,
 noit,Number of iterations per year,,NA,NA,NA,NA,General,,,2000,,,
 IHF1,FTT-IH-CHI final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIME,FTT-IH-CHI,,,2000,,,
 IHF2,FTT-IH-FBT final fuel demand for industrial heat (ktoe),ktoe,RTI,JTI,NA,TIME,FTT-IH-FBT,,,2000,,,

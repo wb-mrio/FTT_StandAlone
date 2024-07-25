@@ -176,21 +176,21 @@ def get_lcof(data, titles):
         dTLCOF=dLCOF
 
         # Introduce Gamma Values
+        TLCOFG = TLCOF * (1 + data['ZGAM'][r, :, 0])
 
         # Convert costs into logarithmic space - applying a log-normal distribution
         LTLCOF = np.log10((TLCOF**2)/np.sqrt((dTLCOF**2)+(TLCOF**2))) + data['ZGAM'][r, :, 0]
 
         dLTLCOF = np.sqrt(np.log10(1+(dTLCOF**2)/(TLCOF**2)))
 
-        # Convert LCOF from 2012 dollars to 2010 Euros (factor of 1.33/1.0529)
-
-        data['ZTLC'][r, :, 0] = LCOF*1.263
-        data['ZTLD'][r, :, 0] = dLCOF*1.263
-        data['ZTTC'][r, :, 0] = TLCOF*1.263
-        data['ZTTD'][r, :, 0] = dTLCOF*1.263
-        data['ZTLL'][r, :, 0] = LTLCOF*1.263
-        data['ZTDD'][r, :, 0] = dLTLCOF*1.263
-
+        data['ZTLC'][r, :, 0] = LCOF        # LCOF without policy
+        data['ZTLD'][r, :, 0] = dLCOF       # LCOF without policy SD
+        data['ZTTC'][r, :, 0] = TLCOF       # LCOF with policy
+        data['ZTTD'][r, :, 0] = dTLCOF      # LCOF with policy SD
+        data['ZEGC'][r, :, 0] = TLCOFG      # LCOF with policy and gamma
+        data['ZTLL'][r, :, 0] = LTLCOF      # LCOF log space with policy and gamma
+        data['ZTDD'][r, :, 0] = dLTLCOF     # LCOF log space with policy SD
+        
         # Vehicle price components for front end ($/veh)
         data["ZWIC"][r, :, 0] = zcet[:, c6ti['1 Purchase cost (USD/veh)']] \
                                 + data["ZTVT"][r, :, 0] \

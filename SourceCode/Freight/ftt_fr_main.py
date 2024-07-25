@@ -205,8 +205,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                 for b1 in range(len(titles['FTTI'])):
 
                     if  not (data_dt['ZEWS'][r, b1, 0] > 0.0 and
-                             data_dt['ZTLL'][r, b1, 0] != 0.0 and
-                             data_dt['ZTDD'][r, b1, 0] != .0):
+                             data_dt['ZEGC'][r, b1, 0] != 0.0 and
+                             data_dt['ZTTD'][r, b1, 0] != .0):
                         continue
 
                     S_i = data_dt['ZEWS'][r, b1, 0]
@@ -214,8 +214,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                     for b2 in range(b1):
 
                         if  not (data_dt['ZEWS'][r, b2, 0] > 0.0 and
-                                 data_dt['ZTLL'][r, b2, 0] != 0.0 and
-                                 data_dt['ZTDD'][r, b2, 0] != 0.0):
+                                 data_dt['ZEGC'][r, b2, 0] != 0.0 and
+                                 data_dt['ZTTD'][r, b2, 0] != 0.0):
                             continue
 
 
@@ -225,10 +225,10 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                         Aki = data['ZEWA'][0, b2, b1] * data['ZCET'][r, b1, c6ti['15 Turnover rate (1/y)']]
 
                         # Propagating width of variations in perceived costs
-                        dFik = sqrt(2) * sqrt((data_dt['ZTDD'][r, b1, 0]*data_dt['ZTDD'][r, b1, 0] + data_dt['ZTDD'][r, b2, 0]*data_dt['ZTDD'][r, b2, 0]))
+                        dFik = sqrt(2) * sqrt((data_dt['ZTTD'][r, b1, 0]*data_dt['ZTTD'][r, b1, 0] + data_dt['ZTTD'][r, b2, 0]*data_dt['ZTTD'][r, b2, 0]))
 
                         # Consumer preference incl. uncertainty
-                        Fik = 0.5*(1 + np.tanh(1.25*(data_dt['ZTLL'][r, b2, 0]-data_dt['ZTLL'][r, b1, 0])/dFik))
+                        Fik = 0.5*(1 + np.tanh(1.25*(data_dt['ZEGC'][r, b2, 0]-data_dt['ZEGC'][r, b1, 0])/dFik))
 
                         # Preferences are then adjusted for regulations
                         F[b1, b2] = Fik*(1.0-isReg[r, b1]) * (1.0 - isReg[r, b2]) + isReg[r, b2]*(1.0-isReg[r, b1]) + 0.5*(isReg[r, b1]*isReg[r, b2])
