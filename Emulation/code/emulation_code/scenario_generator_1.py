@@ -52,13 +52,13 @@ def ambition_generator(regions = ['EA','US', 'CN', 'IN', 'BR', 'RGS', 'RGN'], Ns
     regions = regions
     
     # Latin hypercube sampling over 2 dimensions
-    sampler = qmc.LatinHypercube(d=2)
+    sampler = qmc.LatinHypercube(d=3)
 
     # Generate random values for each region evenly spaced
     df = pd.DataFrame()
     for region in regions:
         values = sampler.random(n = Nscens)
-        country_vals = pd.DataFrame(values, columns= [region + '_cp', region + '_reg'])
+        country_vals = pd.DataFrame(values, columns= [region + '_cp', region + '_phase', region + '_price'])
         df = pd.concat([df, country_vals], axis = 1)
         
         

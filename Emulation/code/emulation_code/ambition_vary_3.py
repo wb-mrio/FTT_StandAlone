@@ -70,7 +70,7 @@ for sheet_name in sheet_names:
 
 
 # load the comparison between baseline and ambitious scenario 
-compare_path = f'Emulation/data/{base_scenario}_{amb_scenario}_comparison.xlsx' # this input will not have varied Background vars
+compare_path = f'Emulation/data/comparisons/{base_scenario}_{amb_scenario}_comparison.xlsx' # this input will not have varied Background vars
 
 compare_data = {}
 # loops through sheets except BCET
@@ -82,9 +82,6 @@ for sheet_name in sheet_names[1:]:
 cp_path = f'Emulation/data/cp_ambit/{amb_scenario}_REPP.csv' # this input will not have varied Background vars, put outside?
 cp_df = pd.read_csv(cp_path)
 
-# Load demand data
-demand_path = f'Emulation/data/mewd_electricity_{amb_scenario}.xlsx'
-demand_df = pd.read_excel(demand_path)
 
 # Other background variables dealt with below
 
@@ -217,22 +214,26 @@ def uncertainty_inputs_non_bcet(scenario_levels = scenario_levels):
 
         ### Technical potential
         tech_base = pd.read_csv(f'Inputs/{base_scenario}/General/MCSC_{reg_short}.csv')
-        tech_lower = tech_base.iloc[1:, 3] * 0.8 # technical potential
-        tech_upper = tech_base.iloc[1:, 3] * 1.2 # technical potential
+        tech_lower = tech_base.iloc[:, 3] * 0.8 # technical potential
+        tech_upper = tech_base.iloc[:, 3] * 1.2 # technical potential
 
         tech_diff = tech_upper - tech_lower
         tech_update = tech_lower + (tech_diff * scenario_levels['tech_potential']) 
 
         # update tech potential
         tech_updated = tech_base.copy()
-        tech_updated.iloc[1:, 3] = tech_update
+        
+        renewables_indices = [9, 10, 11] # indices of renewables in the tech_base df
+        tech_updated.loc[renewables_indices, 3] = tech_update.iloc[renewables_indices].values
+        tech_updated.rename(columns={tech_updated.columns[0]: ''}, inplace=True)
+        
 
         gen_dir_path = f'Inputs/{scen_code}/General'
 
         # Create the directory if it doesn't exist
         os.makedirs(gen_dir_path, exist_ok=True)
 
-        tech_updated.to_csv(f'Inputs/{scen_code}/General/MCSC_{reg_short}.csv', index = False, header = False)
+        tech_updated.to_csv(f'Inputs/{scen_code}/General/MCSC_{reg_short}.csv', index = False, header = True)
         print(f'Sheet MCSC_{reg_short} saved to {scen_code}/General')
 
 
@@ -240,15 +241,15 @@ def uncertainty_inputs_non_bcet(scenario_levels = scenario_levels):
 
 #%% Produces input master sheet for ambition adjusted inputs - reg only
 
-def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, input_data = input_data): 
+def region_ambition_phase(amb_scenario = 'S3', scenario_levels = scenario_levels, input_data = input_data): 
     
     scenario_levels = scenario_levels.copy()
     amb_scenario = amb_scenario
     new_scen_code = scenario_levels.loc['ID'] 
-    sheet_names = ['MEWR', 'MEWT', 'MEFI']
+    sheet_names = ['MEWR']
     
-    # List comprehension to filter elements that end with '_reg' and remove suffix
-    regions = [country[:-4] for country in list(scenario_levels.index) if country.endswith('_reg')]
+    # List comprehension to filter elements that end with '_phase' and remove suffix
+    regions = [country[:-4] for country in list(scenario_levels.index) if country.endswith('_phase')]
 
     
     europe_plus = ['BE', 'DK', 'DE', 'EL', 'ES','FR','IE','IT','LX','NL','AT',
@@ -265,7 +266,7 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
             # Add the additional countries to the dictionary with the same value as 'E+'
         regions = regions + europe_plus
         for region in europe_plus:
-            scenario_levels.loc[region + '_reg'] = scenario_levels.loc['EA_reg']
+            scenario_levels.loc[region + '_phase'] = scenario_levels.loc['EA_phase']
         
 
     new_sheets = pd.DataFrame()
@@ -279,11 +280,11 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
             if var_df['Country'].iloc[row] in regions:
                 country = var_df['Country'].iloc[row]
                 
-                ambition = scenario_levels[country + '_reg']
+                ambition = scenario_levels[country + '_phase']
             elif var_df['Country'].iloc[row] in global_n_regions:
-                ambition = scenario_levels['RGN_reg']
+                ambition = scenario_levels['RGN_phase']
             else:
-                ambition = scenario_levels['RGS_reg']
+                ambition = scenario_levels['RGS_phase']
             
             meta = var_df.iloc[row, 0:5]
             upper_bound = var_df.iloc[row]
@@ -350,6 +351,114 @@ def region_ambition_reg(amb_scenario = 'S3', scenario_levels = scenario_levels, 
 
 
 ## the scenario comparison needs changing for general input
+#%% 
+def region_ambition_price(amb_scenario = 'S3', scenario_levels = scenario_levels, input_data = input_data): 
+    
+    scenario_levels = scenario_levels.copy()
+    amb_scenario = amb_scenario
+    new_scen_code = scenario_levels.loc['ID'] 
+    sheet_names = ['MEWT', 'MEFI']
+    
+    # List comprehension to filter elements that end with '_price' and remove suffix
+    regions = [country[:-4] for country in list(scenario_levels.index) if country.endswith('_price')]
+
+    
+    europe_plus = ['BE', 'DK', 'DE', 'EL', 'ES','FR','IE','IT','LX','NL','AT',
+                   'PT','FI','SW','UK','CZ','EN','CY','LV','LT','HU','MT','PL',
+                   'SI','SK','BG','RO','HR', 'NO','CH']
+    
+    global_n_regions =  ['BE', 'DK', 'DE', 'EL', 'ES', 'FR', 'IE', 'IT', 'LX', 
+                        'NL', 'AT', 'PT', 'FI', 'SW', 'UK', 'CZ', 'EN', 'CY', 'LV', 'LT',
+                        'HU', 'MT', 'PL', 'SI', 'SK', 'BG', 'RO', 'NO', 'CH', 'IS',
+                        'HR', 'TR', 'MK', 'US', 'JA', 'CA', 'AU', 'NZ', 'RS', 'RA',
+                        'CN'] # This is not DRY
+    
+    if 'EA' in regions:
+            # Add the additional countries to the dictionary with the same value as 'E+'
+        regions = regions + europe_plus
+        for region in europe_plus:
+            scenario_levels.loc[region + '_price'] = scenario_levels.loc['EA_price']
+        
+
+    new_sheets = pd.DataFrame()
+    
+    # create data frame of updates
+    for sheet_name in sheet_names:
+        var_df = compare_data[sheet_name]
+        var_df = var_df[var_df['Scenario'] == amb_scenario].reset_index(drop = True)
+        
+        for row in var_df.index: 
+            if var_df['Country'].iloc[row] in regions:
+                country = var_df['Country'].iloc[row]
+                
+                ambition = scenario_levels[country + '_price']
+            elif var_df['Country'].iloc[row] in global_n_regions:
+                ambition = scenario_levels['RGN_price']
+            else:
+                ambition = scenario_levels['RGS_price']
+            
+            meta = var_df.iloc[row, 0:5]
+            upper_bound = var_df.iloc[row]
+            new_level = (upper_bound[5:] * ambition) # this is currently not GEn, neg numbers
+            new_level_meta = pd.concat([meta, new_level])
+            new_level_meta = pd.DataFrame(new_level_meta.drop('Scenario')).T
+            new_sheets = pd.concat([new_sheets, new_level_meta], axis=0)
+
+    # implement updates to baseline
+    for sheet_name in sheet_names:
+        master = input_data[sheet_name]
+        
+        # read in dataframe of changes in new scenario, change name of df1 for better understanding
+        sheet_df = new_sheets[new_sheets['Sheet'] == sheet_name].reset_index(drop = True)
+        
+        
+        countries = pd.unique(sheet_df['Country']) # list of countries to loop through
+    
+        for country in countries:            
+
+            # Country dataframe to merge in
+            country_df = sheet_df[sheet_df['Country'] == country].reset_index(drop = True)
+            # drop meta data
+            country_df = country_df.drop(columns = list(country_df.columns[0:3]))
+            country_df = country_df.set_index('Technology')
+            
+            # update master df, create it and deal with instance of BE
+            if country != 'BE':
+                master_start = master[master.iloc[:, 0] == country].index[0]
+            else: 
+                master_start = 0
+            master_end = master_start + 25 # all rows until next country
+            
+            
+            master_df = master[master_start:master_end].reset_index(drop = True)
+            # Change title of first col to match up with current country_inputs
+            master_df.iloc[0, 0] = 'Technology'
+            master_df.columns = master_df.iloc[0]
+            master_df = master_df[1:]
+            master_df = master_df.set_index('Technology')
+            
+            # Update 
+            master_df.update(country_df)
+            updated_df = master_df.reset_index()
+            updated_df.columns = [''] + list(range(2001, 2101))
+            
+            # add tech numbers
+            for row in list(updated_df.index):
+                updated_df.loc[row, ''] = str(row + 1) + ' ' + updated_df.loc[row, '']
+                
+
+            # Export to input folders
+            folder_path = f'Inputs/{new_scen_code}/FTT-P'
+            sheet_out = sheet_name + '_' + country
+            
+            # Check if already exists
+            if not os.path.exists(folder_path):
+                # Create if new
+                os.makedirs(folder_path)
+                
+            updated_df.to_csv(folder_path + '/' + f'{sheet_out}.csv', index = False, header = True)
+            print(f'Sheet {sheet_out} saved to {folder_path}')
+    
 
 
 #%% Produces input sheet for ambition adjusted inputs for CP, unlike reg version, sheet is ready to be saved
@@ -360,7 +469,7 @@ def region_ambition_cp(scenario_levels = scenario_levels, cp_df = cp_df): # take
     new_scen_code = scenario_levels.loc['ID']
     cp_df = cp_df # load carbon price data frame
     
-    # List comprehension to filter elements that end with '_reg' and remove suffix
+    # List comprehension to filter elements that end with '_cp' and remove suffix
     regions = [country[:-3] for country in list(scenario_levels.index) if country.endswith('_cp')]
 
     
@@ -417,15 +526,17 @@ def region_ambition_cp(scenario_levels = scenario_levels, cp_df = cp_df): # take
 #%% Example usage
 master_path = "Inputs/_MasterFiles/FTT-P/FTT-P-24x71_2024_S0.xlsx"
 
-for i in tqdm(range(0, len(scenario_levels))):
-        region_ambition_reg(scenario_levels=scenario_levels.iloc[i])
-        region_ambition_cp(scenario_levels = scenario_levels.iloc[i])
-        uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
+for i in tqdm(range(0, len(scenario_levels[0:1]))):
+        #region_ambition_phase(scenario_levels=scenario_levels.iloc[i])
+        #region_ambition_price(scenario_levels=scenario_levels.iloc[i])
+        #region_ambition_cp(scenario_levels = scenario_levels.iloc[i])
+        #uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
         uncertainty_inputs_non_bcet(scenario_levels=scenario_levels.iloc[i])
     
 
 #%% ## Possible developments
 
+### URGENT - COMBINE PHASE AND PRICE FUNCITONS, NO REASON (BESIDES URGENCY) TO HAVE THEM SEPARATE
 # Need to think about MGAMs - value range is a little different
 # Also background variables - BCET etc. how do we vary these? Randomly, peturbation?
 # load_workbook is really slow and getting sheet names from another way, even manually, would be faster

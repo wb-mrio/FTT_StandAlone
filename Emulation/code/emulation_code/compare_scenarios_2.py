@@ -119,7 +119,7 @@ sheets_to_output = sheets_to_process  # Add the desired sheet names here
 for scen in scenario_list:
     # Create a new Excel writer object
     #with pd.ExcelWriter(f'Emulation/data/output_workbook_{scen}_24x71_2022.xlsx') as writer:
-    with pd.ExcelWriter(f'Emulation/data/output_workbook_{scen}.xlsx',  engine='openpyxl') as writer:
+    with pd.ExcelWriter(f'Emulation/data/comparisons/output_workbook_{scen}.xlsx',  engine='openpyxl') as writer:
 
         # Iterate through the sheet names and output list
         for sheet_name in dataframes[f"df_{scen}"]:
@@ -141,8 +141,8 @@ def compare_scenarios(scen_base, scen_compare, keep_equal = False):
     keep_equal = keep_equal
     
     # create file names
-    baseline = f'Emulation/data/output_workbook_{scen_base}.xlsx'
-    comparison = f'Emulation/data/output_workbook_{scen_compare}.xlsx'
+    baseline = f'Emulation/data/comparisons/output_workbook_{scen_base}.xlsx'
+    comparison = f'Emulation/data/comparisons/output_workbook_{scen_compare}.xlsx'
     
 
     # Get the sheet names from both workbooks
@@ -205,4 +205,6 @@ def export_compare(compare_output, output_base):
 #%% Action comparison and saved to Emulation data
 
 comp_0_3 = compare_scenarios('S0', 'S3')
-export_compare(comp_0_3, "Emulation/data/S0_S3_comparison.xlsx")
+export_compare(comp_0_3, "Emulation/data/comparisons/S0_S3_comparison.xlsx")
+
+# %%
