@@ -3,4 +3,4 @@
 *.db1
 *.mre
 !????X*.csv
-S3_*/
+batch_*

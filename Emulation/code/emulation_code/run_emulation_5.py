@@ -40,5 +40,43 @@ def scenario_list(file_path):
     return result_string
 
 #%%
+import configparser
+import subprocess
+
+def update_settings_file(scenarios, config_path='settings.ini'):
+    config = configparser.ConfigParser()
+    config.read(config_path)
+    
+    # Update the scenarios in the settings file
+    config['settings']['scenarios'] = ', '.join(scenarios)
+    
+    # Write the updated settings back to the file
+    with open(config_path, 'w') as configfile:
+        config.write(configfile)
+
+def run_simulation_script(script_path='run_simulation.py'):
+    # Run the script using subprocess
+    subprocess.run(['python', script_path], check=True)
+
+def main():
+    # Define all the scenarios you want to run
+    all_scenarios = [f"S{i}" for i in range(100)]
+    
+    # Batch size
+    batch_size = 50
+    
+    # Split the scenarios into batches and run them
+    for i in range(0, len(all_scenarios), batch_size):
+        batch = all_scenarios[i:i + batch_size]
+        update_settings_file(batch)
+        run_simulation_script()
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+#%%
 scens = scenario_list(file_path = 'C:\\Users\\ib400\\OneDrive - University of Exeter\\Desktop\\PhD\\GitHub\\FTT_StandAlone\\Inputs')
 
