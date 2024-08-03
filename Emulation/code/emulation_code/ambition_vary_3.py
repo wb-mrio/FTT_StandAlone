@@ -527,10 +527,10 @@ def region_ambition_cp(scenario_levels = scenario_levels, cp_df = cp_df): # take
 master_path = "Inputs/_MasterFiles/FTT-P/FTT-P-24x71_2024_S0.xlsx"
 
 for i in tqdm(range(0, len(scenario_levels[0:1]))):
-        #region_ambition_phase(scenario_levels=scenario_levels.iloc[i])
-        #region_ambition_price(scenario_levels=scenario_levels.iloc[i])
-        #region_ambition_cp(scenario_levels = scenario_levels.iloc[i])
-        #uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
+        region_ambition_phase(scenario_levels=scenario_levels.iloc[i])
+        region_ambition_price(scenario_levels=scenario_levels.iloc[i])
+        region_ambition_cp(scenario_levels = scenario_levels.iloc[i])
+        uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
         uncertainty_inputs_non_bcet(scenario_levels=scenario_levels.iloc[i])
     
 
