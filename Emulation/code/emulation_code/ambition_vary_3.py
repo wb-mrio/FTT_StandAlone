@@ -54,7 +54,6 @@ sheet_names = ['BCET', 'MEWT', 'MEWR', 'MEFI']
 
 base_scenario = 'S0'
 amb_scenario = 'S3'
-#master_path = f'Inputs/_Masterfiles/FTT-P/FTT-P-24x70_2021_{base_scenario}.xlsx'
 master_path = f'Inputs/_Masterfiles/FTT-P/FTT-P-24x71_2024_{base_scenario}.xlsx'
 scenario_levels = pd.read_csv('Emulation/data/scenarios/S3_scenario_levels.csv')
 
@@ -207,8 +206,9 @@ def uncertainty_inputs_non_bcet(scenario_levels = scenario_levels):
         # update demand
         mewd_updated = mewd_base.copy()
         mewd_updated.iloc[7, 1:] = mewd_el_update
+        mewd_updated.rename(columns={mewd_updated.columns[0]: ''}, inplace=True)
 
-        mewd_updated.to_csv(f'Inputs/{scen_code}/FTT-P/MEWDX_{reg_short}.csv', index = False, header = False)
+        mewd_updated.to_csv(f'Inputs/{scen_code}/FTT-P/MEWDX_{reg_short}.csv', index = False, header = True)
         print(f'Sheet MEWDX_{reg_short} saved to {scen_code}/FTT-P')
 
 
@@ -224,7 +224,7 @@ def uncertainty_inputs_non_bcet(scenario_levels = scenario_levels):
         tech_updated = tech_base.copy()
         
         renewables_indices = [9, 10, 11] # indices of renewables in the tech_base df
-        tech_updated.loc[renewables_indices, 3] = tech_update.iloc[renewables_indices].values
+        tech_updated.loc[renewables_indices, '2'] = tech_update.iloc[renewables_indices].values
         tech_updated.rename(columns={tech_updated.columns[0]: ''}, inplace=True)
         
 
@@ -528,10 +528,10 @@ master_path = "Inputs/_MasterFiles/FTT-P/FTT-P-24x71_2024_S0.xlsx"
 
 for i in tqdm(range(0, len(scenario_levels[0:1]))):
         region_ambition_phase(scenario_levels=scenario_levels.iloc[i])
-        region_ambition_price(scenario_levels=scenario_levels.iloc[i])
-        region_ambition_cp(scenario_levels = scenario_levels.iloc[i])
-        uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
-        uncertainty_inputs_non_bcet(scenario_levels=scenario_levels.iloc[i])
+        # region_ambition_price(scenario_levels=scenario_levels.iloc[i])
+        # region_ambition_cp(scenario_levels = scenario_levels.iloc[i])
+        # uncertainty_inputs(scenario_levels=scenario_levels.iloc[i])
+        #uncertainty_inputs_non_bcet(scenario_levels=scenario_levels.iloc[i])
     
 
 #%% ## Possible developments
