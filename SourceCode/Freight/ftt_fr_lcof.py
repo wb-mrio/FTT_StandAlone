@@ -116,7 +116,7 @@ def get_lcof(data, titles):
 
         # Registration Taxes, ZTVT is vehicle tax
         ItVT = np.ones([len(titles['FTTI']), int(max_LF)])
-        ItVT = ItVT * (zcet[:, c6ti['13 CO2 emissions (gCO2/km)'], np.newaxis] + data['ZTVT'][r,:,0, np.newaxis])
+        ItVT = ItVT * data['ZTVT'][r,:,0, np.newaxis]
         ItVT = ItVT / zcet[:, c6ti['17 Average mileage (km/y)'], np.newaxis]
         ItVT[:,1:] = 0
 
