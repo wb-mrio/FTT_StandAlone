@@ -58,6 +58,7 @@ def ambition_generator(regions = ['EA','US', 'CN', 'IN', 'BR', 'RGS', 'RGN'], Ns
     df = pd.DataFrame()
     for region in regions:
         values = sampler.random(n = Nscens)
+        values = np.round(values, 2)  # Round values to 3 decimal places
         country_vals = pd.DataFrame(values, columns= [region + '_cp', region + '_phase', region + '_price'])
         df = pd.concat([df, country_vals], axis = 1)
         
@@ -105,6 +106,8 @@ def uncertainty_generator(Nscens = 1):
         else:
             samples = lhs(1, samples=Nscens)
             scaled_samples = lower + samples * (upper - lower)
+            scaled_samples = np.round(scaled_samples, 2)  # Round values to 3 decimal places
+
         LHS_df[var] = scaled_samples.flatten()
     
     return LHS_df
