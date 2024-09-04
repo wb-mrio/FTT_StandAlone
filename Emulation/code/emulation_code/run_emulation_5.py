@@ -42,10 +42,8 @@ def scenario_list(file_path):
 
 #%%
 
-import configparser
-import subprocess
 
-def process_scenarios(all_scenarios, batch_size=2, config_path='settings.ini', script_path='run_file.py'):
+def process_scenarios(all_scenarios, batch_size=50, config_path='settings.ini', script_path='run_file.py'):
     error_scenarios = []
 
     config = configparser.ConfigParser()
@@ -70,10 +68,17 @@ def process_scenarios(all_scenarios, batch_size=2, config_path='settings.ini', s
             with open(config_path, 'w') as configfile:
                 config.write(configfile)
                 print(f"Updated {config_path} with scenarios: {batch}")
-                
-            # Optionally, run the simulation script
-            subprocess.run(['python', script_path], check=True)
 
+
+            # Run the simulation script and display its output in real-time
+            process = subprocess.Popen(['python', script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+            # Stream the output to the console
+            for line in process.stdout:
+                print(line, end='')
+
+            process.wait()  # Ensure the process completes
+        
         except Exception as e:
             # Store the scenarios that caused the error
             error_scenarios.extend(batch)
@@ -89,21 +94,12 @@ def process_scenarios(all_scenarios, batch_size=2, config_path='settings.ini', s
 
 def main():
     # Define all the scenarios you want to run except baseline
-    all_scenarios = [f"S3_{i}" for i in range(0, 7)]  
+    all_scenarios = [f"S3_{i}" for i in range(0, 400)]  
 
     # Process the scenarios with a batch size of 50
     process_scenarios(all_scenarios)
 
 
-
-
-
-
-
-
-#%%
-
-main()
 
 # %%
 if __name__ == "__main__":
