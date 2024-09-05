@@ -94,7 +94,7 @@ def process_scenarios(all_scenarios, batch_size=50, config_path='settings.ini', 
 
 def main():
     # Define all the scenarios you want to run except baseline
-    all_scenarios = [f"S3_{i}" for i in range(0, 400)]  
+    all_scenarios = [f"S3_{i}" for i in range(0, 401)]  
 
     # Process the scenarios with a batch size of 50
     process_scenarios(all_scenarios)
