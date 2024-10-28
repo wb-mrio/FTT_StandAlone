@@ -28,7 +28,8 @@ def save_all(output):
 def save_core(output_all, variables_core = ['MWMC', 'MEWW', 'MEWS', 'MEWK', 'MEWI', 
                   'MEWG', 'MEWE', 'MEWD', 'METC', 'MRES', 
                   'MCOC', 'REPP', 'MWIY', 'MEWC', 'BCET', 
-                  'MEWT', 'MEWR', 'MEFI', 'MCOCX']):    
+                  'MEWT', 'MEWR', 'MEFI', 'MCOCX', 'MEWC', 
+                 'MECW' ]):    
     output_all = output_all
     variables_core = variables_core
     

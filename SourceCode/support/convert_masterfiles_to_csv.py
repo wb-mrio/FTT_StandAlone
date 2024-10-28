@@ -476,4 +476,4 @@ if __name__ == '__main__':
     # }
 
     var_dict = convert_masterfiles_to_csv(
-        models, gamma_overwrite_pos="possible", overwrite_existing=True)
+        models, overwrite_existing=True)

@@ -139,7 +139,7 @@ def scen_generator(Nscens, regions, scen_code = 'S3'):
     return scenario_levels
 
 #%% Example scen_generator, check csv is empty first, this could do with automating
-scenario_levels = scen_generator(Nscens=401, regions = ['EA','US', 'CN', 'IN', 'BR', 'RGS', 'RGN'])
+scenario_levels = scen_generator(Nscens=450, regions = ['EA','US', 'CN', 'IN', 'BR', 'RGS', 'RGN'])
 
 
 # %%

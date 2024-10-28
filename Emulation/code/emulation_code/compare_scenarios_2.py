@@ -71,7 +71,7 @@ for scen in scenario_list:
     dataframes[f"df_{scen}"] = []
 
 # Specify the sheet names to process
-sheets_to_process = ['BCET', 'MEWT', 'MEWR', 'MEFI']  
+sheets_to_process = ['BCET', 'MEWT', 'MEWR', 'MEFI', 'MWKA']  
 
 
 #%% ## take input masterfiles and wrangle to remove unneccessary info. 
@@ -147,8 +147,7 @@ def compare_scenarios(scen_base, scen_compare, keep_equal = False):
     
 
     # Get the sheet names from both workbooks
-    sheet_names = ['BCET','MEWT', 'MEWR', \
-                         'MEFI']  
+    sheet_names = sheets_to_process
     
     
     # Initialize an empty DataFrame to store the changed rows
