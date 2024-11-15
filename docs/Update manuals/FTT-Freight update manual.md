@@ -2,7 +2,7 @@
 Author - c.lynch4@exeter.ac.uk
 
 FTT-Freight is a fairly simple FTT model that simulates technology uptake and competition amongst three-wheeler freight vehicles (India only), light-commercial vehicles (vans), medium duty truck, heavy duty trucks, and buses. Because of the very different technology types represented in the model, we chose to prohibit decision-makers switching between vehicle segments. This means a decision-maker cannot replace a diesel LCV with a battery electric bus. As a result, each vehicle segment has its own demand profile and should be considered seperate from one another.
-Updating FTT-Freight is similar to FTT-Transport. With the exception of the [IEA's EV outlook] (https://www.iea.org/data-and-statistics/data-tools/global-ev-data-explorer), publically available data is not readily available. Instead, the model makes use of data from the ICCT. A data processing script can be found in the FTT_Standalone-support repository.
+Updating FTT-Freight is similar to FTT-Transport. With the exception of the [IEA's EV outlook](https://www.iea.org/data-and-statistics/data-tools/global-ev-data-explorer), publically available data is not readily available. Instead, the model makes use of data from the ICCT. A data processing script can be found in the FTT_Standalone-support repository.
 
 ## Aggregate fleet sizes (RFLZ)
 1. Each vehicle segment has its own projections for fleet size. 
