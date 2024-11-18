@@ -28,7 +28,11 @@ Updating FTT-Freight is similar to FTT-Transport. With the exception of the [IEA
 1. 
 
 ## Freight/passenger demand
-1. 
+1. Data on the average annual vehicle kilometers travelled is taken from the ICCTs Roadmap model which provides data for Canada, China, EU (at member state level), India, United Kingdom, and United States. Vehicle kilometers are consistent across powertrains (i.e., BEV HDTs travel the same annual distance as diesel HDTs).
+2. For other regions, we assume Germany's average numbers with the exception of some larger countries which use the US' numbers.
+3. This is supplemented with data on the average loads per vehicle. This is also provided by the ICCT for China, EU (at member state level), India, and the US. Like mileage, average loads are the same across powertrains.
+4. We apply the same logic for load factor proxies as mileage.
+5. For three-wheeler freight vehicles in India, we estimate that mileage is the midpoint between LCVs (vans) and two and three-wheeler personal vehicles. The reasoning is that three-wheeler freight vehicles are likely to cover more distance than personal transport but unlikely as much as LCVs. Likewise for load factors, we use an estimate of 0.4t/vehicle which is based on capacities of such vehicles observed online. This is only a very rough estimate and can be refined.
 
 ## Learning rate
 1. 
