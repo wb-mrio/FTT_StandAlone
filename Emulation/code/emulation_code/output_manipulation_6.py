@@ -51,7 +51,7 @@ for ID in scen_levels['ID']:
 emulation_scens = scen_levels['ID']
 scens_to_compare = list(emulation_scens) # ['S0', 'S3']
 vars_to_compare =  ['MEWS', 'MEWK', \
-                  'MEWG', 'MEWE', 'MEWW', 'METC']
+                  'MEWG', 'MEWE', 'MEWW', 'METC', 'MEWC', 'MECW']
     
 output_data = {}
 for scen in scens_to_compare:
@@ -143,7 +143,7 @@ num_batches = len(df['scenario'].unique())
 batch_size = len(df) // num_batches
 
 # Iterate over batches and save each one
-for i in range(num_batches):
+for i in range(200):
     start_index = i * batch_size
     end_index = (i + 1) * batch_size
     batch_df = df.iloc[start_index:end_index]  # Get a chunk of the DataFrame

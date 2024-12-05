@@ -71,7 +71,7 @@ for scen in scenario_list:
     dataframes[f"df_{scen}"] = []
 
 # Specify the sheet names to process
-sheets_to_process = ['BCET', 'MEWT', 'MEWR', 'MEFI', 'MWKA']  
+sheets_to_process = ['BCET', 'MEWT', 'MEWR', 'MEFI']  
 
 
 #%% ## take input masterfiles and wrangle to remove unneccessary info. 
