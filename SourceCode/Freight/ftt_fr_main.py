@@ -88,61 +88,60 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
     # Creating variables
     # Technology to fuel user conversion matrix
-    zjet = copy.deepcopy(data['ZJET'][0, :, :])
+    zjet = np.copy(data['ZJET'][0, :, :])
     # Initialise the emission correction factor
     emis_corr = np.zeros([len(titles['RTI']), len(titles['FTTI'])])
+    n_veh_classes = len(titles['FSTI'])
+    
+    def sum_over_classes(var):
+        output = np.stack([
+                    np.sum(var[:, veh_class::n_veh_classes, :], axis=1)
+                    for veh_class in range(n_veh_classes)],
+                    axis=1)
+        return output
 
     # Initialise up to the last year of historical data
     if year <= histend["RFLZ"]:
         
+        summed_zews = sum_over_classes(data['ZEWS'])
         for r in range(len(titles['RTI'])):
-            # Correction to market shares
+            # Correction to market shares for each vehicle class
             # Sometimes historical market shares do not add up to 1.0
-            if (~np.isclose(np.sum(data['ZEWS'][r, :, 0]), 1.0, atol=1e-9)
-                    and np.sum(data['ZEWS'][r, :, 0]) > 0.0):
-                        data['ZEWS'][r, :, 0] = np.divide(data['ZEWS'][r, :, 0],
-                                                np.sum(data['ZEWS'][r, :, 0]))
+            for veh_class in range(n_veh_classes):
+                if (~np.isclose(summed_zews[r, veh_class, 0], 1.0, atol=1e-9)
+                    and summed_zews[r, veh_class, 0] > 0.0):
+                        data['ZEWS'][r, :, 0] = np.divide(data['ZEWS'][r, veh_class::n_veh_classes, 0],
+                                                    summed_zews[r, veh_class, 0])
             
-            # Find total service area
-            data['ZESG'][r, :, 0] = data["RVKZ"][r, 0, 0] / data['ZLOD'][r, 0, 0]
-
-            # ZESD is share difference between small and large trucks
-            data['ZESD'][r, 0, 0] = data['ZEWS'][r, 0, 0] + data['ZEWS'][r, 2, 0] + data['ZEWS'][r, 4, 0] \
-            + data['ZEWS'][r, 6, 0] + data['ZEWS'][r, 8, 0] + data['ZEWS'][r, 10, 0] + data['ZEWS'][r, 12, 0] \
-            + data['ZEWS'][r, 14, 0] + data['ZEWS'][r, 16, 0] + data['ZEWS'][r, 18, 0]
-
-            data['ZESD'][r, 1, 0] = 1 - data['ZESD'][r, 0, 0]
-
-            # Find service area
-
-            if data['ZESD'][r, 0, 0] > 0:
-                for x in range(0, 20, 2):  
-                    data['ZESA'][r, x, 0] = data['ZEWS'][r, x, 0] / data['ZESD'][r, 0, 0]
-                    data['ZEVV'][r, x, 0] = data['ZESG'][r, x, 0] * data['ZESA'][r, x, 0] \
-                                            / (1 - 1 / (data['ZSLR'][r, 0, 0] + 1))
-            if data['ZESD'][r, 1, 0] > 0:
-                for x in range(1, 21, 2):
-                    data['ZESA'][r, x, 0] = data['ZEWS'][r, x, 0] / data['ZESD'][r, 1, 0]
-                    data['ZEVV'][r, x, 0] = data['ZESG'][r, x, 0] * data['ZESA'][r, x, 0] \
-                                            / (1 / (data['ZSLR'][r, 0, 0] + 1))
-                
-            for veh in range(len(titles['FTTI'])):
-                for fuel in range(len(titles['JTI'])):
-                    if titles['JTI'][fuel] == '11 Biofuels'  and data['ZJET'][0, veh, fuel] == 1:
-                        # No biofuel blending mandate in the historical period
-                        zjet[veh, fuel] = 0
-
-            # Find fuel use
-            data['ZJNJ'][r, :, 0] = (np.matmul(np.transpose(zjet), data['ZEVV'][r, :, 0] * \
-                                        data['BZTC'][r, :, c6ti['9 Energy use (MJ/vkm)']])) / 41.868
-
-            # Emissions 
-            data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['BZTC'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
-                        * (1 - data['ZBFM'][r, 0, 0]) / (1e6)
         
         # Calculate number of vehicles per technology. First reshape rflz into right format
         rflz_reshaped = np.tile(data['RFLZ'], (1, data['ZEWS'].shape[1] // data['RFLZ'].shape[1], 1))
         data['ZEWK'] = data['ZEWS'] * rflz_reshaped
+        
+        # Find total service area in Mvkm, first by tech, then by vehicle class
+        data['ZEVV'] = data['ZEWK'] * data['BZTC'][:, :, c6ti['17 Average mileage (km/y)'], np.newaxis] / 10e6
+        data['ZESG'] = sum_over_classes(data['ZEVV'])
+        
+        # Calculate demand in million ton vehicle-km OR million passenger vehicle km, per vehicle class
+        data['ZEST'] = data['ZEVV'] * data['BZTC'][:, :, c6ti['10 Loads (t or passengers/veh)'], np.newaxis]
+        data['RVKZ'] = sum_over_classes(data['ZEST'])
+        
+        # Emissions 
+        data['ZEWE'] = (data['ZEVV']
+                        * data['BZTC'][:, :, c6ti['13 CO2 emissions (gCO2/km)'], np.newaxis]
+                        * (1 - data['ZBFM']) / (1e6) )
+        
+        for r in range(len(titles['RTI'])):
+        
+            for veh in range(len(titles['FTTI'])):
+                    for fuel in range(len(titles['JTI'])):
+                        if titles['JTI'][fuel] == '11 Biofuels'  and data['ZJET'][0, veh, fuel] == 1:
+                            # No biofuel blending mandate in the historical period
+                            zjet[veh, fuel] = 0
+                        
+            # Find fuel use
+            data['ZJNJ'][r, :, 0] = (np.matmul(np.transpose(zjet), data['ZEVV'][r, :, 0] * \
+                                    data['BZTC'][r, :, c6ti['9 Energy use (MJ/vkm)']])) / 41.868
 
         if year == histend["RFLZ"]:
             # Calculate levelised cost
@@ -157,17 +156,11 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
         data_dt = {}
         data_dt['ZWIY'] = np.zeros([len(titles['RTI']), len(titles['FTTI']), 1])
 
+        
         for var in time_lag.keys():
-
-            if var.startswith("R"):
-
-                data_dt[var] = copy.deepcopy(time_lag[var])
-
-        for var in time_lag.keys():
-
-            if var.startswith("Z"):
-
-                data_dt[var] = copy.deepcopy(time_lag[var])
+            if var.startswith(("R", "Z", "B")):
+                data_dt[var] = np.copy(time_lag[var])
+                
 
         # Find if there is a regulation and if it is exceeded
         division = divide((time_lag['ZEWK'][:, :, 0] - data['ZREG'][:, :, 0]),
@@ -182,11 +175,11 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
             D = time_lag['RVKZ'] + (data['RVKZ'] - time_lag['RVKZ']) * t * dt
             Utot = time_lag['RFLZ'] + (data['RFLZ'] - time_lag['RFLZ']) * t * dt
-            Utot = np.tile(Utot, (1, data['ZEWS'].shape[1] // Utot.shape[1], 1)) # Reshape to 71 x #tech
+            Utot = np.tile(Utot, (1, data['ZEWS'].shape[1] // Utot.shape[1], 1))[:, :, 0] # Reshape to 71 x #tech (duplicate info)
 
             for r in range(len(titles['RTI'])):
 
-                if D[r] == 0.0:
+                if np.sum(D[r]) == 0.0:
                     continue
 
                 # DSiK contains the change in shares
@@ -238,7 +231,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
                         # Runge-Kutta market share dynamiccs
                         k_1[b1, b2] = S_i*S_k * (Aik*F[b1, b2] - Aki*F[b2, b1])
-                        k_2[b1, b2] = (S_i + dt*k_1[b1, b2]/2)*(S_k-dt*k_1[b1, b2]/2)* (Aik*F[b1, b2] - Aki*F[b2, b1])
+                        k_2[b1, b2] = (S_i + dt*k_1[b1, b2]/2)*(S_k-dt*k_1[b1, b2]/2) * (Aik*F[b1, b2] - Aki*F[b2, b1])
                         k_3[b1, b2] = (S_i + dt*k_2[b1, b2]/2)*(S_k-dt*k_2[b1, b2]/2) * (Aik*F[b1, b2] - Aki*F[b2, b1])
                         k_4[b1, b2] = (S_i + dt*k_3[b1, b2])*(S_k-dt*k_3[b1, b2]) * (Aik*F[b1, b2] - Aki*F[b2, b1])
 
@@ -254,7 +247,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
                 # Calculate temporary market shares and temporary capacity from endogenous results
                 endo_shares = data_dt['ZEWS'][r, :, 0] + np.sum(dSik, axis=1) 
-                endo_capacity = endo_shares * Utot
+                endo_capacity = endo_shares * Utot[r]
 
                 # Add in exogenous sales figures. These are blended with
                 # endogenous result! Note that it's different from the
@@ -267,16 +260,20 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                 ZWSA_scalar = 1.0
 
                 # Check that exogenous sales additions aren't too large
-                # As a proxy it can't be greater than 80% of the fleet size
+                # As a proxy it can't be greater than 80% of the class fleet size
                 # divided by 15 (the average lifetime of freight vehicles)
-                if (data['ZWSA'][r, :, 0].sum() > 0.8 * Utot[r] / 15):
-            
-                    ZWSA_scalar = data['ZWSA'][r, :, 0].sum() \
-                                  / (0.8 * Utot[r] / 15)
+                sum_zwsa = sum_over_classes(data['ZWSA'])
+                for veh_class in range(n_veh_classes):
+                    
+                    if sum_zwsa[r, veh_class, 0] > 0.8 * Utot[r, veh_class] / 15:
+                
+                        # ZWSA_scalar[veh_class] = sum_zwsa[veh_class] / (0.8 * Utot[r] / 15)
+                        data['ZWSA'][r, veh_class::n_veh_classes] /= (
+                                        sum_zwsa[r, veh_class, 0] / (0.8 * Utot[r, veh_class] / 15) )
 
                 # Check that exogenous capacity is smaller than regulated capacity
                 # Regulations have priority over exogenous capacity
-                reg_vs_exog = ((data['ZWSA'][r, :, 0] / ZWSA_scalar / no_it + endo_capacity) 
+                reg_vs_exog = ((data['ZWSA'][r, :, 0] / no_it + endo_capacity) 
                               > data['ZREG'][r, :, 0]) & (data['ZREG'][r, :, 0] >= 0.0)
              
                 # ZWSA is yearly capacity additions. We need to split it up based on the number of time steps, and also scale it if necessary.
@@ -286,21 +283,21 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                 # Correct for regulations due to the stretching effect. This is the difference in capacity due only to rflt increasing.
                 # This is the difference between capacity based on the endogenous capacity, and what the endogenous capacity would have been
                 # if rflz (i.e. total vehicles) had not grown.
-                dUkREG = -(endo_capacity - endo_shares * Utot) \
+                dUkREG = -(endo_capacity - endo_shares * Utot[r]) \
                          * isReg[r, :].reshape([len(titles['FTTI'])])
                                            
                 # Sum effect of exogenous sales additions (if any) with effect of regulations. 
                 dUk = dUkTK + dUkREG
                 dUtot = np.sum(dUk)
 
-                # Calaculate changes to endogenous capacity, and use to find new market shares
+                # Calculate changes to endogenous capacity, and use to find new market shares
                 # Zero capacity will result in zero shares
                 # All other capacities will be streched
                 data['ZEWS'][r, :, 0] = (endo_capacity + dUk) / (np.sum(endo_capacity) + dUtot)
 
-                if ~np.isclose(np.sum(data['ZEWS'][r, :, 0]), 1.0, atol = 1e-5):
+                if ~np.isclose(np.sum(data['ZEWS'][r, :, 0]), 5.0, atol = 1e-5):
                     msg = (f"Sector: {sector} - Region: {titles['RTI'][r]} - Year: {year}"
-                    "Sum of market shares do not add to 1.0 (instead: {np.sum(data['ZEWS'][r, :, 0])})")
+                    "Sum of market shares do not add to 5.0 (instead: {np.sum(data['ZEWS'][r, :, 0])})")
                     warnings.warn(msg)
 
                 if np.any(data['ZEWS'][r, :, 0] < 0.0):
@@ -311,29 +308,14 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                 # Copy over costs that don't change
                 data['BZTC'][:, :, 1:20] = data_dt['BZTC'][:, :, 1:20]
 
-                data['ZESG'][r, :, 0] = D[r, 0, 0]/data['ZLOD'][r, 0, 0]
-
-                # ZESD is share difference between small and large trucks
-                data['ZESD'][r, 0, 0] = data['ZEWS'][r, 0, 0] + data['ZEWS'][r, 2, 0] + data['ZEWS'][r, 4, 0] + \
-                data['ZEWS'][r, 6, 0] + data['ZEWS'][r, 8, 0] + data['ZEWS'][r, 10, 0] + data['ZEWS'][r, 12, 0] + \
-                data['ZEWS'][r, 14, 0] + data['ZEWS'][r, 16, 0] + data['ZEWS'][r, 18, 0]
-
-                data['ZESD'][r, 1, 0] = 1 - data['ZESD'][r, 0, 0]
-
-                if data['ZESD'][r, 0, 0] > 0:
-                    for x in range(0, 20, 2):
-                        data['ZESA'][r, x, 0] = data['ZEWS'][r, x, 0]/data['ZESD'][r, 0, 0]
-                        data['ZEVV'][r, x, 0] = data['ZESG'][r, x, 0]*data['ZESA'][r, x, 0]/(1-1/(data['ZSLR'][r, 0, 0] + 1))
-                        data['ZEST'][r, x, 0] = data['ZEVV'][r, x, 0]*data['ZLOD'][r, 1, 0]
-                
-                if data['ZESD'][r, 1, 0] > 0:
-                    for x in range(1, 21, 2):
-                        data['ZESA'][r, x, 0] = data['ZEWS'][r, x, 0]/data['ZESD'][r, 1, 0]
-                        data['ZEVV'][r, x, 0] = data['ZESG'][r, x, 0]*data['ZESA'][r, x, 0]/(1/(data['ZSLR'][r, 0, 0] + 1))
-                        data['ZEST'][r, x, 0] = data['ZEVV'][r, x, 0]*data['ZLOD'][r, 1, 0]
-
-                # This is number of trucks by technology
-                data['ZEWK'][r, :, 0] = data['ZEWS'] * Utot
+            # This is number of trucks by technology
+            data['ZEWK'] = data['ZEWS'] * Utot[:, :, None]
+            
+            # Find total service area and demand, first by tech, then by vehicle class     
+            data['ZEVV'] = data['ZEWK'] * data['BZTC'][:, :, c6ti['17 Average mileage (km/y)'], np.newaxis] / 10e6
+            data['ZEST'] = data['ZEVV'] * data['BZTC'][:, :, c6ti['10 Loads (t or passengers/veh)'], np.newaxis]
+            data['ZESG'] = sum_over_classes(data['ZEVV'])
+            data['RVKZ'] = sum_over_classes(data['ZEST'])
 
             # Investment (sales) = new capacity created
             # zewi_t is new additions at current timestep/iteration
@@ -342,13 +324,13 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # Reopen country loop
             for r in range(len(titles['RTI'])):
 
-                if D[r] == 0.0:
+                if np.sum(D[r]) == 0.0:
                     continue
                 
                 # Emissions
                 data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['BZTC'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
                                         * (1 - data['ZBFM'][r, 0, 0]) / (1e6)
-                zjet = copy.deepcopy(data['ZJET'][0, :, :])
+                zjet = np.copy(data['ZJET'][0, :, :])
                 for veh in range(len(titles['FTTI'])):
                     for fuel in range(len(titles['JTI'])):
                         #  Middle distillates
@@ -390,25 +372,14 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
 
             # Calculate total investment by technology in terms of truck purchases
-            for r in range(len(titles['RTI'])):
-                data['ZWIY'][r, :, 0] = data['ZEWI'][r, :, 0] \
-                                        * data["BZTC"][r, :, c6ti['1 Purchase cost (USD/veh)']]
+            data['ZWIY'] = data['ZEWI'] * data["BZTC"][r, :, c6ti['1 Purchase cost (USD/veh)'], None]
 
             # Calculate levelised cost again
             data = get_lcof(data, titles)
 
 
-            # Update time loop variables:
             for var in time_lag.keys():
-
-                if var.startswith("R"):
-
-                    data_dt[var] = np.copy(data[var])
-
-            for var in time_lag.keys():
-
-                if var.startswith("Z"):
-
+                if var.startswith(("R", "Z", "B")):
                     data_dt[var] = np.copy(data[var])
 
 

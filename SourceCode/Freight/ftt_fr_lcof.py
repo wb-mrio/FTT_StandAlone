@@ -134,7 +134,7 @@ def get_lcof(data, titles):
 
         # Capacity factors
         Lfactor = np.ones([len(titles['FTTI']), int(max_LF)])
-        Lfactor = Lfactor * BZTC[:, c6ti['10 Loads (t/veh)'], np.newaxis]
+        Lfactor = Lfactor * BZTC[:, c6ti['10 Loads (t or passengers/veh)'], np.newaxis]
 
         # Road Tax
         RT = np.ones([len(titles['FTTI']), int(max_LF)])

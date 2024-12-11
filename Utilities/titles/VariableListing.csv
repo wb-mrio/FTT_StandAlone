@@ -295,7 +295,7 @@ IAM5,FTT-IH-OIS gamma values,,RTI,ITTI,NA,TIME,FTT-IH-OIS2,-,-,2000,,Y,Y
 IRG5,FTT-IH-OIS regulations (based on capacity),GW,RTI,ITTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
 ISB5,FTT-IH-OIS subsidies (percentage of investment cost),%,RTI,ITTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
 IXS5,FTT-IH-OIS exogenous share changes,%,RTI,ITTI,NA,TIME,FTT-IH-OIS2,,,2000,,,
-RVKZ,FTT-Fr Demand,Million Tkm,RTI,NA,NA,TIME,FTT-Fr,,2018,1995,,,Y
+RVKZ,FTT-Fr Demand,Million Tkm,RTI,FSTI,NA,TIME,FTT-Fr,,2018,1995,,,Y
 RFLZ,FTT-Fr Number in Fleet,veh,RTI,FSTI,NA,TIME,FTT-Fr,,2023,2001,,,Y
 ZEWS,FTT-Fr Market Shares,%,RTI,FTTI,NA,TIME,FTT-Fr,,2023,2001,,Y,Y
 ZREG,FTT-Fr regulations,,RTI,FTTI,NA,TIME,FTT-Fr,,,2018,,,Y
@@ -322,10 +322,8 @@ ZTDD,FTT-Fr log space with gamma sd,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
 ZEGC,FTT-Fr LCOF with policy and gamma,$/tkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZEWK,FTT-Fr Capacity by technology (number of vehicles),No. vehicles,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
 ZEWI,FTT-Fr New sales,No. vehicles,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,Y,Y
-ZESD,FTT-Fr Difference between small and large truck shares,%,RTI,LODZ,NA,TIME,FTT-Fr,,,2001,,,
-ZESA,FTT-Fr Share of small trucks,%,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
 ZEVV,FTT-Fr Service by Technology,Mvkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
-ZESG,FTT-Fr Total Service (Mvkm),Mvkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
+ZESG,FTT-Fr Total Service (Mvkm),Mvkm,RTI,FSTI,NA,TIME,FTT-Fr,,,2001,,,
 ZEST,FTT-Fr Service by Technology (MTkm),MTkm,RTI,FTTI,NA,TIME,FTT-Fr,,,2001,,,
 ZJEF,FTT-Fr Fuel use,ktoe,RTI,NA,NA,TIME,FTT-Fr,,,2001,,,Y
 ZJNJ,FTT-Fr Fuel use by fuel type,ktoe,RTI,JTI,NA,TIME,FTT-Fr,,,2001,,,
