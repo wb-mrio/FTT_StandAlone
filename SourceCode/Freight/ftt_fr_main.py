@@ -93,7 +93,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
     emis_corr = np.zeros([len(titles['RTI']), len(titles['FTTI'])])
 
     # Initialise up to the last year of historical data
-    if year <= histend["RVKZ"]:
+    if year <= histend["RFLZ"]:
         
         for r in range(len(titles['RTI'])):
             # Correction to market shares
@@ -140,11 +140,11 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['BZTC'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
                         * (1 - data['ZBFM'][r, 0, 0]) / (1e6)
         
-        # Calculate number of vehicles per technology
-        data['ZEWK'][:, :, 0] = data['ZEWS'][:, :, 0] \
-                                * data['RFLZ'][:, np.newaxis, 0, 0]
+        # Calculate number of vehicles per technology. First reshape rflz into right format
+        rflz_reshaped = np.tile(data['RFLZ'], (1, data['ZEWS'].shape[1] // data['RFLZ'].shape[1], 1))
+        data['ZEWK'] = data['ZEWS'] * rflz_reshaped
 
-        if year == histend["RVKZ"]:
+        if year == histend["RFLZ"]:
             # Calculate levelised cost
             data = get_lcof(data, titles)
 
@@ -152,7 +152,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
     "Model Dynamics"
 
     # Endogenous calculation starts here
-    if year > histend['RVKZ']:
+    if year > histend['RFLZ']:
 
         data_dt = {}
         data_dt['ZWIY'] = np.zeros([len(titles['RTI']), len(titles['FTTI']), 1])
@@ -180,8 +180,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
         for t in range(1, no_it + 1):
         # Interpolations to avoid staircase profile
 
-            D = time_lag['RVKZ'][:, :, :] + (data['RVKZ'][:, :, :] - time_lag['RVKZ'][:, :, :]) * t * dt
-            Utot = time_lag['RFLZ'][:, :, :] + (data['RFLZ'][:, :, :] - time_lag['RFLZ'][:, :, :]) * t * dt
+            D = time_lag['RVKZ'] + (data['RVKZ'] - time_lag['RVKZ']) * t * dt
+            Utot = time_lag['RFLZ'] + (data['RFLZ'] - time_lag['RFLZ']) * t * dt
+            Utot = np.tile(Utot, (1, data['ZEWS'].shape[1] // Utot.shape[1], 1)) # Reshape to 71 x #tech
 
             for r in range(len(titles['RTI'])):
 
@@ -253,7 +254,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
                 # Calculate temporary market shares and temporary capacity from endogenous results
                 endo_shares = data_dt['ZEWS'][r, :, 0] + np.sum(dSik, axis=1) 
-                endo_capacity = endo_shares * Utot[r, np.newaxis]
+                endo_capacity = endo_shares * Utot
 
                 # Add in exogenous sales figures. These are blended with
                 # endogenous result! Note that it's different from the
@@ -285,7 +286,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                 # Correct for regulations due to the stretching effect. This is the difference in capacity due only to rflt increasing.
                 # This is the difference between capacity based on the endogenous capacity, and what the endogenous capacity would have been
                 # if rflz (i.e. total vehicles) had not grown.
-                dUkREG = -(endo_capacity - endo_shares * Utot[r,np.newaxis]) \
+                dUkREG = -(endo_capacity - endo_shares * Utot) \
                          * isReg[r, :].reshape([len(titles['FTTI'])])
                                            
                 # Sum effect of exogenous sales additions (if any) with effect of regulations. 
@@ -295,7 +296,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                 # Calaculate changes to endogenous capacity, and use to find new market shares
                 # Zero capacity will result in zero shares
                 # All other capacities will be streched
-                data['ZEWS'][r, :, 0] = (endo_capacity + dUk)/(np.sum(endo_capacity)+dUtot)
+                data['ZEWS'][r, :, 0] = (endo_capacity + dUk) / (np.sum(endo_capacity) + dUtot)
 
                 if ~np.isclose(np.sum(data['ZEWS'][r, :, 0]), 1.0, atol = 1e-5):
                     msg = (f"Sector: {sector} - Region: {titles['RTI'][r]} - Year: {year}"
@@ -332,7 +333,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                         data['ZEST'][r, x, 0] = data['ZEVV'][r, x, 0]*data['ZLOD'][r, 1, 0]
 
                 # This is number of trucks by technology
-                data['ZEWK'][r, :, 0] = data['ZEWS'][r, :, 0] * Utot[r, 0, 0]
+                data['ZEWK'][r, :, 0] = data['ZEWS'] * Utot
 
             # Investment (sales) = new capacity created
             # zewi_t is new additions at current timestep/iteration
@@ -402,13 +403,13 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
                 if var.startswith("R"):
 
-                    data_dt[var] = copy.deepcopy(data[var])
+                    data_dt[var] = np.copy(data[var])
 
             for var in time_lag.keys():
 
                 if var.startswith("Z"):
 
-                    data_dt[var] = copy.deepcopy(data[var])
+                    data_dt[var] = np.copy(data[var])
 
 
     return data
