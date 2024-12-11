@@ -131,8 +131,12 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                     var_tl_fit = [year for year in var_tl if year in timeline]
                     var_tl_inds = [i for i, year in enumerate(timeline) if year in var_tl]
                     csv.columns = [int(year) for year in csv.columns]
-
-                    read = csv.loc[:, var_tl]
+                    
+                    try:
+                        read = csv.loc[:, var_tl]
+                    except KeyError as e:
+                        print(f"Failed reading in variable with time dimension {var}")
+                        raise e
 
                 else:
                     read = csv
@@ -180,7 +184,7 @@ def load_data(titles, dimensions, timeline, scenarios, ftt_modules, forstart):
                             try: 
                                 data[scen][var][:, :, 0, 0] = read
                             except (IndexError, ValueError) as e:
-                                input_functions_message(scen, var, dims, read, reg_index = reg_index)
+                                input_functions_message(scen, var, dims, read)
                                 raise(e)
                         
                         # If there is a third dimension only

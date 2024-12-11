@@ -1,7 +1,7 @@
 Model,Cost_var,Cost index,Electricity_index
 FTT-H,BHTC,9,"8,9,10,11"
 FTT-Tr,BTTC,2,"18,19,20"
-FTT-Fr,ZCET,2,"12,13"
+FTT-Fr,BZTC,2,"12,13"
 FTT-IH-CHI,BIC1,9,"4,6,11"
 FTT-IH-FBT,BIC2,9,"4,6,11"
 FTT-IH-MTM,BIC3,9,"4,6,11"

@@ -66,11 +66,11 @@ def get_sales(data, data_dt, time_lag, titles, dt, c6ti, t):
     for r in range(len(titles['RTI'])):
         for veh in range(len(titles['FTTI'])):
             cap_drpctn[r, veh, 0] = np.where(cap_diff[r, veh] > 0.0,
-                                data_dt["ZEWK"][r, veh, 0] * dt / data['ZCET'][r, veh, c6ti['8 Lifetime (y)']],
-                                np.where((-data_dt["ZEWS"][r, veh, 0] * dt / data['ZCET'][r, veh, c6ti['8 Lifetime (y)']] 
+                                data_dt["ZEWK"][r, veh, 0] * dt / data['BZTC'][r, veh, c6ti['8 Lifetime (y)']],
+                                np.where((-data_dt["ZEWS"][r, veh, 0] * dt / data['BZTC'][r, veh, c6ti['8 Lifetime (y)']] 
                                           < data["ZEWS"][r, veh, 0] - data_dt["ZEWS"][r, veh, 0] < 0),
                                             (data["ZEWS"][r, veh, 0] - data_dt["ZEWS"][r, veh, 0] 
-                                             + data_dt["ZEWS"][r,veh,0] * dt / data['ZCET'][r, veh, c6ti['8 Lifetime (y)']])
+                                             + data_dt["ZEWS"][r,veh,0] * dt / data['BZTC'][r, veh, c6ti['8 Lifetime (y)']])
                                              * time_lag["ZEWK"][r, veh, 0], 0))
             # Catch any negative values
             if cap_drpctn[r, veh, 0] < 0:

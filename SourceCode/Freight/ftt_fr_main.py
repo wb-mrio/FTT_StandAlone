@@ -134,10 +134,10 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
             # Find fuel use
             data['ZJNJ'][r, :, 0] = (np.matmul(np.transpose(zjet), data['ZEVV'][r, :, 0] * \
-                                        data['ZCET'][r, :, c6ti['9 Energy use (MJ/vkm)']])) / 41.868
+                                        data['BZTC'][r, :, c6ti['9 Energy use (MJ/vkm)']])) / 41.868
 
             # Emissions 
-            data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['ZCET'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
+            data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['BZTC'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
                         * (1 - data['ZBFM'][r, 0, 0]) / (1e6)
         
         # Calculate number of vehicles per technology
@@ -221,8 +221,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
                         S_k = data_dt['ZEWS'][r, b2, 0]
 
-                        Aik = data['ZEWA'][0, b1, b2] * data['ZCET'][r, b1, c6ti['15 Turnover rate (1/y)']]
-                        Aki = data['ZEWA'][0, b2, b1] * data['ZCET'][r, b1, c6ti['15 Turnover rate (1/y)']]
+                        Aik = data['ZEWA'][0, b1, b2] * data['BZTC'][r, b1, c6ti['15 Turnover rate (1/y)']]
+                        Aki = data['ZEWA'][0, b2, b1] * data['BZTC'][r, b1, c6ti['15 Turnover rate (1/y)']]
 
                         # Propagating width of variations in perceived costs
                         dFik = sqrt(2) * sqrt((data_dt['ZTTD'][r, b1, 0]*data_dt['ZTTD'][r, b1, 0] + data_dt['ZTTD'][r, b2, 0]*data_dt['ZTTD'][r, b2, 0]))
@@ -308,7 +308,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                     warnings.warn(msg)
                     
                 # Copy over costs that don't change
-                data['ZCET'][:, :, 1:20] = data_dt['ZCET'][:, :, 1:20]
+                data['BZTC'][:, :, 1:20] = data_dt['BZTC'][:, :, 1:20]
 
                 data['ZESG'][r, :, 0] = D[r, 0, 0]/data['ZLOD'][r, 0, 0]
 
@@ -345,7 +345,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                     continue
                 
                 # Emissions
-                data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['ZCET'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
+                data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['BZTC'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
                                         * (1 - data['ZBFM'][r, 0, 0]) / (1e6)
                 zjet = copy.deepcopy(data['ZJET'][0, :, :])
                 for veh in range(len(titles['FTTI'])):
@@ -363,9 +363,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
                             zjet[veh, fuel] = data['ZJET'][0, veh, fuel] * data['ZBFM'][r, 0, 0]
 
-                # Fuel use by fuel type - Convert TJ (ZCET * ZEVV) to ktoe, so divide by 41.868
+                # Fuel use by fuel type - Convert TJ (BZTC * ZEVV) to ktoe, so divide by 41.868
                 data['ZJNJ'][r, :, 0] = (np.matmul(np.transpose(zjet), data['ZEVV'][r, :, 0] * \
-                                    data['ZCET'][r, :, c6ti['9 Energy use (MJ/vkm)']])) / 41.868
+                                    data['BZTC'][r, :, c6ti['9 Energy use (MJ/vkm)']])) / 41.868
 
 
             # Cumulative investment, not in region loop as it is global
@@ -382,16 +382,16 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
                 if data['ZEWW'][0, tech, 0] > 0.1:
 
-                    data['ZCET'][:, tech, c6ti['1 Purchase cost (USD/veh)']] =  \
-                            data_dt['ZCET'][:, tech, c6ti['1 Purchase cost (USD/veh)']] \
-                            * (1.0 + data["ZCET"][:, tech, c6ti['14 Learning exponent']]
+                    data['BZTC'][:, tech, c6ti['1 Purchase cost (USD/veh)']] =  \
+                            data_dt['BZTC'][:, tech, c6ti['1 Purchase cost (USD/veh)']] \
+                            * (1.0 + data["BZTC"][:, tech, c6ti['14 Learning exponent']]
                             * dw[tech]/data['ZEWW'][0, tech, 0])
 
 
             # Calculate total investment by technology in terms of truck purchases
             for r in range(len(titles['RTI'])):
                 data['ZWIY'][r, :, 0] = data['ZEWI'][r, :, 0] \
-                                        * data["ZCET"][r, :, c6ti['1 Purchase cost (USD/veh)']]
+                                        * data["BZTC"][r, :, c6ti['1 Purchase cost (USD/veh)']]
 
             # Calculate levelised cost again
             data = get_lcof(data, titles)

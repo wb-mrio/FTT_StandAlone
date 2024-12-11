@@ -108,7 +108,7 @@ def are_csvs_older_than_masterfiles(vars_to_convert, out_dir, models, \
         For a given module and scenario, compares the most recent date
         a csv file was last updated
         """
-        # Take old time to compare to
+        # Initialise with random old time
         last_time_modified = datetime.datetime(2021, 1, 1)
         
         for var in vars_to_convert:
@@ -119,11 +119,11 @@ def are_csvs_older_than_masterfiles(vars_to_convert, out_dir, models, \
             elif csv_exists(out_fn_reg):
                 time_modified = os.path.getmtime(out_fn_reg)
             else:
-                print(f"var does not exist: {var}")
+                print(f"var csv file does not exist: {var}")
                 print(f"vars_to_convert: {vars_to_convert}")
                 continue
             
-            time_modified =  datetime.datetime.fromtimestamp(time_modified)
+            time_modified = datetime.datetime.fromtimestamp(time_modified)
             if time_modified > last_time_modified:
                 last_time_modified = time_modified
         
@@ -193,7 +193,7 @@ def gamma_input_on_overwrite(out_dir, var, gamma_options):
     the user may not want to lose their calibrated gamma values 
     """
     
-    costvar_to_gam_dict = {"MGAM": "MGAM", "BTTC": "TGAM", "BHTC": "HGAM", "ZCET": "ZGAM"}
+    costvar_to_gam_dict = {"MGAM": "MGAM", "BTTC": "TGAM", "BHTC": "HGAM", "BZTC": "ZGAM"}
     var_gamma = costvar_to_gam_dict[var]
     out_fn = os.path.join(out_dir, f"{var_gamma}_BE.csv")
     
@@ -253,7 +253,11 @@ def write_to_csv(data, row_title, col_title, var, out_dir, reg=None):
     else:
         out_fn = os.path.join(out_dir, f"{var}.csv")
     
-    df = pd.DataFrame(data.values, index=row_title, columns=col_title)
+    try: 
+        df = pd.DataFrame(data.values, index=row_title, columns=col_title)
+    except ValueError as e:
+        print(f"Shape of input incorrect for {var}")
+        raise e
     df.to_csv(out_fn)
 
 
@@ -264,10 +268,11 @@ def costs_to_gam(data, var, reg, timeline_dict, dims, out_dir):
     gamma values are defined for each year.
     """
 
-    costvar_to_gam_dict = {"BTTC": "TGAM", "BHTC": "HGAM", "ZCET": "ZGAM"}
-    gamma_index = {"BTTC": 14, "BHTC": 13, "ZCET": 13}
-    gamma_row_titles = {"BTTC": "VTTI", "BHTC": "HTTI", "ZCET": "FTTI"}
+    costvar_to_gam_dict = {"BTTC": "TGAM", "BHTC": "HGAM", "BZTC": "ZGAM"}
+    gamma_index = {"BTTC": 14, "BHTC": 13, "BZTC": 13}
+    gamma_row_titles = {"BTTC": "VTTI", "BHTC": "HTTI", "BZTC": "FTTI"}
     gamma_var = costvar_to_gam_dict[var]
+        
     gamma_1D = data[gamma_index[var]]
     col_names = timeline_dict[gamma_var]
 
