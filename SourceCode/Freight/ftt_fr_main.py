@@ -311,8 +311,9 @@ def solve(data, time_lag, titles, histend, year, domain):
             data['RVKZ'] = sum_over_classes(data['ZEST'])
                                     
             # Emissions
-            data['ZEWE'] = data['ZEVV'] * data['BZTC'][:, :, c6ti['13 CO2 emissions (gCO2/km)'], None] \
-                                    * (1 - data['ZBFM']) / (1e6)
+            data['ZEWE'] = ( data['ZEVV']
+                            * data['BZTC'][:, :, c6ti['13 CO2 emissions (gCO2/km)'], None]
+                            * (1 - data['ZBFM']) / 1e6 )
             
             # Reopen country loop
             for r in range(len(titles['RTI'])):
