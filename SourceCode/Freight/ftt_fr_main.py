@@ -46,7 +46,7 @@ from SourceCode.Freight.ftt_fr_sales import get_sales
 # -----------------------------------------------------------------------------
 # ----------------------------- Main ------------------------------------------
 # -----------------------------------------------------------------------------
-def solve(data, time_lag, iter_lag, titles, histend, year, domain):
+def solve(data, time_lag, titles, histend, year, domain):
     """
     Main solution function for the module.
 
@@ -57,10 +57,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
     Parameters
     -----------
     data: dictionary of NumPy arrays
-        Model variables for the given year of solution
+        Model variables for given year of solution
     time_lag: type
-        Model variables from the previous year
-    iter_lag: type
         Model variables from the previous year
     titles: dictionary of lists
         Dictionary containing all title classification
@@ -311,7 +309,10 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             data['ZEST'] = data['ZEVV'] * data['BZTC'][:, :, c6ti['10 Loads (t or passengers/veh)'], np.newaxis]
             data['ZESG'] = sum_over_classes(data['ZEVV'])
             data['RVKZ'] = sum_over_classes(data['ZEST'])
-            
+                                    
+            # Emissions
+            data['ZEWE'] = data['ZEVV'] * data['BZTC'][:, :, c6ti['13 CO2 emissions (gCO2/km)'], None] \
+                                    * (1 - data['ZBFM']) / (1e6)
             
             # Reopen country loop
             for r in range(len(titles['RTI'])):
@@ -319,9 +320,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
                 if np.sum(D[r]) == 0.0:
                     continue
                 
-                # Emissions
-                data['ZEWE'][r, :, 0] = data['ZEVV'][r, :, 0] * data['BZTC'][r, :, c6ti['13 CO2 emissions (gCO2/km)']] \
-                                        * (1 - data['ZBFM'][r, 0, 0]) / (1e6)
+                                        
                 zjet = np.copy(data['ZJET'][0, :, :])
                 for veh in range(len(titles['FTTI'])):
                     for fuel in range(len(titles['JTI'])):
@@ -352,8 +351,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             dw = np.sum(bi, axis=0)
             
             data['ZEWW'][0, :, 0] = data_dt['ZEWW'][0, :, 0] + dw
-                
-            # Reopen region loop 
+            
+            
             # Learning-by-doing effects on investment
             for tech in range(len(titles['FTTI'])):
 

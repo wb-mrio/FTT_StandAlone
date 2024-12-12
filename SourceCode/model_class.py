@@ -230,7 +230,7 @@ class ModelRun:
                                         self.titles, self.histend, tl[y],
                                         self.domain)
             if "FTT-Fr" in self.ftt_modules:
-                variables = ftt_fr.solve(variables, time_lags, iter_lags,
+                variables = ftt_fr.solve(variables, time_lags, 
                                         self.titles, self.histend, tl[y],
                                         self.domain)
             if "FTT-H" in self.ftt_modules:
