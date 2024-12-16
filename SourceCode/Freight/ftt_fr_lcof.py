@@ -84,25 +84,25 @@ def get_lcof(data, titles):
         # Costs of trucks, paid once in a lifetime
         It = np.ones([len(titles['FTTI']), int(max_LF)])
         It = It * BZTC[:, c6ti['1 Purchase cost (USD/veh)'], np.newaxis]
-        It = It / BZTC[:, c6ti['17 Average mileage (km/y)'], np.newaxis]
+        It = It / BZTC[:, c6ti['15 Average mileage (km/y)'], np.newaxis]
         It[:,1:] = 0
 
         # Standard deviation of costs of trucks
         dIt = np.ones([len(titles['FTTI']), int(max_LF)])
         dIt = dIt * BZTC[:, c6ti['2 Std of purchase cost'], np.newaxis]
-        dIt = dIt / BZTC[:, c6ti['17 Average mileage (km/y)'], np.newaxis]
+        dIt = dIt / BZTC[:, c6ti['15 Average mileage (km/y)'], np.newaxis]
         dIt[:,1:] = 0
 
         # Reg tax based on carbon price, RTCOt = ($/tCO2/km)/(tCO2/km)
         RZCOt = np.ones([len(titles['FTTI']), int(max_LF)])
-        RZCOt = (RZCOt * BZTC[:, c6ti['13 CO2 emissions (gCO2/km)'], np.newaxis]
+        RZCOt = (RZCOt * BZTC[:, c6ti['12 CO2 emissions (gCO2/km)'], np.newaxis]
               * data['RZCO'][r,0,0])
         RZCOt[:,1:] = 0
 
         # Registration Taxes, ZTVT is vehicle tax
         ItVT = np.ones([len(titles['FTTI']), int(max_LF)])
         ItVT = ItVT * data['ZTVT'][r,:,0, np.newaxis]
-        ItVT = ItVT / BZTC[:, c6ti['17 Average mileage (km/y)'], np.newaxis]
+        ItVT = ItVT / BZTC[:, c6ti['15 Average mileage (km/y)'], np.newaxis]
         ItVT[:,1:] = 0
 
         # Fuel Cost
@@ -180,7 +180,7 @@ def get_lcof(data, titles):
         # Vehicle price components for front end ($/veh)
         data["ZWIC"][r, :, 0] = BZTC[:, c6ti['1 Purchase cost (USD/veh)']] \
                                 + data["ZTVT"][r, :, 0] \
-                                + BZTC[:, c6ti["13 CO2 emissions (gCO2/km)"]] \
+                                + BZTC[:, c6ti["12 CO2 emissions (gCO2/km)"]] \
                                 * data["RZCO"][r, 0, 0]
         
         # Vehicle fuel price components for front end ($/km)
