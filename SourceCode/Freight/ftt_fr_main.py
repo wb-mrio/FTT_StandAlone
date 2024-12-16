@@ -257,7 +257,7 @@ def solve(data, time_lag, titles, histend, year, domain):
 
 
             # Calculate total investment by technology in terms of truck purchases
-            data['ZWIY'] = data['ZEWI'] * data["BZTC"][r, :, c6ti['1 Purchase cost (USD/veh)'], None]
+            data['ZWIY'] = data['ZEWI'] * data["BZTC"][:, :, c6ti['1 Purchase cost (USD/veh)'], None]
 
             # Calculate levelised cost again
             data = get_lcof(data, titles)
