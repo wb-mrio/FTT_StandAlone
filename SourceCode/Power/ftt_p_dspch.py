@@ -23,7 +23,7 @@ from numba import njit
 # -----------------------------------------------------------------------------
 # -------------------------- DSPTCH of capacity ------------------------------
 # -----------------------------------------------------------------------------
-@njit(fastmath=True)
+@njit(nopython=True)
 def dspch(MWDD, MEWS, MKLB, MCRT, MEWL, MWMC_lag, MMCD_lag, rti, t2ti, lbti):
     """
     Calculates dispatch of capacity.
@@ -137,6 +137,8 @@ def dspch(MWDD, MEWS, MKLB, MCRT, MEWL, MWMC_lag, MMCD_lag, rti, t2ti, lbti):
             for i in range(lbti - 1): # NOT intermittent renewables
                 # TODO: In FORTRAN, MMC1 is chosen (which does not include negative carbon prices for BECCS). Switch either. 
                 sig = np.sqrt(np.sum(dd[:,i] * MMCD_lag[r, :, 0]**2 * MEWS[r, :, 0]))
+                
+                
                 exponent = -(MWMC_lag[r, :, 0] - m0) / sig
                 fn = np.zeros((t2ti))
                 # Approximate exponential
@@ -147,7 +149,7 @@ def dspch(MWDD, MEWS, MKLB, MCRT, MEWL, MWMC_lag, MMCD_lag, rti, t2ti, lbti):
                 # Multinomial logit or simplification
                 if (np.sum(dd[:,i] * s_i) > 0 and sig > 0.001 and np.sum(dd[:,i] * s_i * fn) > 0):
 
-                    p_tech[:, i] = dd[:,i]*s_i*fn / np.sum(dd[:,i]*s_i*fn)
+                    p_tech[:, i] = dd[:,i]*s_i*fn / np.sum(dd[:,i] * s_i * fn)
 
                 else:
 
@@ -233,8 +235,9 @@ def dspch(MWDD, MEWS, MKLB, MCRT, MEWL, MWMC_lag, MMCD_lag, rti, t2ti, lbti):
         # For each tech, take largest value in temp or shares, whichever is less
         for i in range(t2ti):
             MES2[r, i, 0] = min(np.max(temp[i, :]), MEWS[r, i, 0])
-            
-        if r == 70:
-            x = 1+1
+                        
 
     return MSLB, MLLB, MES1, MES2
+
+    
+   

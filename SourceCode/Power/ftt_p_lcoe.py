@@ -54,7 +54,7 @@ def set_carbon_tax(data, c2ti, year):
     return carbon_costs
     
 
-def get_lcoe(data, titles):
+def get_lcoe(data, titles, year):
     """
     Calculate levelized costs.
 
@@ -280,6 +280,7 @@ def get_lcoe(data, titles):
         # Check if METC is nan
         if np.isnan(data['METC']).any():
             nan_indices_metc = np.where(np.isnan(data['METC']))
-            raise ValueError(f"NaN values detected in lcoe ('metc') at indices: {nan_indices_metc}")
+            raise ValueError(f"NaN values detected in lcoe ('metc') in  "
+                             f"region {nan_indices_metc[0]} and technology {nan_indices_metc[1]}")
 
     return data

@@ -105,13 +105,13 @@ if __name__ == '__main__':
         mewkx = {}
         mewsx = {}
         # mssmx = {}
-        # mlsmx = {}
-        # fretx = {}
+        mlsmx = {}
+        fretx = {}
         mcocx = {}
         # mwicx = {}
-        # mwfcx = {}
-        # msspx = {}
-        # mlspx = {}
+        mwfcx = {}
+        msspx = {}
+        mlspx = {}
         # mwkax = {}
         # pfrb = {}
         # pfrc = {}
@@ -120,8 +120,8 @@ if __name__ == '__main__':
         # pfro = {}
         # pfrg = {}
         # # Please add MWMC and MWMD to the DAN1.idiom file!
-        # mwmcx = {}
-        # mmcdx = {}
+        mwmcx = {}
+        mmcdx = {}
         mes2x = {}
         repp = {}
         fets = {}
@@ -131,8 +131,8 @@ if __name__ == '__main__':
         mcfcx = {}
 
         # # 2D variables
-        # prsc = pd.DataFrame(mre['PRSC'][0], index=regions_short, columns=tl)
-        # ex = pd.DataFrame(mre['EX'][0], index=regions_short, columns=tl)
+        prsc = pd.DataFrame(mre['PRSC'][0], index=regions_short, columns=tl)
+        ex = pd.DataFrame(mre['EX'][0], index=regions_short, columns=tl)
         rex = pd.DataFrame(mre['REX'][0], index=regions_short, columns=tl)
 
         repp = pd.DataFrame(mre["REPP"][0], index=regions_short, columns=tl)
@@ -149,15 +149,15 @@ if __name__ == '__main__':
             mewkx[region] = pd.DataFrame(mre['MEWK'][r], index=t2ti, columns=tl)
             mewsx[region] = pd.DataFrame(mre['MEWS'][r], index=t2ti, columns=tl)
             # mssmx[region] = pd.DataFrame(mre['MSSM'][r], index=t2ti, columns=tl)
-            # mlsmx[region] = pd.DataFrame(mre['MLSM'][r], index=t2ti, columns=tl)
-            # fretx[region] = pd.DataFrame(mre['FRET'][r], index=fuel_users, columns=tl)
+            mlsmx[region] = pd.DataFrame(mre['MLSM'][r], index=t2ti, columns=tl)
+            fretx[region] = pd.DataFrame(mre['FRET'][r], index=fuel_users, columns=tl)
             mcocx[region] = pd.DataFrame(mre['MCOC'][r], index=t2ti, columns=tl)
             # mwicx[region] = pd.DataFrame(mre['MWIC'][r], index=t2ti, columns=tl)
-            # mwfcx[region] = pd.DataFrame(mre['MWFC'][r], index=t2ti, columns=tl)
-            # mwmcx[region] = pd.DataFrame(mre['MWMC'][r], index=t2ti, columns=tl)
-            # mmcdx[region] = pd.DataFrame(mre['MMCD'][r], index=t2ti, columns=tl)
-            # msspx[region] = pd.DataFrame(mre['MSSP'][r], index=t2ti, columns=tl)
-            # mlspx[region] = pd.DataFrame(mre['MLSP'][r], index=t2ti, columns=tl)
+            mwfcx[region] = pd.DataFrame(mre['MWFC'][r], index=t2ti, columns=tl)
+            mwmcx[region] = pd.DataFrame(mre['MWMC'][r], index=t2ti, columns=tl)
+            #mmcdx[region] = pd.DataFrame(mre['MMCD'][r], index=t2ti, columns=tl)
+            #msspx[region] = pd.DataFrame(mre['MSSP'][r], index=t2ti, columns=tl)
+            mlspx[region] = pd.DataFrame(mre['MLSP'][r], index=t2ti, columns=tl)
             # mwkax[region] = pd.DataFrame(mre['MWKA'][r], index=t2ti, columns=tl)
             mcfcx[region] = pd.DataFrame(mre['MCFC'][r], index=t2ti, columns=tl)
             mes2x[region] = pd.DataFrame(mre['MES2'][r], index=t2ti, columns=tl)
@@ -168,41 +168,21 @@ if __name__ == '__main__':
             # pfre[region] = pd.DataFrame(mre["PFRE"][r], index=fuel_users, columns=tl)
             # pfrg[region] = pd.DataFrame(mre["PFRG"][r], index=fuel_users, columns=tl)
 
-    # prsc.to_csv(os.path.join(dirp_out_ftt, "PRSCX.csv"))
-    # ex.to_csv(os.path.join(dirp_out_ftt, "EXX.csv"))
+    
+    # Exogenous inputs    
+    prsc.to_csv(os.path.join(dirp_out_ftt, "PRSCX.csv"))
+    ex.to_csv(os.path.join(dirp_out_ftt, "EXX.csv"))
     rex.to_csv(os.path.join(dirp_out_ftt, "REXX.csv"))
     repp.to_csv(os.path.join(dirp_out_ftt, "REPPX.csv"))
 
 
     for region in regions_short:
-
-        mewlx[region].to_csv(os.path.join(dirp_out_ftt, "MEWLX_{}.csv".format(region)))
         pass
-        #mewlx[region].to_csv(os.path.join(dirp_out_ftt, "MEWLX_{}.csv".format(region)))
-        # mercx[region].to_csv(os.path.join(dirp_out_ftt, "MERCX_{}.csv".format(region)))
-        #mewdx[region].to_csv(os.path.join(dirp_out_ftt, "MEWDX_{}.csv".format(region)))
-        metcx[region].to_csv(os.path.join(dirp_out_ftt, "METCX_{}.csv".format(region)))
-        # mtcdx[region].to_csv(os.path.join(dirp_out_ftt, "MTCDX_{}.csv".format(region)))
-        # mgamx[region].to_csv(os.path.join(dirp_out_ftt, "MGAMX_{}.csv".format(region)))
-        # mgamx[region].to_csv(os.path.join(dirp_out_ftt, "MGAM_{}.csv".format(region)))
-        #mewgx[region].to_csv(os.path.join(dirp_out_ftt, "MEWGX_{}.csv".format(region)))
-        #mewkx[region].to_csv(os.path.join(dirp_out_ftt, "MEWKX_{}.csv".format(region)))
-        #mewsx[region].to_csv(os.path.join(dirp_out_ftt, "MEWSX_{}.csv".format(region)))
-        # mssmx[region].to_csv(os.path.join(dirp_out_ftt, "MSSMX_{}.csv".format(region)))
-        # mlsmx[region].to_csv(os.path.join(dirp_out_ftt, "MLSMX_{}.csv".format(region)))
-        # fretx[region].to_csv(os.path.join(dirp_out_ftt, "FRETX_{}.csv".format(region)))
-        #mcocx[region].to_csv(os.path.join(dirp_out_ftt, "MCOCX_{}.csv".format(region)))
-        # mwicx[region].to_csv(os.path.join(dirp_out_ftt, "MWICX_{}.csv".format(region)))
-        # mwfcx[region].to_csv(os.path.join(dirp_out_ftt, "MWFCX_{}.csv".format(region)))
-        # mwmcx[region].to_csv(os.path.join(dirp_out_ftt, "MWMCX_{}.csv".format(region)))
-        # mmcdx[region].to_csv(os.path.join(dirp_out_ftt, "MMCDX_{}.csv".format(region)))
-        # msspx[region].to_csv(os.path.join(dirp_out_ftt, "MSSPX_{}.csv".format(region)))
-        # mlspx[region].to_csv(os.path.join(dirp_out_ftt, "MLSPX_{}.csv".format(region)))
-        # mwkax[region].to_csv(os.path.join(dirp_out_ftt, "MWKA_{}.csv".format(region)))
-        #mcfcx[region].to_csv(os.path.join(dirp_out_ftt, "MCFCX_{}.csv".format(region)))
-        #mes2x[region].to_csv(os.path.join(dirp_out_ftt, "MES2X_{}.csv".format(region)))
+    
+        # Exogenous inputs
+        mewdx[region].to_csv(os.path.join(dirp_out_ftt, "MEWDX_{}.csv".format(region)))
         mcfcx[region].to_csv(os.path.join(dirp_out_ftt, "MCFCX_{}.csv".format(region)))
-        #mes2x[region].to_csv(os.path.join(dirp_out_ftt, "MES2X_{}.csv".format(region)))
+        
 
         # pfrb[region].to_csv(os.path.join(dirp_out_gen, "PFRB_{}.csv".format(region)))
         # pfrc[region].to_csv(os.path.join(dirp_out_gen, "PFRC_{}.csv".format(region)))
@@ -212,12 +192,27 @@ if __name__ == '__main__':
         # pfrg[region].to_csv(os.path.join(dirp_out_gen, "PFRG_{}.csv".format(region)))
 
 
-
-
-
-
-
-
-
-
-#space
+        # Only there for debugging
+        mewlx[region].to_csv(os.path.join(dirp_out_ftt, "MEWLX_{}.csv".format(region)))
+        # mercx[region].to_csv(os.path.join(dirp_out_ftt, "MERCX_{}.csv".format(region)))
+        metcx[region].to_csv(os.path.join(dirp_out_ftt, "METCX_{}.csv".format(region)))
+        # mtcdx[region].to_csv(os.path.join(dirp_out_ftt, "MTCDX_{}.csv".format(region)))
+        # mgamx[region].to_csv(os.path.join(dirp_out_ftt, "MGAMX_{}.csv".format(region)))
+        # mgamx[region].to_csv(os.path.join(dirp_out_ftt, "MGAM_{}.csv".format(region)))
+        #mewgx[region].to_csv(os.path.join(dirp_out_ftt, "MEWGX_{}.csv".format(region)))
+        #mewkx[region].to_csv(os.path.join(dirp_out_ftt, "MEWKX_{}.csv".format(region)))
+        #mewsx[region].to_csv(os.path.join(dirp_out_ftt, "MEWSX_{}.csv".format(region)))
+        # mssmx[region].to_csv(os.path.join(dirp_out_ftt, "MSSMX_{}.csv".format(region)))
+        mlsmx[region].to_csv(os.path.join(dirp_out_ftt, "MLSMX_{}.csv".format(region)))
+        #mcocx[region].to_csv(os.path.join(dirp_out_ftt, "MCOCX_{}.csv".format(region)))
+        # mwicx[region].to_csv(os.path.join(dirp_out_ftt, "MWICX_{}.csv".format(region)))
+        #mwfcx[region].to_csv(os.path.join(dirp_out_ftt, "MWFCX_{}.csv".format(region)))
+        #mwmcx[region].to_csv(os.path.join(dirp_out_ftt, "MWMCX_{}.csv".format(region)))
+        #mmcdx[region].to_csv(os.path.join(dirp_out_ftt, "MMCDX_{}.csv".format(region)))
+        #msspx[region].to_csv(os.path.join(dirp_out_ftt, "MSSPX_{}.csv".format(region)))
+        mlspx[region].to_csv(os.path.join(dirp_out_ftt, "MLSPX_{}.csv".format(region)))
+        # mwkax[region].to_csv(os.path.join(dirp_out_ftt, "MWKA_{}.csv".format(region)))
+        #mes2x[region].to_csv(os.path.join(dirp_out_ftt, "MES2X_{}.csv".format(region)))
+        
+        # Not sure
+        #fretx[region].to_csv(os.path.join(dirp_out_ftt, "FRETX_{}.csv".format(region)))

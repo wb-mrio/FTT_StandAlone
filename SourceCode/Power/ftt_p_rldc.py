@@ -33,7 +33,7 @@ def feqs(a):
 # -----------------------------------------------------------------------------
 # -------------------------- RLDC calcultion ------------------------------
 # -----------------------------------------------------------------------------
-def rldc(data, time_lag, data_dt, year, titles):
+def rldc(data, MEWDt, time_lag, data_dt, year, titles, histend):
     """
     Calculate RLDCs.
 
@@ -203,31 +203,18 @@ def rldc(data, time_lag, data_dt, year, titles):
                              [0.191,-0.806,-0.434,-0.023,-0.491,-0.174,-0.291, 0.005]])
     
     # Electricity demand (!= same as supply!)
-    e_dem = data['MEWDX'][:, 7, 0] /3.6*1000
+    e_dem = MEWDt / 3.6 * 1000
     
     # Apply learning-by-doing on storage techs
     learning_exp_ss = -0.2945 # = -(0.421 + 0.168)/2: average for flow and li-ion batteries, and mid-length storage may be included here.
     learning_exp_ls = -0.129  # Both from Way paper (https://www.inet.ox.ac.uk/files/energy_transition_paper-INET-working-paper.pdf), latter less reliable due to data constraints
     
-
-    
-    if year > 2020: 
-        
-        data['MSSC2020'] = time_lag['MSSC2020'].copy()
-        data['MLSC2020'] = time_lag['MLSC2020'].copy()        
-        
-        # data['MSCC'][:,0,0] = iter_lag['MSCC'][:,0,0] * (iter_lag['MSSC'][:,0,0].sum()/39.91390) ** learning_exp_ss
-        # data['MLCC'][:,0,0] = iter_lag['MLCC'][:,0,0] * (iter_lag['MLSC'][:,0,0].sum()/5.336314) ** learning_exp_ls
-        
-        # Apply learning rate to levelised cost of storage (MSCC and MLCC)
-        data['MSCC'][:,0,0] = 0.20 * 1e6 * (data_dt['MSSC'][:, 0, 0].sum() / data['MSSC2020']) ** learning_exp_ss
-        data['MLCC'][:,0,0] = 0.32 * 1e6 * (data_dt['MLSC'][:, 0, 0].sum() / data['MLSC2020']) ** learning_exp_ls
     
 
     # Wind and solar shares for all regions
     Sw = np.zeros(len(titles['RTI']))
     Ss = np.zeros(len(titles['RTI']))
-    Sw = np.divide(np.sum(data['MEWG'][:, [16, 17, 21], 0], axis=1),
+    Sw = np.divide(np.sum(data['MEWG'][:, [16, 17], 0], axis=1),
                    e_dem[:],
                    where=~np.isclose(e_dem[:], 0.0))
     Ss = np.divide(data['MEWG'][:, 18, 0],
@@ -298,7 +285,7 @@ def rldc(data, time_lag, data_dt, year, titles):
     for r in range(len(titles['RTI'])):
         if Sw[r] + Ss[r] == 0:
             print(f"No wind or solar in region {r}")
-            continue
+            
 
         # SHORT-TERM STORAGE
         # Multidimensional polynomial from Ueckerdt et al. (2017)
@@ -320,8 +307,9 @@ def rldc(data, time_lag, data_dt, year, titles):
        
         # Estimate general curtailment rate and the splits for wind and solar
         data['MCRT'][r, 0, 0] = rldc_prod[0]
-        curt_w[r] = data['MCRT'][r, 0, 0] * (Sw[r] + Ss[r])/ (Sw[r] + Ss[r]/ratio[r])
-        curt_s[r] = data['MCRT'][r, 0, 0] * (Sw[r] + Ss[r])/ (Sw[r]*ratio[r] + Ss[r])
+        if Sw[r] != 0 and Ss[r] != 0: 
+            curt_w[r] = data['MCRT'][r, 0, 0] * (Sw[r] + Ss[r]) / (Sw[r] + Ss[r]/ratio[r])
+            curt_s[r] = data['MCRT'][r, 0, 0] * (Sw[r] + Ss[r]) / (Sw[r]*ratio[r] + Ss[r])
         
         # Upper limit of values
         if data['MCRT'][r, 0, 0] > 0.75: data['MCRT'][r, 0, 0] = 0.75
@@ -333,7 +321,6 @@ def rldc(data, time_lag, data_dt, year, titles):
         data['MCTG'][r, :, 0] = 0.0
         data['MCTG'][r, 16, 0] = curt_w[r]
         data['MCTG'][r, 17, 0] = curt_w[r]
-        data['MCTG'][r, 21, 0] = curt_w[r]
         data['MCTG'][r, 18, 0] = curt_s[r]
         
         # %% Load band heights
@@ -470,20 +457,18 @@ def rldc(data, time_lag, data_dt, year, titles):
                                    )    
         
             LSw = (Sw[r] + Ss[r])/ feqs( (Sw[r] + Ss[r]/ratio_ls[r]) )
-            LSs = (Sw[r] + Ss[r])/ feqs( (Sw[r]*ratio_ls[r] + Ss[r]) )         
+            LSs = (Sw[r] + Ss[r])/ feqs( (Sw[r]*ratio_ls[r] + Ss[r]) )           
         
             # Split the average costs over technologies
             data['MLSP'][r, :, 0] = 0.0
             data['MLSP'][r, 16, 0] = data['MLSR'][r,0,0] * LSw
             data['MLSP'][r, 17, 0] = data['MLSR'][r,0,0] * LSw
-            data['MLSP'][r, 21, 0] = data['MLSR'][r,0,0] * LSw
             data['MLSP'][r, 18, 0] = data['MLSR'][r,0,0] * LSs
         # For option 4, all VRE pay the equal amount
         elif np.rint(data['MSAL'][r, 0, 0]) in [4]:
             data['MLSP'][r, :, 0] = 0.0
             data['MLSP'][r, 16, 0] = data['MLSR'][r,0,0]
             data['MLSP'][r, 17, 0] = data['MLSR'][r,0,0]
-            data['MLSP'][r, 21, 0] = data['MLSR'][r,0,0]
             data['MLSP'][r, 18, 0] = data['MLSR'][r,0,0] 
         # All technologies pay the pay amount for the other options
         else:
@@ -519,7 +504,16 @@ def rldc(data, time_lag, data_dt, year, titles):
         
         
         # Storage cost are overwritten here:
-        # Assumed levelised cost of storage: 0.20 EURO/kWh initially
+            
+        if year >= histend["MSSC_histend"]: 
+            
+            data['MSSC_histend'] = time_lag['MSSC_histend'].copy()
+            data['MLSC_histend'] = time_lag['MLSC_histend'].copy()        
+            
+            data['MSCC'][:,0,0] = 0.18 * 1e6 * (data_dt['MSSC'][:,0,0].sum() / data['MSSC_histend']) ** learning_exp_ss
+            data['MLCC'][:,0,0] = 0.32 * 1e6 * (data_dt['MLSC'][:,0,0].sum() / data['MLSC_histend']) ** learning_exp_ls
+            
+        # Assumed levelised cost of storage: 0.18 EURO/kWh initially
         # in reality the capacity/energy discharged ratio changes due to demand-supply mismatches.
         # For simplicity a fixed LC is chosen
         # Total costs of electricity discharged to the system per unit of electricity demanded (EURO/GWh):
@@ -545,14 +539,12 @@ def rldc(data, time_lag, data_dt, year, titles):
             data['MSSP'][r, :,0] = 0.0
             data['MSSP'][r, 16,0] = data['MSSR'][r,0,0] * SSw
             data['MSSP'][r, 17,0] = data['MSSR'][r,0,0] * SSw
-            data['MSSP'][r, 21,0] = data['MSSR'][r,0,0] * SSw
             data['MSSP'][r, 18,0] = data['MSSR'][r,0,0] * SSs
         # For option 4, all VRE pay the equal amount
         elif np.rint(data['MSAL'][r, 0, 0]) in [4]:
             data['MSSP'][r,:,0] = 0.0
             data['MSSP'][r,16,0] = data['MSSR'][r,0,0]
             data['MSSP'][r,17,0] = data['MSSR'][r,0,0]
-            data['MSSP'][r,21,0] = data['MSSR'][r,0,0]
             data['MSSP'][r,18,0] = data['MSSR'][r,0,0] 
         # All technologies pay the pay amount for the other options
         else:
@@ -612,7 +604,6 @@ def rldc(data, time_lag, data_dt, year, titles):
             data['MLSM'][r, :, 0] = 0.0
             data['MLSM'][r, 16, 0] = marg_cost_wind_ls
             data['MLSM'][r, 17, 0] = marg_cost_wind_ls
-            data['MLSM'][r, 21, 0] = marg_cost_wind_ls
             data['MLSM'][r, 18, 0] = marg_cost_sol_ls            
                 
             #-------------------------------------------------------------
@@ -639,40 +630,19 @@ def rldc(data, time_lag, data_dt, year, titles):
             elif np.rint(data['MSAL'][r, 0, 0]) in [5]:
                 marg_cost_sol_ss = output_sol * data['MSCC'][r,0,0] / (vre + vre_ggr_sol[r]) * SSs - data['MSSP'][r, 18, 0] 
                 marg_cost_wind_ss = output_wind * data['MSCC'][r,0,0] / (vre + vre_ggr_wind[r]) * SSw  - data['MSSP'][r, 16, 0] 
+
                     
             data['MSSM'][r,:,0] = 0.0
             data['MSSM'][r,16,0] = marg_cost_wind_ss
             data['MSSM'][r,17,0] = marg_cost_wind_ss
-            data['MSSM'][r,21,0] = marg_cost_wind_ss
             data['MSSM'][r,18,0] = marg_cost_sol_ss 
             
-    # %%
-    
-    # Ad hoc correction for exchange rate and inflation
-    # TODO: check if these corrections actually make sense. The FORTRAN conversions have been changed, so we likely need to copy that. 
-    data["MSSP"] = data["MSSP"] * 1.34
-    data["MLSP"] = data["MLSP"] * 1.34
-    data["MSSM"] = data["MSSM"] * 1.34
-    data["MLSM"] = data["MLSM"] * 1.34
-    data["MSSR"] = data["MSSR"] * 1.34
-    
-    check_mewg = pd.DataFrame(data['MEWG'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
-    check_mewl = pd.DataFrame(data['MEWL'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
-    check_mewl_lag = pd.DataFrame(time_lag['MEWL'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
-    check_mews = pd.DataFrame(data['MEWS'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
-    check_mewd = pd.DataFrame(data['MEWD'][:, :, 0], index=titles['RTI'], columns=titles["JTI"])
-    check_mlsp = pd.DataFrame(data['MLSP'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
-    check_mssp = pd.DataFrame(data['MSSP'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
-    check_mssr = pd.Series(data["MSSR"][:, 0, 0], index=titles["RTI"])
-    check_mlsr = pd.Series(data["MLSR"][:, 0, 0], index=titles["RTI"])
-    check_mlsm = pd.DataFrame(data['MLSM'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
-    check_mssm = pd.DataFrame(data['MSSM'][:, :, 0], index=titles['RTI'], columns=titles["T2TI"])
+  
 
-    # %%
+    # Store the storage capacities in last historical year
+    if year <= histend["MSSC_histend"]:
+        data['MSSC_histend'] = np.sum(data['MSSC']).copy()
+        data['MLSC_histend']  = np.sum(data['MLSC']).copy()         
 
-    # Store the storage capacities in 2020
-    if year == 2020:
-        data['MSSC2020'] = np.sum(data['MSSC']).copy()
-        data['MLSC2020']  = np.sum(data['MLSC']).copy()         
 
     return data

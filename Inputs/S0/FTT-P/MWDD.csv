@@ -3,23 +3,21 @@
 2 Oil,1,1,1,1,1,0
 3 Coal,1,1,1,0,0,0
 4 Coal + CCS,1,1,1,0,0,0
-5 IGCC,1,1,1,1,1,0
-6 IGCC + CCS,1,1,1,1,1,0
+5 Waste,1,1,1,0,0,0
+6 Waste + CCS,1,1,1,0,0,0
 7 CCGT,1,1,1,1,1,0
 8 CCGT + CCS,1,1,1,1,1,0
-9 Solid Biomass,1,1,1,0,0,0
-10 S Biomass CCS,1,1,1,0,0,0
-11 BIGCC,1,1,1,1,1,0
-12 BIGCC + CCS,1,1,1,1,1,0
-13 Biogas,1,1,1,1,1,0
-14 Biogas + CCS,1,1,1,1,1,0
-15 Tidal,1,1,1,1,1,0
-16 Large Hydro,1,1,1,1,1,0
+9 OCGT,1,1,1,1,1,0
+10 OCGT + CCS,1,1,1,1,1,0
+11 Biomass,1,1,1,0,0,0
+12 Biomass + CCS,1,1,1,0,0,0
+13 Large Hydro,0,0,0,0,0,1
+14 Pumped Hydro,0,0,0,0,0,1
+15 Geothermal,1,0,0,0,0,0
+16 Marine,0,0,0,0,0,1
 17 Onshore,0,0,0,0,0,1
 18 Offshore,0,0,0,0,0,1
 19 Solar PV,0,0,0,0,0,1
 20 CSP,1,1,1,0,0,0
-21 Geothermal,1,0,0,0,0,0
-22 Wave,0,0,0,0,0,1
-23 Fuel Cells,0,0,0,0,0,0
-24 CHP,1,1,1,0,0,0
+21 Fuel cells / Turbine,1,1,1,1,1,0
+22 Lithium-ion,1,1,1,1,1,0

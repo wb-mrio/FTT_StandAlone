@@ -373,7 +373,7 @@ def variable_setup(dir_masterfiles, models):
 def get_model_classification(titles_path, variables_df):
     """Get the dimensions for the classifications"""
     dims = list(pd.concat([variables_df['RowDim'], variables_df['ColDim'], variables_df['3DDim']]))
-    dims = list(set([dim for dim in dims if dim not in ['TIME', np.nan, 0]]))
+    dims = {dim for dim in dims if dim not in {'TIME', np.nan, 0}}
     dims = {dim: None for dim in dims}
 
     titles_dict = load_titles()
@@ -434,7 +434,7 @@ def convert_masterfiles_to_csv(models, ask_user_input=False, overwrite_existing_
                 os.makedirs(out_dir)
             
             # Check if masterfiles are updated since last csv update (unless explicitly overwriting)
-            if not overwrite_existing_csvs: 
+            if not overwrite_existing_csvs:
                 # Overwrite existing csv files when masterfile has more recently been updated
                 overwrite_existing_csvs = are_csvs_older_than_masterfiles(
                         vars_to_convert, out_dir, models, model, scen, dir_masterfiles

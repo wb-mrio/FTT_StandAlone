@@ -168,8 +168,8 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
         data['MRED'] = mred
         data['MRES'] = mres
 
-        data = get_lcoe(data, titles)
-        data = rldc(data, time_lag, iter_lag, year, titles)
+        data = get_lcoe(data, titles, year)
+        data = rldc(data, data["MEWDX"][:, 7, 0], time_lag, iter_lag, year, titles, histend)
         mslb, mllb, mes1, mes2 = dspch(data['MWDD'], data['MEWS'], data['MKLB'], data['MCRT'],
                                    data['MEWL'], data['MWMC'], data['MMCD'],
                                    len(titles['RTI']), len(titles['T2TI']), len(titles['LBTI']))
@@ -230,7 +230,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
         data['MCFC'][:, :, 0] = data['MWLO'][:, :, 0].copy()
         data['BCET'][:, :, c2ti['11 Decision Load Factor']] = data['MCFC'][:, :, 0].copy()
         
-        data = get_lcoe(data, titles)
+        data = get_lcoe(data, titles, year)
 
 
     #%%
@@ -273,12 +273,13 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
 
         # If first year, get initial MC, dMC for DSPCH ( TODO FORTRAN??)
         if not time_lag['MMCD'][:, :, 0].any():
-            time_lag = get_lcoe(data, titles)
+            time_lag = get_lcoe(data, titles, year)
         # Call RLDC function for capacity and load factor by LB, and storage costs
-        if year >= 2013:
+        
+        if year >= 2013: # Still in historical period
 
             # 1 and 2 -- Estimate RLDC and storage parameters
-            data = rldc(data, time_lag, iter_lag, year, titles)
+            data = rldc(data, data["MEWDX"][:, 7, 0], time_lag, iter_lag, year, titles, histend)
 
             # 3--- Call dispatch routine to connect market shares to load bands
             # Call DSPCH function to dispatch flexible capacity based on MC
@@ -476,7 +477,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # =====================================================================
             # Initialise the LCOE variables
             # =====================================================================
-            data = get_lcoe(data, titles)
+            data = get_lcoe(data, titles, year)
             # Historical differences between demand and supply.
             # This variable covers transmission losses and net exports
             # Hereafter, the lagged variable will have these values stored
@@ -605,7 +606,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # Residual load-duration curve
             # =================================================================
             # Call RLDC function for capacity and load factor by LB, and storage costs
-            data = rldc(data, time_lag, data_dt, year, titles)
+            data = rldc(data, MEWDt, time_lag, data_dt, year, titles, histend)
             
             # Change currency from EUR2015 to USD2013 (This is wrong, but in terms of logic and by misstating currency year for storage)
             data['MSSP'][:, :, 0] = data['MSSP'][:, :, 0] * (data['PRSC13'][:, 0, 0, np.newaxis]/data['PRSC15'][:, 0, 0, np.newaxis]) / data['EX13'][33, 0, 0]
@@ -617,8 +618,9 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # =================================================================
             # Dispatch routine
             # =================================================================
-            # Call DSPCH function to dispatch flexible capacity based on MC
-
+            # Call DSPCH function to dispatch flexible capacity based on marginal costs (MC)
+            
+            test = 1
             mslb, mllb, mes1, mes2 = dspch(data['MWDD'], data['MEWS'], data['MKLB'], data['MCRT'],
                                            data['MEWL'], data_dt['MWMC'], data_dt['MMCD'],
                                            len(titles['RTI']), len(titles['T2TI']), len(titles['LBTI']))
@@ -811,7 +813,7 @@ def solve(data, time_lag, iter_lag, titles, histend, year, domain):
             # =================================================================
             # Update LCOE
             # =================================================================
-            data = get_lcoe(data, titles)
+            data = get_lcoe(data, titles, year)
 
             # =================================================================
             # Update the time-loop variables data_dt
