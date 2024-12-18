@@ -1,0 +1,38 @@
+# Each line is a file pattern followed by one or more owners.
+# More info for this type of file: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# Femke and Pim will be requested for review when someone opens a pull request.
+*       @Femkemilene @pv-camecon
+
+# Order is important; the last matching pattern takes the most
+# precedence. When someone opens a pull request that only
+# modifies the frontend and not the global owner(s) will be requested for a review.
+/frontend/    @jp-camecon  # This is an inline comment.
+
+# The heat models, with mostly similar owners
+/SourceCode/Heat/ @AEdwards476 @idwesar-camecon @FAcamecon @msimo97
+/SourceCode/Industrial/ @idwesar-camecon @FAcamecon @rhayward1 @msimo97
+/Inputs/_Masterfiles/FTT-H/ @AEdwards476 @idwesar-camecon @FAcamecon @msimo97
+/docs/Update\ manuals/FTT-Heat\ update\ manual.md @AEdwards476 @idwesar-camecon @FAcamecon @msimo97
+
+# The power sector model
+/SourceCode/Power/ @Femkemilene @ldxib2 @FAcamecon @hartviga @sgulati26 @msimo97
+/Inputs/_Masterfiles/FTT-P/ @Femkemilene @ldxib2 @FAcamecon @hartviga @sgulati26 @msimo97
+/docs/Update\ manuals/FTT-Power\ update\ manual.md  @Femkemilene @ldxib2 @FAcamecon @hartviga @sgulati26 @msimo97
+
+# The transport models
+/SourceCode/Transport/ @cormacmlynch @sgulati26 @bbenyak
+/SourceCode/Freight/ @cormacmlynch @sgulati26 @bbenyak
+/Inputs/_Masterfiles/FTT-Tr/ @cormacmlynch @sgulati26 @bbenyak
+/Inputs/_Masterfiles/FTT-Fr/ @cormacmlynch @sgulati26 @bbenyak
+/docs/Update\ manuals/FTT-Transport\ update\ manual.md" @cormacmlynch @sgulati26 @bbenyak
+
+/SourceCode/Steel/ @pv-camecon  
+/Inputs/_Masterfiles/FTT-S/ @pv-camecon
+# Note: a second person is needed here
+
+/SourceCode/Hydrogen/ @hartviga @pv-camecon @sgulati26 @msimo97
+/Inputs/_Masterfiles/FTT-H2 @hartviga @pv-camecon @sgulati26 @msimo97
+
