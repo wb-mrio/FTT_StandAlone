@@ -1,8 +1,9 @@
 import numpy as np
-import copy
-green_indices=[12, 13, 18, 19]  # Indices for green technologies
+
+
+green_indices=range(30, 35)  # Indices for green technologies
 MANDATE_START_YEAR = 2025
-N_YEARS = 11
+N_YEARS = 16
 MANDATE_END_YEAR = MANDATE_START_YEAR + N_YEARS
 
 def calculate_mandate_share(year):
@@ -17,6 +18,7 @@ def calculate_mandate_share(year):
 
 def get_enhanced_sales(cap, cap_dt, cap_lag, shares, shares_dt, sales_or_investment_in,
                        timescales, dt, EV_truck_mandate, year):
+    
     # Step 1: Calculate basic components
     cap_growth = cap[:, :, 0] - cap_lag[:, :, 0]
     share_growth_dt = shares[:, :, 0] - shares_dt[:, :, 0]
@@ -85,7 +87,7 @@ def get_enhanced_sales(cap, cap_dt, cap_lag, shares, shares_dt, sales_or_investm
     cap[:, :, 0] = np.maximum(cap[:, :, 0], 0)
 
     # Step 6: Update cumulative sales
-    sales_or_investment = copy.deepcopy(sales_or_investment_in)
+    sales_or_investment = np.copy(sales_or_investment_in)
     sales_or_investment[:, :, 0] += sales_dt[:, :, 0]
 
     return sales_or_investment, sales_dt, cap

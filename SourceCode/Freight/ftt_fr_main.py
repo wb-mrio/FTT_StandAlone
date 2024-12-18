@@ -201,7 +201,7 @@ def solve(data, time_lag, titles, histend, year, domain):
                     shares=data["ZEWS"],
                     shares_dt=data_dt["ZEWS"],
                     sales_or_investment_in=data["ZEWI"],
-                    timescales=data['ZCET'][:, :, c6ti['8 service lifetime (y)']],
+                    timescales=data['BZTC'][:, :, c6ti['8 Lifetime (y)']],
                     dt=dt,
                     EV_truck_mandate=data["EV truck mandate"],
                     year=year
